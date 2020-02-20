@@ -6,12 +6,13 @@ import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class DrawingContext {
   private List<Component> components;
   private DiagramType diagramType;
   private File outputFile;
-  private List<ComponentItem> knownComponents;
+  private Map<String, ComponentItem> knownComponents;
 
   public File getOutputFile() {
     return outputFile;
@@ -37,11 +38,11 @@ public class DrawingContext {
     this.diagramType = diagramType;
   }
 
-  public List<ComponentItem> getKnownComponents() {
+  public Map<String, ComponentItem> getKnownComponents() {
     return knownComponents;
   }
 
-  public void setKnownComponents(List<ComponentItem> knownComponents) {
-    this.knownComponents = Collections.unmodifiableList(knownComponents);
+  public void setKnownComponents(Map<String, ComponentItem> knownComponents) {
+    this.knownComponents = Collections.unmodifiableMap(knownComponents);
   }
 }

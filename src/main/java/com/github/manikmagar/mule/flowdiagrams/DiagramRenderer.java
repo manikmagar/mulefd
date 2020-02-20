@@ -26,12 +26,12 @@ public class DiagramRenderer {
     this.commandModel = commandModel;
   }
 
-  private List<ComponentItem> prepareKnownComponents() {
+  private Map<String, ComponentItem> prepareKnownComponents() {
     List<String> lines = null;
     try {
       lines = Files.readAllLines(Paths.get(Thread.currentThread().getContextClassLoader()
           .getResource("mule-components.csv").toURI()));
-      List<ComponentItem> items = new ArrayList<>();
+      Map<String, ComponentItem> items = new HashMap<>();
       for (String line : lines) {
         if (!line.startsWith("prefix")) {
           String[] part = line.split(",");
@@ -39,15 +39,16 @@ public class DiagramRenderer {
           item.setPrefix(part[0]);
           item.setOperation(part[1]);
           item.setSource(Boolean.valueOf(part[2]));
-          item.setPath(part[3]);
-          items.add(item);
+          item.setPathAttributeName(part[3]);
+          item.setConfigAttributeName(part[4]);
+          items.putIfAbsent(item.qualifiedName(), item);
         }
       }
       return items;
     } catch (IOException | URISyntaxException e) {
       log.error("mule-components file not found", e);
     }
-    return Collections.emptyList();
+    return Collections.emptyMap();
   }
 
   public void buildModel() {
@@ -55,13 +56,13 @@ public class DiagramRenderer {
       List<Path> xmls = Files.walk(commandModel.getSourcePath())
           .filter(path -> path.toFile().isFile()).collect(Collectors.toList());
       List<MuleFlow> flows = new ArrayList<>();
-
+      Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
         log.debug("Reading file {}", path);
         MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
         muleXmlParser.parse();
         if (muleXmlParser.isMuleFile()) {
-          flows.addAll(muleXmlParser.getMuleFlows());
+          flows.addAll(muleXmlParser.getMuleFlows(knownComponents));
         } else {
           log.debug("Not a mule configuration file: {}", path);
         }

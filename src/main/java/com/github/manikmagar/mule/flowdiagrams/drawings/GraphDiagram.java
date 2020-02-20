@@ -75,6 +75,7 @@ public class GraphDiagram implements Diagram {
     } else {
       flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
     }
+    MutableNode sourceNode = null;
     for (int j = 1; j <= flow.getComponents().size(); j++) {
       MuleComponent muleComponent = flow.getComponents().get(j - 1);
       // Link style should be done with .linkTo()
@@ -89,10 +90,20 @@ public class GraphDiagram implements Diagram {
           }
         }
       }
-      addSubNodes(flowNode, j, muleComponent, name);
+      if (muleComponent.isSource()) {
+        sourceNode = mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE)
+            .add(Label.htmlLines(muleComponent.getType(), muleComponent.getName()));
+      } else {
+        addSubNodes(flowNode, j, muleComponent, name);
+      }
+
       mappedFlowKinds.add(name);
     }
-    flowNode.addTo(graph);
+    if (sourceNode != null) {
+      sourceNode.addLink(flowNode).add(Style.BOLD).addTo(graph);
+    } else {
+      flowNode.addTo(graph);
+    }
     return flowNode;
   }
 

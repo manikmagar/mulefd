@@ -4,16 +4,24 @@ public class ComponentItem {
   private String prefix;
   private String operation;
   private boolean source;
+  private String configAttributeName;
+  private String pathAttributeName;
 
-  public String getPath() {
-    return path;
+  public String getPathAttributeName() {
+    return pathAttributeName;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setPathAttributeName(String pathAttributeName) {
+    this.pathAttributeName = pathAttributeName;
   }
 
-  private String path;
+  public String getConfigAttributeName() {
+    return configAttributeName;
+  }
+
+  public void setConfigAttributeName(String configAttributeName) {
+    this.configAttributeName = configAttributeName;
+  }
 
   public String getPrefix() {
     return prefix;
@@ -37,6 +45,10 @@ public class ComponentItem {
 
   public void setSource(boolean source) {
     this.source = source;
+  }
+
+  public String qualifiedName() {
+    return prefix + ":" + operation;
   }
 
 }
