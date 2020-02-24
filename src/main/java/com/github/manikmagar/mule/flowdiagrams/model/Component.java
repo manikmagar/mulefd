@@ -2,6 +2,7 @@ package com.github.manikmagar.mule.flowdiagrams.model;
 
 import java.util.*;
 
+
 public class Component {
   private String name;
   private String type;

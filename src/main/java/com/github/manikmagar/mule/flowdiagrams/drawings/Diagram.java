@@ -15,7 +15,11 @@ public interface Diagram {
 
   boolean draw(DrawingContext drawingContext);
 
-  boolean supports(DiagramType diagramType);
+  default String[] getDiagramHeaderLines() {
+    return new String[]{"Mule Flows - "+ name() +" Diagram", "Generated on : " + getDate() + ""};
+  }
+
+    boolean supports(DiagramType diagramType);
 
   String name();
 

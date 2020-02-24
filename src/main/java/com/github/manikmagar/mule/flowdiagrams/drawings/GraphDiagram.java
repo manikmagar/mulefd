@@ -31,7 +31,7 @@ public class GraphDiagram implements Diagram {
     MutableGraph graph =
         mutGraph("mule").setDirected(true).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
             GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0),
-            Label.htmlLines("<b>Mule Flows - Graph Diagram</b>", "Generated on : " + getDate() + "")
+            Label.htmlLines(getDiagramHeaderLines())
                 .locate(Label.Location.TOP));
 
     Map<String, Component> flowRefs = new HashMap<>();
@@ -69,13 +69,15 @@ public class GraphDiagram implements Diagram {
       DrawingContext drawingContext, Map<String, Component> flowRefs,
       List<String> mappedFlowKinds) {
     MuleFlow flow = (MuleFlow) component;
-    MutableNode flowNode = mutNode(flow.qualifiedName());
+    MutableNode flowNode = mutNode(flow.qualifiedName())
+            .add(Label.markdown(getNodeLabel(flow)));
     if (flow.isSubflow()) {
       flowNode.add(Color.BLACK).add(Shape.ELLIPSE);
     } else {
       flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
     }
     MutableNode sourceNode = null;
+    boolean hasSource = false;
     for (int j = 1; j <= flow.getComponents().size(); j++) {
       MuleComponent muleComponent = flow.getComponents().get(j - 1);
       // Link style should be done with .linkTo()
@@ -84,17 +86,25 @@ public class GraphDiagram implements Diagram {
         Component refComponent = flowRefs.computeIfAbsent(muleComponent.getName(),
             k -> targetFlowByName(muleComponent.getName(), drawingContext.getComponents()));
         if (refComponent != null) {
-          name = refComponent.qualifiedName();
-          if (!mappedFlowKinds.contains(name)) {
-            processComponent(refComponent, graph, drawingContext, flowRefs, mappedFlowKinds);
+          if(refComponent.equals(flow)) {
+            log.warn("Detected a possible self loop in {} {}. Skipping flow-ref processing.", refComponent.getType(), refComponent.getName());
+            flowNode.addLink(flowNode);
+            mappedFlowKinds.add(name);
+            continue;
+          } else {
+            name = refComponent.qualifiedName();
+            if (!mappedFlowKinds.contains(name)) {
+              processComponent(refComponent, graph, drawingContext, flowRefs, mappedFlowKinds);
+            }
           }
         }
       }
       if (muleComponent.isSource()) {
-        sourceNode = mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE)
-            .add(Label.htmlLines(muleComponent.getType(), muleComponent.getName()));
+        hasSource = true;
+        sourceNode = mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE).add("sourceNode", Boolean.TRUE)
+            .add(Label.htmlLines("<b>"+muleComponent.getType()+"</b>", muleComponent.getName()));
       } else {
-        addSubNodes(flowNode, j, muleComponent, name);
+        addSubNodes(flowNode, hasSource ? j -1 : j , muleComponent, name);
       }
 
       mappedFlowKinds.add(name);
@@ -105,6 +115,10 @@ public class GraphDiagram implements Diagram {
       flowNode.addTo(graph);
     }
     return flowNode;
+  }
+
+  private String getNodeLabel(Component component) {
+    return String.format("**%s**: %s", component.getType(), component.getName());
   }
 
   private void addSubNodes(MutableNode flowNode, int j, MuleComponent muleComponent, String name) {
