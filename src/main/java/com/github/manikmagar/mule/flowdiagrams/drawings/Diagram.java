@@ -16,10 +16,10 @@ public interface Diagram {
   boolean draw(DrawingContext drawingContext);
 
   default String[] getDiagramHeaderLines() {
-    return new String[]{"Mule Flows - "+ name() +" Diagram", "Generated on : " + getDate() + ""};
+    return new String[] {"Mule Flows - " + name() + " Diagram", "Generated on : " + getDate() + ""};
   }
 
-    boolean supports(DiagramType diagramType);
+  boolean supports(DiagramType diagramType);
 
   String name();
 

@@ -7,6 +7,15 @@ public class Component {
   private String name;
   private String type;
   private Map<String, Object> attributes = new HashMap<>();
+  private Integer muleVersion;
+
+  public Integer getMuleVersion() {
+    return muleVersion;
+  }
+
+  public void setMuleVersion(Integer muleVersion) {
+    this.muleVersion = muleVersion;
+  }
 
   public Component(String type, String name) {
     Objects.requireNonNull(type, "Component type must not be null");

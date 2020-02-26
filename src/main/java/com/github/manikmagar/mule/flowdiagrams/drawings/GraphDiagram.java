@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static guru.nidi.graphviz.attribute.Arrow.*;
 import static guru.nidi.graphviz.model.Factory.*;
 
 public class GraphDiagram implements Diagram {
@@ -28,11 +29,10 @@ public class GraphDiagram implements Diagram {
 
   @Override
   public boolean draw(DrawingContext drawingContext) {
-    MutableGraph graph =
-        mutGraph("mule").setDirected(true).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
-            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0),
-            Label.htmlLines(getDiagramHeaderLines())
-                .locate(Label.Location.TOP));
+    MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
+        .add(VEE.dir(DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0), GraphAttr.dpi(300),
+            Label.htmlLines(getDiagramHeaderLines()).locate(Label.Location.TOP));
 
     Map<String, Component> flowRefs = new HashMap<>();
     List<String> mappedFlowKinds = new ArrayList<>();
@@ -69,8 +69,7 @@ public class GraphDiagram implements Diagram {
       DrawingContext drawingContext, Map<String, Component> flowRefs,
       List<String> mappedFlowKinds) {
     MuleFlow flow = (MuleFlow) component;
-    MutableNode flowNode = mutNode(flow.qualifiedName())
-            .add(Label.markdown(getNodeLabel(flow)));
+    MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isSubflow()) {
       flowNode.add(Color.BLACK).add(Shape.ELLIPSE);
     } else {
@@ -86,8 +85,9 @@ public class GraphDiagram implements Diagram {
         Component refComponent = flowRefs.computeIfAbsent(muleComponent.getName(),
             k -> targetFlowByName(muleComponent.getName(), drawingContext.getComponents()));
         if (refComponent != null) {
-          if(refComponent.equals(flow)) {
-            log.warn("Detected a possible self loop in {} {}. Skipping flow-ref processing.", refComponent.getType(), refComponent.getName());
+          if (refComponent.equals(flow)) {
+            log.warn("Detected a possible self loop in {} {}. Skipping flow-ref processing.",
+                refComponent.getType(), refComponent.getName());
             flowNode.addLink(flowNode);
             mappedFlowKinds.add(name);
             continue;
@@ -101,16 +101,17 @@ public class GraphDiagram implements Diagram {
       }
       if (muleComponent.isSource()) {
         hasSource = true;
-        sourceNode = mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE).add("sourceNode", Boolean.TRUE)
-            .add(Label.htmlLines("<b>"+muleComponent.getType()+"</b>", muleComponent.getName()));
+        sourceNode =
+            mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE).add("sourceNode", Boolean.TRUE).add(
+                Label.htmlLines("<b>" + muleComponent.getType() + "</b>", muleComponent.getName()));
       } else {
-        addSubNodes(flowNode, hasSource ? j -1 : j , muleComponent, name);
+        addSubNodes(flowNode, hasSource ? j - 1 : j, muleComponent, name);
       }
 
       mappedFlowKinds.add(name);
     }
     if (sourceNode != null) {
-      sourceNode.addLink(flowNode).add(Style.BOLD).addTo(graph);
+      sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD)).addTo(graph);
     } else {
       flowNode.addTo(graph);
     }
@@ -123,11 +124,10 @@ public class GraphDiagram implements Diagram {
 
   private void addSubNodes(MutableNode flowNode, int j, MuleComponent muleComponent, String name) {
     if (muleComponent.isAsync()) {
-      flowNode.addLink(to(mutNode(name)).with(Style.DOTTED).with(Label.of("(" + j + ") Async"))
-          .with(Color.BROWN).with(LinkAttr.weight(j)));
+      flowNode.addLink(to(mutNode(name)).with(Style.DASHED.and(Style.BOLD),
+          Label.of("(" + j + ") Async"), Color.BROWN));
     } else {
-      flowNode.addLink(to(mutNode(name)).with(Style.SOLID).with(Label.of("(" + j + ")"))
-          .with(LinkAttr.weight(j)));
+      flowNode.addLink(to(mutNode(name)).with(Style.SOLID, Label.of("(" + j + ")")));
     }
   }
 

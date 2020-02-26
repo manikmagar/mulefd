@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,10 @@ public class MuleXmlElement {
   public static final String ELEMENT_SUB_FLOW = "sub-flow";
   public static final String ELEMENT_FLOW_REF = "flow-ref";
   public static final String ELEMENT_SCOPE_ASYNC = "async";
+
+  private static final List<String> loops = Arrays.asList("foreach", "parallel-foreach");
+  private static final List<String> scopes =
+      Arrays.asList("cache", "try", "async", "until-successful", "foreach", "parallel-foreach");
 
   public static boolean isFlowOrSubflow(Element element) {
     return element.getNodeName().equalsIgnoreCase(ELEMENT_FLOW)
@@ -30,8 +35,16 @@ public class MuleXmlElement {
     return element.getNodeName().equalsIgnoreCase(ELEMENT_FLOW_REF);
   }
 
-  public static boolean isScope(Element element, String scopeName) {
-    return element.getNodeName().equalsIgnoreCase(scopeName);
+  public static boolean isAsync(Element element) {
+    return element.getNodeName().equalsIgnoreCase(ELEMENT_SCOPE_ASYNC);
+  }
+
+  public static boolean isScope(Element element) {
+    return scopes.contains(element.getNodeName().toLowerCase());
+  }
+
+  public static boolean isForLoop(Element element) {
+    return loops.contains(element.getNodeName().toLowerCase());
   }
 
   public static boolean isFlowRef(MuleComponent component) {
@@ -52,13 +65,13 @@ public class MuleXmlElement {
           component.addAttribute("name", nameAttr);
           muleComponentList.add(component);
         }
-        if (isScope(element, ELEMENT_SCOPE_ASYNC)) {
-          // Check if any flow ref exists in async
+        if (isScope(element)) {
           fillComponents(element, knownComponents).forEach(component -> {
-            component.setAsync(true);
+            component.setAsync(isAsync(element));
             muleComponentList.add(component);
           });
         }
+
         if (knownComponents.containsKey(element.getTagName())) {
           ComponentItem item = knownComponents.get(element.getTagName());
           String name = item.qualifiedName();
