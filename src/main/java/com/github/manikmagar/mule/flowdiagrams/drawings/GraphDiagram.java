@@ -2,7 +2,7 @@ package com.github.manikmagar.mule.flowdiagrams.drawings;
 
 import com.github.manikmagar.mule.flowdiagrams.model.Component;
 import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleFlow;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
@@ -68,7 +68,7 @@ public class GraphDiagram implements Diagram {
   private MutableNode processComponent(Component component, MutableGraph graph,
       DrawingContext drawingContext, Map<String, Component> flowRefs,
       List<String> mappedFlowKinds) {
-    MuleFlow flow = (MuleFlow) component;
+    FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isSubflow()) {
       flowNode.add(Color.BLACK).add(Shape.ELLIPSE);

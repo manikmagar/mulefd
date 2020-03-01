@@ -1,14 +1,10 @@
 package com.github.manikmagar.mule.flowdiagrams.drawings;
 
 import com.github.manikmagar.mule.flowdiagrams.model.Component;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleFlow;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 public interface Diagram {
@@ -29,9 +25,9 @@ public interface Diagram {
     return date.format(formatter);
   }
 
-  default MuleFlow targetFlowByName(String name, List<Component> components) {
+  default FlowContainer targetFlowByName(String name, List<Component> components) {
     return components.stream()
         .filter(component -> component.isFlowKind() && component.getName().equals(name)).findFirst()
-        .map(component -> (MuleFlow) component).orElse(null);
+        .map(component -> (FlowContainer) component).orElse(null);
   }
 }

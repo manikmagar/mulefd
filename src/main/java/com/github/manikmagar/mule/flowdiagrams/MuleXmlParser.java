@@ -1,7 +1,7 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
 import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleFlow;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 import com.github.manikmagar.mule.flowdiagrams.xml.XmlParser;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,25 +28,25 @@ public class MuleXmlParser extends XmlParser {
     return getDocument().getDocumentElement().getNodeName().equalsIgnoreCase("mule");
   }
 
-  public List<MuleFlow> getMuleFlows(Map<String, ComponentItem> knownComponents) {
+  public List<FlowContainer> getMuleFlows(Map<String, ComponentItem> knownComponents) {
     return findChildrenForElement(knownComponents);
   }
 
-  private List<MuleFlow> findChildrenForElement(Map<String, ComponentItem> knownComponents) {
-    List<MuleFlow> muleFlows = new ArrayList<>();
+  private List<FlowContainer> findChildrenForElement(Map<String, ComponentItem> knownComponents) {
+    List<FlowContainer> flowContainers = new ArrayList<>();
     NodeList nodeList = getDocument().getDocumentElement().getChildNodes();
     for (int i = 0; i < nodeList.getLength(); i++) {
       Node node = nodeList.item(i);
       if (isElement(node)) {
         Element element = (Element) node;
         if (isFlowOrSubflow(element)) {
-          MuleFlow mf = new MuleFlow(element.getNodeName(), element.getAttribute("name"));
+          FlowContainer mf = new FlowContainer(element.getNodeName(), element.getAttribute("name"));
           mf.getComponents().addAll(MuleXmlElement.fillComponents(element, knownComponents));
-          muleFlows.add(mf);
+          flowContainers.add(mf);
         }
       }
     }
-    return muleFlows;
+    return flowContainers;
   }
 
 }

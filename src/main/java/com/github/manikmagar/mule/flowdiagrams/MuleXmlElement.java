@@ -17,11 +17,14 @@ public class MuleXmlElement {
   public static final String ELEMENT_SUB_FLOW = "sub-flow";
   public static final String ELEMENT_FLOW_REF = "flow-ref";
   public static final String ELEMENT_SCOPE_ASYNC = "async";
+  public static final String ELEMENT_ERROR_HANDLER = "error-handler";
 
   private static final List<String> loops = Arrays.asList("foreach", "parallel-foreach");
   private static final List<String> scopes =
       Arrays.asList("cache", "try", "async", "until-successful", "foreach", "parallel-foreach");
-
+  private static final List<String> routers = Arrays.asList("choice","scatter-gather","round-robin","first-successful");
+  private static final List<String> routes =
+          Arrays.asList("when","otherwise","route", "on-error-propagate", "on-error-continue");
   public static boolean isFlowOrSubflow(Element element) {
     return element.getNodeName().equalsIgnoreCase(ELEMENT_FLOW)
         || element.getNodeName().equalsIgnoreCase(ELEMENT_SUB_FLOW);
@@ -39,12 +42,17 @@ public class MuleXmlElement {
     return element.getNodeName().equalsIgnoreCase(ELEMENT_SCOPE_ASYNC);
   }
 
-  public static boolean isScope(Element element) {
+  public static boolean isaScope(Element element) {
     return scopes.contains(element.getNodeName().toLowerCase());
   }
-
-  public static boolean isForLoop(Element element) {
-    return loops.contains(element.getNodeName().toLowerCase());
+  public static boolean isaRouter(Element element) {
+    return routers.contains(element.getNodeName().toLowerCase());
+  }
+  public static boolean isaRoute(Element element) {
+    return routes.contains(element.getNodeName().toLowerCase());
+  }
+  public static boolean isanErrorHandler(Element element){
+    return ELEMENT_ERROR_HANDLER.equalsIgnoreCase(element.getNodeName());
   }
 
   public static boolean isFlowRef(MuleComponent component) {
@@ -65,11 +73,17 @@ public class MuleXmlElement {
           component.addAttribute("name", nameAttr);
           muleComponentList.add(component);
         }
-        if (isScope(element)) {
+        if (isaScope(element)) {
           fillComponents(element, knownComponents).forEach(component -> {
             component.setAsync(isAsync(element));
             muleComponentList.add(component);
           });
+        }
+        if (isaRouter(element)) {
+          muleComponentList.addAll(parseContainerElement(element, knownComponents));
+        }
+       if(isanErrorHandler(element)){
+          muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
 
         if (knownComponents.containsKey(element.getTagName())) {
@@ -96,4 +110,26 @@ public class MuleXmlElement {
     }
     return muleComponentList;
   }
+
+  /**
+   * Parses router elements such as choice, scatter-gather, round-robin, first-successful
+   * @param element
+   * @param knownComponents
+   * @return
+   */
+  private static  List<MuleComponent> parseContainerElement(Element element, Map<String, ComponentItem> knownComponents){
+    List<MuleComponent> muleComponentList = new ArrayList<>();
+      NodeList routes = element.getChildNodes();
+      for (int i = 0; i < routes.getLength(); i++) {
+        Node route = routes.item(i);
+        if (route.getNodeType() == Node.ELEMENT_NODE) {
+          Element ele = (Element) route;
+          if(isaRoute(ele)){
+            muleComponentList.addAll(fillComponents(ele, knownComponents));
+          }
+        }
+      }
+    return muleComponentList;
+  }
+
 }

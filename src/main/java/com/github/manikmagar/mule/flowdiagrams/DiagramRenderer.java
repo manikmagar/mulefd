@@ -4,7 +4,7 @@ import com.github.manikmagar.mule.flowdiagrams.app.CommandModel;
 import com.github.manikmagar.mule.flowdiagrams.drawings.Diagram;
 import com.github.manikmagar.mule.flowdiagrams.drawings.DrawingContext;
 import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleFlow;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class DiagramRenderer {
     try {
       List<Path> xmls = Files.walk(commandModel.getSourcePath())
           .filter(path -> path.toFile().isFile()).collect(Collectors.toList());
-      List<MuleFlow> flows = new ArrayList<>();
+      List<FlowContainer> flows = new ArrayList<>();
       Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
         log.debug("Reading file {}", path);

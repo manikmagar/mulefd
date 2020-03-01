@@ -6,7 +6,6 @@ public class MuleComponent extends Component {
   private Attribute<String, String> configRef;
   private Attribute<String, String> path;
 
-
   public MuleComponent(String type, String name) {
     super(type, name);
   }
