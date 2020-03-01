@@ -51,7 +51,7 @@ public class DiagramRenderer {
     return Collections.emptyMap();
   }
 
-  public void buildModel() {
+  public Boolean render() {
     try {
       List<Path> xmls = Files.walk(commandModel.getSourcePath())
           .filter(path -> path.toFile().isFile()).collect(Collectors.toList());
@@ -71,12 +71,14 @@ public class DiagramRenderer {
 
       if (flows.isEmpty()) {
         log.warn("No mule flows found for creating diagram.");
+        return false;
       } else {
         DrawingContext context = toDrawingContext(commandModel);
         context.setComponents(Collections.unmodifiableList(flows));
         context.setKnownComponents(prepareKnownComponents());
         ServiceLoader<Diagram> diagramServices = ServiceLoader.load(Diagram.class);
         Iterator<Diagram> its = diagramServices.iterator();
+        boolean drawn = false;
         while (its.hasNext()) {
           Diagram diagram = its.next();
           log.debug("Analyzing diagram provider {}", diagram.getClass());
@@ -84,16 +86,18 @@ public class DiagramRenderer {
             log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
                 commandModel.getDiagramType());
             log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getResultPath());
-            diagram.draw(context);
+            drawn = diagram.draw(context);
             log.info("Generated {} at {}", diagram.name(),
                 context.getOutputFile().getAbsolutePath());
             break;
           }
         }
+        return drawn;
       }
 
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
+      return false;
     }
   }
 
