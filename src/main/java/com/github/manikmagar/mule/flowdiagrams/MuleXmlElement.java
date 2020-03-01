@@ -22,9 +22,11 @@ public class MuleXmlElement {
   private static final List<String> loops = Arrays.asList("foreach", "parallel-foreach");
   private static final List<String> scopes =
       Arrays.asList("cache", "try", "async", "until-successful", "foreach", "parallel-foreach");
-  private static final List<String> routers = Arrays.asList("choice","scatter-gather","round-robin","first-successful");
+  private static final List<String> routers =
+      Arrays.asList("choice", "scatter-gather", "round-robin", "first-successful");
   private static final List<String> routes =
-          Arrays.asList("when","otherwise","route", "on-error-propagate", "on-error-continue");
+      Arrays.asList("when", "otherwise", "route", "on-error-propagate", "on-error-continue");
+
   public static boolean isFlowOrSubflow(Element element) {
     return element.getNodeName().equalsIgnoreCase(ELEMENT_FLOW)
         || element.getNodeName().equalsIgnoreCase(ELEMENT_SUB_FLOW);
@@ -45,13 +47,16 @@ public class MuleXmlElement {
   public static boolean isaScope(Element element) {
     return scopes.contains(element.getNodeName().toLowerCase());
   }
+
   public static boolean isaRouter(Element element) {
     return routers.contains(element.getNodeName().toLowerCase());
   }
+
   public static boolean isaRoute(Element element) {
     return routes.contains(element.getNodeName().toLowerCase());
   }
-  public static boolean isanErrorHandler(Element element){
+
+  public static boolean isanErrorHandler(Element element) {
     return ELEMENT_ERROR_HANDLER.equalsIgnoreCase(element.getNodeName());
   }
 
@@ -82,7 +87,7 @@ public class MuleXmlElement {
         if (isaRouter(element)) {
           muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
-       if(isanErrorHandler(element)){
+        if (isanErrorHandler(element)) {
           muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
 
@@ -113,22 +118,24 @@ public class MuleXmlElement {
 
   /**
    * Parses router elements such as choice, scatter-gather, round-robin, first-successful
+   * 
    * @param element
    * @param knownComponents
    * @return
    */
-  private static  List<MuleComponent> parseContainerElement(Element element, Map<String, ComponentItem> knownComponents){
+  private static List<MuleComponent> parseContainerElement(Element element,
+      Map<String, ComponentItem> knownComponents) {
     List<MuleComponent> muleComponentList = new ArrayList<>();
-      NodeList routes = element.getChildNodes();
-      for (int i = 0; i < routes.getLength(); i++) {
-        Node route = routes.item(i);
-        if (route.getNodeType() == Node.ELEMENT_NODE) {
-          Element ele = (Element) route;
-          if(isaRoute(ele)){
-            muleComponentList.addAll(fillComponents(ele, knownComponents));
-          }
+    NodeList routes = element.getChildNodes();
+    for (int i = 0; i < routes.getLength(); i++) {
+      Node route = routes.item(i);
+      if (route.getNodeType() == Node.ELEMENT_NODE) {
+        Element ele = (Element) route;
+        if (isaRoute(ele)) {
+          muleComponentList.addAll(fillComponents(ele, knownComponents));
         }
       }
+    }
     return muleComponentList;
   }
 

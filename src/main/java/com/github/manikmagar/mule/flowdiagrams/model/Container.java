@@ -5,18 +5,18 @@ import java.util.List;
 
 public class Container extends Component {
 
-    private List<MuleComponent> components = new ArrayList<>();
+  private List<MuleComponent> components = new ArrayList<>();
 
-    public Container(String type, String name) {
-        super(type, name);
-    }
+  public Container(String type, String name) {
+    super(type, name);
+  }
 
-    public void addComponent(MuleComponent component) {
-      this.components.add(component);
-    }
+  public void addComponent(MuleComponent component) {
+    this.components.add(component);
+  }
 
-    public List<MuleComponent> getComponents() {
-      return components;
-    }
+  public List<MuleComponent> getComponents() {
+    return components;
+  }
 
 }

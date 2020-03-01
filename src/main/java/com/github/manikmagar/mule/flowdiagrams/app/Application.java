@@ -15,7 +15,8 @@ public class Application {
 
   public static void main(String[] args) {
     CommandModel cm = new CommandModel();
-    cm.setSourcePath(Paths.get("/Users/manik/devlife/AnypointStudio/studio-workspace/mule-flow-diagrams-demo/src/main/mule"));
+    cm.setSourcePath(Paths.get(
+        "/Users/manik/devlife/AnypointStudio/studio-workspace/mule-flow-diagrams-demo/src/main/mule"));
     cm.setResultPath(Paths.get("example"));
     cm.setDiagramType(DiagramType.GRAPH);
     cm.setOutputFilename("mule" + System.currentTimeMillis() + ".png");
