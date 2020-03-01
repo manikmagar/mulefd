@@ -8,12 +8,10 @@ import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,12 +25,10 @@ public class DiagramRenderer {
   }
 
   private Map<String, ComponentItem> prepareKnownComponents() {
-    List<String> lines = null;
-    try {
-      lines = Files.readAllLines(Paths.get(Thread.currentThread().getContextClassLoader()
-          .getResource("mule-components.csv").toURI()));
-      Map<String, ComponentItem> items = new HashMap<>();
-      for (String line : lines) {
+    Map<String, ComponentItem> items = new HashMap<>();
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(Thread.currentThread()
+        .getContextClassLoader().getResourceAsStream("mule-components.csv")))) {
+      for (String line; (line = br.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
           String[] part = line.split(",");
           ComponentItem item = new ComponentItem();
@@ -44,11 +40,11 @@ public class DiagramRenderer {
           items.putIfAbsent(item.qualifiedName(), item);
         }
       }
-      return items;
-    } catch (IOException | URISyntaxException e) {
+      // line is not visible here.
+    } catch (IOException e) {
       log.error("mule-components file not found", e);
     }
-    return Collections.emptyMap();
+    return items;
   }
 
   public Boolean render() {
