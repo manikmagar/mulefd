@@ -3,6 +3,9 @@ package com.github.manikmagar.mule.flowdiagrams.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
+
 public class Container extends Component {
 
   private List<MuleComponent> components = new ArrayList<>();
@@ -12,7 +15,7 @@ public class Container extends Component {
   }
 
   public void addComponent(MuleComponent component) {
-    this.components.add(component);
+    this.components.add(requireNonNull(component, "Component cannot be null"));
   }
 
   public List<MuleComponent> getComponents() {

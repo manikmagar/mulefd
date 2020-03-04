@@ -1,6 +1,11 @@
 package com.github.manikmagar.mule.flowdiagrams.model;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
 
 
 public abstract class Component {
@@ -18,11 +23,10 @@ public abstract class Component {
   }
 
   public Component(String type, String name) {
-    Objects.requireNonNull(type, "Component type must not be null");
-    Objects.requireNonNull(name, "Component name must not be null");
-    this.name = name;
-    this.type = type;
+    this.name = requireNonNull(name, "Component name must not be null");
+    this.type = requireNonNull(type, "Component type must not be null");
   }
+
 
   public String getName() {
     return name;
@@ -53,4 +57,7 @@ public abstract class Component {
     return type + ":" + name;
   }
 
+  public boolean isaSubFlow() {
+    return "sub-flow".equalsIgnoreCase(getType());
+  }
 }

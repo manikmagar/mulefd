@@ -6,12 +6,4 @@ public class FlowContainer extends Container {
     super(type, name);
   }
 
-  public String qualifiedName() {
-    return isSubflow() ? "sub-flow:" + getName() : "flow:" + getName();
-  }
-
-  public boolean isSubflow() {
-    return getType().equalsIgnoreCase("sub-flow");
-  }
-
 }

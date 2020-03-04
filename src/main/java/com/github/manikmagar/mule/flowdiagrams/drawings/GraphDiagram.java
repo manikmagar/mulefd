@@ -70,7 +70,7 @@ public class GraphDiagram implements Diagram {
       List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
-    if (flow.isSubflow()) {
+    if (flow.isaSubFlow()) {
       flowNode.add(Color.BLACK).add(Shape.ELLIPSE);
     } else {
       flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
