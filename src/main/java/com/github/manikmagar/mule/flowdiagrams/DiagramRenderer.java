@@ -26,7 +26,7 @@ public class DiagramRenderer {
     this.commandModel = commandModel;
   }
 
-  private Map<String, ComponentItem> prepareKnownComponents() {
+  Map<String, ComponentItem> prepareKnownComponents() {
     Map<String, ComponentItem> items = new HashMap<>();
     try (BufferedReader br = new BufferedReader(new InputStreamReader(Thread.currentThread()
         .getContextClassLoader().getResourceAsStream("mule-components.csv")))) {
@@ -56,50 +56,53 @@ public class DiagramRenderer {
       List<FlowContainer> flows = new ArrayList<>();
       Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
-        log.debug("Reading file {}", path);
-        MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
-        muleXmlParser.parse();
-        if (muleXmlParser.isMuleFile()) {
-          flows.addAll(muleXmlParser.getMuleFlows(knownComponents));
-        } else {
-          log.debug("Not a mule configuration file: {}", path);
-        }
+        flows(flows, knownComponents, path);
       }
-
-
-      if (flows.isEmpty()) {
-        log.warn("No mule flows found for creating diagram.");
-        return false;
-      } else {
-        DrawingContext context = toDrawingContext(commandModel);
-        context.setComponents(Collections.unmodifiableList(flows));
-        context.setKnownComponents(prepareKnownComponents());
-        ServiceLoader<Diagram> diagramServices = ServiceLoader.load(Diagram.class);
-        Iterator<Diagram> its = diagramServices.iterator();
-        boolean drawn = false;
-        while (its.hasNext()) {
-          Diagram diagram = its.next();
-          log.debug("Analyzing diagram provider {}", diagram.getClass());
-          if (diagram.supports(commandModel.getDiagramType())) {
-            log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
-                commandModel.getDiagramType());
-            log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getResultPath());
-            drawn = diagram.draw(context);
-            log.info("Generated {} at {}", diagram.name(),
-                context.getOutputFile().getAbsolutePath());
-            break;
-          }
-        }
-        return drawn;
-      }
-
+      return diagram(flows);
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
       return false;
     }
   }
 
-  public DrawingContext toDrawingContext(CommandModel model) {
+  void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) {
+    log.debug("Reading file {}", path);
+    MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
+    muleXmlParser.parse();
+    if (muleXmlParser.isMuleFile()) {
+      flows.addAll(muleXmlParser.getMuleFlows(knownComponents));
+    } else {
+      log.debug("Not a mule configuration file: {}", path);
+    }
+  }
+
+  Boolean diagram(List<FlowContainer> flows) {
+    if (flows.isEmpty()) {
+      log.warn("No mule flows found for creating diagram.");
+      return false;
+    }
+    DrawingContext context = drawingContext(commandModel);
+    context.setComponents(Collections.unmodifiableList(flows));
+    context.setKnownComponents(prepareKnownComponents());
+    ServiceLoader<Diagram> diagramServices = ServiceLoader.load(Diagram.class);
+    Iterator<Diagram> its = diagramServices.iterator();
+    boolean drawn = false;
+    while (its.hasNext()) {
+      Diagram diagram = its.next();
+      log.debug("Analyzing diagram provider {}", diagram.getClass());
+      if (diagram.supports(commandModel.getDiagramType())) {
+        log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
+            commandModel.getDiagramType());
+        log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getResultPath());
+        drawn = diagram.draw(context);
+        log.info("Generated {} at {}", diagram.name(), context.getOutputFile().getAbsolutePath());
+        break;
+      }
+    }
+    return drawn;
+  }
+
+  public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
     context.setOutputFile(new File(model.getResultPath().toFile(), model.getOutputFilename()));
