@@ -36,6 +36,6 @@ public class Validations {
   }
 
   public static boolean requireFalse(boolean value) {
-    return requireTrue(value, "Value must be false");
+    return requireFalse(value, "Value must be false");
   }
 }

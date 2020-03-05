@@ -60,4 +60,33 @@ public abstract class Component {
   public boolean isaSubFlow() {
     return "sub-flow".equalsIgnoreCase(getType());
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof Component))
+      return false;
+
+    Component component = (Component) o;
+
+    if (!getName().equals(component.getName()))
+      return false;
+    if (!getType().equals(component.getType()))
+      return false;
+    if (getAttributes() != null ? !getAttributes().equals(component.getAttributes())
+        : component.getAttributes() != null)
+      return false;
+    return getMuleVersion() != null ? getMuleVersion().equals(component.getMuleVersion())
+        : component.getMuleVersion() == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = getName().hashCode();
+    result = 31 * result + getType().hashCode();
+    result = 31 * result + (getAttributes() != null ? getAttributes().hashCode() : 0);
+    result = 31 * result + (getMuleVersion() != null ? getMuleVersion().hashCode() : 0);
+    return result;
+  }
 }

@@ -19,7 +19,8 @@ public class MuleXmlElement {
   public static final String ELEMENT_SCOPE_ASYNC = "async";
   public static final String ELEMENT_ERROR_HANDLER = "error-handler";
 
-  private static final List<String> loops = Arrays.asList("foreach", "parallel-foreach");
+  private MuleXmlElement() {}
+
   private static final List<String> scopes =
       Arrays.asList("cache", "try", "async", "until-successful", "foreach", "parallel-foreach");
   private static final List<String> routers =
@@ -61,7 +62,7 @@ public class MuleXmlElement {
   }
 
   public static boolean isFlowRef(MuleComponent component) {
-    return component.getName().equalsIgnoreCase(ELEMENT_FLOW_REF);
+    return component.getType().equalsIgnoreCase(ELEMENT_FLOW_REF);
   }
 
   public static List<MuleComponent> fillComponents(Element flowElement,
