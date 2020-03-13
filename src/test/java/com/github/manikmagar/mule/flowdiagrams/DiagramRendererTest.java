@@ -8,10 +8,12 @@ import io.github.netmikey.logunit.api.LogCapturer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.event.Level;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +27,25 @@ class DiagramRendererTest {
   @RegisterExtension
   LogCapturer logs = LogCapturer.create().captureForType(DiagramRenderer.class, Level.DEBUG);
 
+  @TempDir
+  File tempDir;
+
   private CommandModel getCommandModel() {
-    return getCommandModel("./src/test/resources/empty-dir");
+    return getCommandModel(tempDir.toPath());
   }
 
   private CommandModel getCommandModel(String sourcePath) {
+    return getCommandModel(
+        new File(getClass().getClassLoader().getResource(sourcePath).getFile()).toPath());
+  }
+
+  private CommandModel getCommandModel(Path sourcePath) {
     CommandModel model = new CommandModel();
     model.setDiagramType(DiagramType.GRAPH);
     model.setOutputFilename("test-output-file");
     model.setResultPath(Paths.get("dummy-result-path"));
-    model.setSourcePath(new File(sourcePath).toPath());
+    model.setSourcePath(sourcePath);
+
     return model;
   }
 
@@ -55,8 +66,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Skips rendering non-mule file")
   void skipsNonMuleFileRendering() {
-    DiagramRenderer renderer =
-        spy(new DiagramRenderer(getCommandModel("./src/test/resources/renderer/non-mule")));
+    DiagramRenderer renderer = spy(new DiagramRenderer(getCommandModel("./renderer/non-mule")));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(anyList());
     assertThat(renderer.render()).isFalse();
@@ -65,14 +75,15 @@ class DiagramRendererTest {
     verify(renderer).diagram(captor.capture());
     assertThat(captor.getValue()).isEmpty();
     logs.assertContains(
-        "Not a mule configuration file: ./src/test/resources/renderer/non-mule/non-mule-file.xml");
+        (s) -> s.getMessage().startsWith("Not a mule configuration file: ")
+            && s.getMessage().endsWith("renderer/non-mule/non-mule-file.xml"),
+        "Non mule file log entry");
   }
 
   @Test
   @DisplayName("Source directory rendering with one config")
   void singleFileRendering() {
-    DiagramRenderer renderer =
-        spy(new DiagramRenderer(getCommandModel("./src/test/resources/renderer/single")));
+    DiagramRenderer renderer = spy(new DiagramRenderer(getCommandModel("./renderer/single")));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(anyList());
     assertThat(renderer.render()).isFalse();
