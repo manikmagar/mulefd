@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -20,5 +20,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Test with Maven
+        run: mvn -B test --file pom.xml
+      - name: Package with Maven
+          run: mvn -B package -DskipTests --file pom.xml
