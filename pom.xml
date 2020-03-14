@@ -38,7 +38,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>format</goal>
+                            <goal>validate</goal>
                         </goals>
                     </execution>
                 </executions>

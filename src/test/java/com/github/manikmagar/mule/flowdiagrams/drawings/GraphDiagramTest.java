@@ -43,7 +43,8 @@ class GraphDiagramTest {
     graphDiagram.draw(context);
 
     assertThat(output).exists();
-    logs.assertContains("Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    logs.assertContains(
+        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
   @Test
