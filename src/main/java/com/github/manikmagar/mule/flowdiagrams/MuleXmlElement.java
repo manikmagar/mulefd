@@ -7,10 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MuleXmlElement {
   public static final String ELEMENT_FLOW = "flow";
@@ -21,10 +18,10 @@ public class MuleXmlElement {
 
   private MuleXmlElement() {}
 
-  private static final List<String> scopes =
-      Arrays.asList("cache", "try", "async", "until-successful", "foreach", "parallel-foreach");
-  private static final List<String> routers =
-      Arrays.asList("choice", "scatter-gather", "round-robin", "first-successful");
+  public static final List<String> scopes = Collections
+      .unmodifiableList(Arrays.asList("ee:cache", "try", "async", "until-successful", "foreach"));
+  public static final List<String> routers = Collections.unmodifiableList(
+      Arrays.asList("choice", "scatter-gather", "round-robin", "first-successful"));
   private static final List<String> routes =
       Arrays.asList("when", "otherwise", "route", "on-error-propagate", "on-error-continue");
 
@@ -67,6 +64,7 @@ public class MuleXmlElement {
 
   public static List<MuleComponent> fillComponents(Element flowElement,
       Map<String, ComponentItem> knownComponents) {
+    Objects.requireNonNull(flowElement, "Flow element must not be null");
     List<MuleComponent> muleComponentList = new ArrayList<>();
     NodeList children = flowElement.getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
@@ -92,29 +90,34 @@ public class MuleXmlElement {
           muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
 
-        if (knownComponents.containsKey(element.getTagName())) {
-          ComponentItem item = knownComponents.get(element.getTagName());
-          String name = item.qualifiedName();
-          if (!item.getPathAttributeName().trim().isEmpty()) {
-            name = element.getAttribute(item.getPathAttributeName());
-          }
-          MuleComponent mc = new MuleComponent(item.getPrefix(), name);
-          mc.setSource(item.isSource());
-          if (!item.getConfigAttributeName().trim().isEmpty()) {
-            mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
-                element.getAttribute(item.getConfigAttributeName())));
-          }
-          if (!item.getPathAttributeName().trim().isEmpty()) {
-            mc.setPath(Attribute.with(item.getPathAttributeName(),
-                element.getAttribute(item.getPathAttributeName())));
-          }
-          mc.setAsync(true);
-          muleComponentList.add(mc);
-        }
+        processKnownComponents(knownComponents, muleComponentList, element);
 
       }
     }
     return muleComponentList;
+  }
+
+  static void processKnownComponents(Map<String, ComponentItem> knownComponents,
+      List<MuleComponent> muleComponentList, Element element) {
+    if (knownComponents.containsKey(element.getTagName())) {
+      ComponentItem item = knownComponents.get(element.getTagName());
+      String name = item.qualifiedName();
+      if (!item.getPathAttributeName().trim().isEmpty()) {
+        name = element.getAttribute(item.getPathAttributeName());
+      }
+      MuleComponent mc = new MuleComponent(item.getPrefix(), name);
+      mc.setSource(item.isSource());
+      if (!item.getConfigAttributeName().trim().isEmpty()) {
+        mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
+            element.getAttribute(item.getConfigAttributeName())));
+      }
+      if (!item.getPathAttributeName().trim().isEmpty()) {
+        mc.setPath(Attribute.with(item.getPathAttributeName(),
+            element.getAttribute(item.getPathAttributeName())));
+      }
+      mc.setAsync(true);
+      muleComponentList.add(mc);
+    }
   }
 
   /**

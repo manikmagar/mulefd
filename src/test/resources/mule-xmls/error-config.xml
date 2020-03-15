@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="error-configFlow" doc:id="e05d7df6-9245-4266-a2be-7d291b204e12" >
+		<flow-ref doc:name="Flow Reference" doc:id="bf2dbdbd-25cf-4477-a5e1-95b1c77637a9" name="try-sub-flow"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="56f67425-0dfa-4a85-8276-17fd006df283" type="EXPRESSION">
+				<flow-ref doc:name="Flow Reference" doc:id="cf791dd4-da06-414b-90f8-eb95d6f8b8be" name="on-error-sub-flow"/>
+			</on-error-continue>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="655926a3-9cf3-411b-96f0-bc849cb35f66" >
+				<flow-ref doc:name="Flow Reference" doc:id="e57e234b-61c7-4ea0-a785-4c850746bd9c" name="on-error-propagate-sub-flow"/>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<sub-flow name="try-sub-flow" doc:id="22c3cd44-f696-425b-9e40-26fc05f061df" >
+		<logger level="INFO" doc:name="Logger" doc:id="cc4f6a6e-c4ea-47d5-b1c1-294f612fe197" />
+	</sub-flow>
+	<sub-flow name="on-error-sub-flow" doc:id="5ac3317a-7281-4ba8-b42e-5cdb28b7394c" >
+		<logger level="INFO" doc:name="Logger" doc:id="2293a2c0-24f4-4ff8-8d06-0ec5039b0ed6" />
+	</sub-flow>
+	<sub-flow name="on-error-propagate-sub-flow" doc:id="db14d1d6-1e37-4420-9d98-d4501148ba10" >
+		<logger level="INFO" doc:name="Logger" doc:id="0aab5fd8-850b-45ee-be0c-7b2f6b252c5e" />
+	</sub-flow>
+</mule>
