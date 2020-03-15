@@ -1,5 +1,7 @@
 package com.github.manikmagar.mule.flowdiagrams.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -10,6 +12,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 public class XmlParser {
+
+  Logger logger = LoggerFactory.getLogger(XmlParser.class);
 
   private final String filePath;
 
@@ -24,14 +28,24 @@ public class XmlParser {
   }
 
   public void parse() {
-    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     try {
+      DocumentBuilderFactory documentBuilderFactory = safeDocumentBuilderFactory();
       DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
       document = documentBuilder.parse(filePath);
       document.getDocumentElement().normalize();
     } catch (SAXException | IOException | ParserConfigurationException e) {
-      e.printStackTrace();
+      logger.error("Failed to parse xml - " + filePath, e);
     }
+  }
+
+  DocumentBuilderFactory safeDocumentBuilderFactory() throws ParserConfigurationException {
+    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    // XXE protection -
+    // https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md#jaxp-documentbuilderfactory-saxparserfactory-and-dom4j
+    documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    documentBuilderFactory.setXIncludeAware(false);
+    documentBuilderFactory.setExpandEntityReferences(false);
+    return documentBuilderFactory;
   }
 
 

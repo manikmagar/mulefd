@@ -22,9 +22,18 @@ class GraphDiagramTest {
   @RegisterExtension
   LogCapturer logs = LogCapturer.create().captureForType(GraphDiagram.class, Level.DEBUG);
 
+  private static final long MEGABYTE = 1024L * 1024L;
+
+  public static long bytesToMegabytes(long bytes) {
+    return bytes / MEGABYTE;
+  }
 
   @Test
   void draw() {
+    // Get the Java runtime
+    Runtime runtime = Runtime.getRuntime();
+    // Run the garbage collector
+    runtime.gc();
     File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
@@ -41,7 +50,10 @@ class GraphDiagramTest {
 
     GraphDiagram graphDiagram = new GraphDiagram();
     graphDiagram.draw(context);
-
+    runtime.gc();
+    long memory = runtime.totalMemory() - runtime.freeMemory();
+    System.out.println("Used memory is bytes: " + memory);
+    System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
     logs.assertContains(
         "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
