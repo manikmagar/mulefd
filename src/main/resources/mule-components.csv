@@ -1,0 +1,5 @@
+prefix,operation,sourceFlag,path,configName
+http,listener,true,path,config-ref
+http,request,false,path,config-ref
+vm,listener,true,queueName,config-ref
+vm,publish,false,queueName,config-ref

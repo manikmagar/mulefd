@@ -1,0 +1,11 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <file>app.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss,SSS} %-5p [%c] - %m%n</pattern>
+        </encoder>
+    </appender>
+    <root level="debug">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

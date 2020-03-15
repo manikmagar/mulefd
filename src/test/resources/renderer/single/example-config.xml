@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4b9901d3-7256-4899-ba42-e48244bb84fd" >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <configuration-properties doc:name="Configuration properties" doc:id="f535d8b1-e94a-47d3-8280-192dfc7f53b4" file="application.properties" />
+
+    <flow name="test-hello-appFlow" doc:id="c13c3670-cd7a-4181-bd9b-8d87f3f114d6" >
+        <http:listener doc:name="Listener" doc:id="b0b19843-27ad-45c9-8761-2910af952655" config-ref="HTTP_Listener_config" path="/sayhello"/>
+        <set-payload value="#['Hello from container']" doc:name="Set Payload" doc:id="2cfc464b-950a-4645-b7e3-355c5aeb7304" mimeType="text/plain"/>
+    </flow>
+</mule>

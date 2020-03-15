@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="router-config-scatter-gather" doc:id="187fdbd9-249f-414f-a994-5f1d5785b5f9" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="524c250e-70cf-4939-85ea-86dc25e6868f" >
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="2935f65c-2898-4332-94d5-ec81a0576108" name="scatter-gather-route-1"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="caaa35ed-82de-469b-80ce-3f0306d490e7" name="scatter-gather-route-2"/>
+			</route>
+		</scatter-gather>
+	</sub-flow>
+	<sub-flow name="scatter-gather-route-1" doc:id="71a7434c-bfa2-4c94-807d-372ad291b3e3" >
+		<logger level="INFO" doc:name="Logger" doc:id="b8b012a9-ac1c-440d-b0cd-d3673cb1eba8" />
+	</sub-flow>
+	<sub-flow name="scatter-gather-route-2" doc:id="76a64a0e-0485-4b91-9438-881f7e1fb5e3" >
+		<logger level="INFO" doc:name="Logger" doc:id="99c0efd5-9229-4642-8b26-71697a817b47" />
+	</sub-flow>
+	<sub-flow name="router-config-round-robin" doc:id="1acffcd8-541e-4a19-a24d-21f5e8e71ef1" >
+		<round-robin doc:name="Round Robin" doc:id="b79f8378-f645-400a-a113-aecd9b3df83d" >
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="e3b2e024-1dfe-48f0-92aa-f5c9cac34eaf" name="round-robin-route-1"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="543129b0-343a-4e8d-aa8c-2dd3d9da5d3e" name="round-robin-route-2"/>
+			</route>
+		</round-robin>
+	</sub-flow>
+	<sub-flow name="round-robin-route-1" doc:id="282ac338-0f55-4654-aead-284667f05f39" >
+		<logger level="INFO" doc:name="Logger" doc:id="56e4477f-9312-46a2-af5d-a43b6627f8dc" />
+	</sub-flow>
+	<sub-flow name="round-robin-route-2" doc:id="e7774dfe-7786-4c76-a965-765dcfa6f682" >
+		<logger level="INFO" doc:name="Logger" doc:id="165e43a2-a4ff-44d7-aa02-26c4102380dd" />
+	</sub-flow>
+	<sub-flow name="router-config-first-successful" doc:id="a42fa440-6043-474a-896e-ee0c41af495b" >
+		<first-successful doc:name="First Successful" doc:id="2bd554c0-7c49-4599-ab33-60cf33be0ff6">
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="91607be3-b973-4af0-909b-d6761d339f17" name="first-successful-route-1"/>
+			</route>
+			<route >
+				<flow-ref doc:name="Flow Reference" doc:id="124bc20d-da13-41fd-ba20-9b3074dae7ae" name="first-successful-route-2"/>
+			</route>
+		</first-successful>
+	</sub-flow>
+	<sub-flow name="first-successful-route-1" doc:id="0f1174eb-64ad-4945-97a9-7602cc978394" >
+		<logger level="INFO" doc:name="Logger" doc:id="b78937d4-60d4-4baa-9281-b5a83254a236" />
+	</sub-flow>
+	<sub-flow name="first-successful-route-2" doc:id="9140e6c3-4e58-47f8-8667-ddce7f49c6b7" >
+		<logger level="INFO" doc:name="Logger" doc:id="6c2a9dd4-1947-44dc-8b12-b00dc64076a7" />
+	</sub-flow>
+	<sub-flow name="router-config-choice" doc:id="bbe86a66-408e-4340-81a6-6de25eefcb9c" >
+		<choice doc:name="Choice" doc:id="8c171848-8532-443a-b138-8c93259a8daa" >
+			<when expression="#[isEmpty(payload)]">
+				<flow-ref doc:name="Flow Reference" doc:id="555442b9-9e2d-48bc-ab76-ba185d79879b" name="choice-route-1"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Flow Reference" doc:id="1be21cb8-63a3-40f1-921e-10f7d09ae496" name="choice-route-2"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="choice-route-1" doc:id="cbf1d5a7-cffd-4df6-97bc-ec0702bd08bc" >
+		<logger level="INFO" doc:name="Logger" doc:id="b9729477-9379-4a2a-8dec-115cbc9a88aa" />
+	</sub-flow>
+	<sub-flow name="choice-route-2" doc:id="fc00c098-6410-4c51-85e6-dbae00c63cb3" >
+		<logger level="INFO" doc:name="Logger" doc:id="89fd35da-1f12-4d57-88ff-3a5288b565ca" />
+	</sub-flow>
+</mule>

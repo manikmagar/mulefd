@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="scope-config-ee:cache" doc:id="69ea6a1c-8a42-49be-bf57-af160436883c" >
+		<ee:cache doc:name="Cache" doc:id="b1d6963e-fd60-4beb-89e4-0e89c7243734" >
+			<flow-ref doc:name="Flow Reference" doc:id="d82e87df-e692-433e-86ff-f08985695448" name="ee:cache-sub-flow" />
+		</ee:cache>
+	</sub-flow>
+	<sub-flow name="ee:cache-sub-flow" doc:id="29d6c1df-60a1-487c-9d92-7fb06f654855" >
+		<logger level="INFO" doc:name="Logger" doc:id="ac427a10-5ecc-441f-9cb7-1ce2efe802fb" />
+	</sub-flow>
+	<sub-flow name="scope-config-try" doc:id="d0afde41-f956-484e-a537-a2cefa7c2438" >
+		<ee:cache doc:name="Cache" doc:id="6158a75d-b379-4302-ab7b-366558c80a81" >
+			<flow-ref doc:name="Flow Reference" doc:id="f547a331-65e1-441a-8176-5eeea4157b26" name="try-sub-flow" />
+		</ee:cache>
+	</sub-flow>
+	<flow name="scopes-configFlow" doc:id="257c95e0-c6d4-4e5c-8c0c-f0d172f758cd" >
+		<ee:cache doc:name="Cache" doc:id="d6f7d770-6b90-4955-b6ef-9e340aa0d707" />
+	</flow>
+	<sub-flow name="try-sub-flow" doc:id="0bc46d1b-fe32-46a3-88f7-550a54d15d39" >
+		<logger level="INFO" doc:name="Logger" doc:id="a9662a5a-1c41-4660-ad6f-fbbbf078e4c1" />
+	</sub-flow>
+	<sub-flow name="scope-config-async" doc:id="a28860fe-6540-4365-b027-8b4ff95a28b7" >
+		<async doc:name="Async" doc:id="5ad95326-02a5-4ef4-9a3f-2558f8ca23af" >
+			<flow-ref doc:name="Flow Reference" doc:id="1e0034d8-fd8e-4f8e-8a7e-83f05666fae6" name="async-sub-flow" />
+		</async>
+	</sub-flow>
+	<sub-flow name="async-sub-flow" doc:id="c593b84c-6961-42a6-ba3a-9a987ab38862" >
+		<logger level="INFO" doc:name="Logger" doc:id="cc3d47d7-c05d-48ee-b597-8be78def2cd8" />
+	</sub-flow>
+	<sub-flow name="scope-config-until-successful" doc:id="a51bb7d5-fb4c-4e9d-a799-12f39b4822e2" >
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="3ac609be-3b66-4e63-891f-e3673bfc3494" >
+			<flow-ref doc:name="Flow Reference" doc:id="64391667-3f17-4876-bcef-e587306d4ec2" name="until-successful-sub-flow" />
+		</until-successful>
+	</sub-flow>
+	<sub-flow name="until-successful-sub-flow" doc:id="f033a9c6-695b-48a3-9e2b-6df9cf0f3674" >
+		<logger level="INFO" doc:name="Logger" doc:id="1e7481f1-3eaf-444b-8549-e5ba7405bdf1" />
+	</sub-flow>
+	<sub-flow name="scope-config-foreach" doc:id="c588f187-1035-44a9-a9db-5744eebe5096" >
+		<foreach doc:name="For Each" doc:id="6863cbb2-5fe5-4ae4-9ebd-75082c189580" collection="#[1 to 2]">
+			<flow-ref doc:name="Flow Reference" doc:id="9958a4a7-da41-4049-8705-070414b203bb" name="foreach-sub-flow" />
+		</foreach>
+	</sub-flow>
+	<sub-flow name="foreach-sub-flow" doc:id="add54488-8aca-4a32-b87f-4a16df92521d" >
+		<logger level="INFO" doc:name="Logger" doc:id="8c88e7c2-f5d2-4550-b8ef-15acf5c5a1be" />
+	</sub-flow>
+</mule>
