@@ -1,17 +1,18 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import com.github.manikmagar.mule.flowdiagrams.xml.XmlParser;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import static com.github.manikmagar.mule.flowdiagrams.MuleXmlElement.isFlowOrSubflow;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.manikmagar.mule.flowdiagrams.MuleXmlElement.isFlowOrSubflow;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
+import com.github.manikmagar.mule.flowdiagrams.xml.XmlParser;
 
 public class MuleXmlParser extends XmlParser {
 

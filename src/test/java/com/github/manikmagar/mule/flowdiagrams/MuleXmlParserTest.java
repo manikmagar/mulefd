@@ -1,12 +1,13 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 
 class MuleXmlParserTest {
 

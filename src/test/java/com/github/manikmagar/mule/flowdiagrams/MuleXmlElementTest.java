@@ -1,26 +1,6 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.model.Attribute;
-import com.github.manikmagar.mule.flowdiagrams.model.Component;
-import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
-import com.github.manikmagar.mule.flowdiagrams.xml.XmlParser;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +9,25 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import com.github.manikmagar.mule.flowdiagrams.model.Attribute;
+import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
+import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
+import com.github.manikmagar.mule.flowdiagrams.xml.XmlParser;
 
 class MuleXmlElementTest {
 

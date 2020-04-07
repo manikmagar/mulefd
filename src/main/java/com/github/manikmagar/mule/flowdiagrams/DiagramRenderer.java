@@ -1,13 +1,5 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.app.CommandModel;
-import com.github.manikmagar.mule.flowdiagrams.drawings.Diagram;
-import com.github.manikmagar.mule.flowdiagrams.drawings.DrawingContext;
-import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.manikmagar.mule.flowdiagrams.app.CommandModel;
+import com.github.manikmagar.mule.flowdiagrams.drawings.Diagram;
+import com.github.manikmagar.mule.flowdiagrams.drawings.DrawingContext;
+import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 
 public class DiagramRenderer {
   Logger log = LoggerFactory.getLogger(DiagramRenderer.class);

@@ -1,13 +1,14 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.model.Attribute;
-import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
+import java.util.*;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.*;
+import com.github.manikmagar.mule.flowdiagrams.model.Attribute;
+import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
+import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
 
 public class MuleXmlElement {
   public static final String ELEMENT_FLOW = "flow";

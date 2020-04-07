@@ -1,17 +1,7 @@
 package com.github.manikmagar.mule.flowdiagrams.drawings;
 
-import com.github.manikmagar.mule.flowdiagrams.model.Component;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import guru.nidi.graphviz.attribute.*;
-import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.GraphvizJdkEngine;
-import guru.nidi.graphviz.model.Factory;
-import guru.nidi.graphviz.model.MutableGraph;
-import guru.nidi.graphviz.model.MutableNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static guru.nidi.graphviz.attribute.Arrow.*;
+import static guru.nidi.graphviz.model.Factory.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,8 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static guru.nidi.graphviz.attribute.Arrow.*;
-import static guru.nidi.graphviz.model.Factory.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.manikmagar.mule.flowdiagrams.model.Component;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
+import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
+
+import guru.nidi.graphviz.attribute.*;
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.GraphvizJdkEngine;
+import guru.nidi.graphviz.model.Factory;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.model.MutableNode;
 
 public class GraphDiagram implements Diagram {
 

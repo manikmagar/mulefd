@@ -1,16 +1,8 @@
 package com.github.manikmagar.mule.flowdiagrams;
 
-import com.github.manikmagar.mule.flowdiagrams.app.CommandModel;
-import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
-import com.github.manikmagar.mule.flowdiagrams.drawings.DrawingContext;
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import io.github.netmikey.logunit.api.LogCapturer;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.ArgumentCaptor;
-import org.slf4j.event.Level;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -18,9 +10,19 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.event.Level;
+
+import com.github.manikmagar.mule.flowdiagrams.app.CommandModel;
+import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
+import com.github.manikmagar.mule.flowdiagrams.drawings.DrawingContext;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
+
+import io.github.netmikey.logunit.api.LogCapturer;
 
 class DiagramRendererTest {
 

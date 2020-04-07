@@ -1,11 +1,11 @@
 package com.github.manikmagar.mule.flowdiagrams.drawings;
 
-import com.github.manikmagar.mule.flowdiagrams.model.Component;
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import com.github.manikmagar.mule.flowdiagrams.model.Component;
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
 
 public interface Diagram {
 

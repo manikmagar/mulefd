@@ -1,11 +1,11 @@
 package com.github.manikmagar.mule.flowdiagrams.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.Objects.requireNonNull;
 
 
 public abstract class Component {

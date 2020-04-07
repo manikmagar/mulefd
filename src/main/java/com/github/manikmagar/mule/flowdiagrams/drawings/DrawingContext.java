@@ -1,12 +1,12 @@
 package com.github.manikmagar.mule.flowdiagrams.drawings;
 
-import com.github.manikmagar.mule.flowdiagrams.model.Component;
-import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import com.github.manikmagar.mule.flowdiagrams.model.Component;
+import com.github.manikmagar.mule.flowdiagrams.model.ComponentItem;
 
 public class DrawingContext {
   private List<Component> components;

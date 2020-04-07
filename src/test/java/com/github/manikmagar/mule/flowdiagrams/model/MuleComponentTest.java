@@ -1,10 +1,9 @@
 package com.github.manikmagar.mule.flowdiagrams.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Attr;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class MuleComponentTest {
 

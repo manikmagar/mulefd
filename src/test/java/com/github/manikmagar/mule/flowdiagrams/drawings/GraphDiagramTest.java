@@ -1,18 +1,20 @@
 package com.github.manikmagar.mule.flowdiagrams.drawings;
 
-import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
-import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
-import io.github.netmikey.logunit.api.LogCapturer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.event.Level;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.event.Level;
+
+import com.github.manikmagar.mule.flowdiagrams.model.FlowContainer;
+import com.github.manikmagar.mule.flowdiagrams.model.MuleComponent;
+
+import io.github.netmikey.logunit.api.LogCapturer;
 
 class GraphDiagramTest {
 

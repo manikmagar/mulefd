@@ -1,13 +1,12 @@
 package com.github.manikmagar.mule.flowdiagrams.app;
 
-import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
-import picocli.CommandLine;
+import static com.github.manikmagar.mule.flowdiagrams.util.Validations.requireTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
-import static com.github.manikmagar.mule.flowdiagrams.util.Validations.requireTrue;
+import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
+
 
 public class CommandModel {
 

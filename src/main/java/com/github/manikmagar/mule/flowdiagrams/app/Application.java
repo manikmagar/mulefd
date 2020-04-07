@@ -1,12 +1,13 @@
 package com.github.manikmagar.mule.flowdiagrams.app;
 
-import com.github.manikmagar.mule.flowdiagrams.DiagramRenderer;
-import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+
+import com.github.manikmagar.mule.flowdiagrams.DiagramRenderer;
+import com.github.manikmagar.mule.flowdiagrams.drawings.DiagramType;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 @Command(name = "mule-flow-diagrams", mixinStandardHelpOptions = true,
     version = "Mule Flow Diagrams 0.1.0",
