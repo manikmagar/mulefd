@@ -52,4 +52,4 @@ jobs:
       - run: |
           java -version
           chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams
-          ./build/install/jbang/bin/muleflowdiagrams --version
+          ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
