@@ -6,6 +6,7 @@
             <pattern>%d{HH:mm:ss,SSS} %-5p [%c] - %m%n</pattern>
         </encoder>
     </appender>
+    <logger name="com.javastreets.muleflowdiagrams" level="INFO"/>
     <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </root>

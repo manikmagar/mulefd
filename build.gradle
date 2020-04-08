@@ -7,10 +7,11 @@ plugins {
 	id 'maven-publish'
 	id 'application'
 	id "com.diffplug.gradle.spotless" version "3.28.1"
+	id "io.toolebox.git-versioner" version "1.3.0"
 }
 
 application {
-	mainClassName = 'com.github.manikmagar.mule.flowdiagrams.app.Application'
+	mainClassName = 'com.javastreets.muleflowdiagrams.app.Application'
 }
 repositories {
 	mavenCentral()
@@ -48,10 +49,6 @@ spotless {
 	}
 }
 
-group = 'com.github.manikmagar'
-version = '0.1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
-
 publishing {
 	publications {
 		maven(MavenPublication) {
@@ -60,6 +57,25 @@ publishing {
 	}
 }
 
+versioner {
+	startFrom {
+		major = 0
+		minor = 0
+		patch = 1
+	}
+	git {
+		authentication {
+			https {
+				token = project.hasProperty('github_token') ? getProperty('github_token') : "unknown_github_token"
+			}
+		}
+	}
+}
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
+
+
+group = 'com.javastreets'
+sourceCompatibility = '1.8'
