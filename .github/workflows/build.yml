@@ -28,12 +28,11 @@ jobs:
         with:
           name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
-#      - name: integration-test
-#        if: runner.os != 'Windows'
-#        run: |
-#          export PATH=`pwd`/build/install/muleflowdiagrams/bin:$PATH
-#          cd itests
-#          ./tests.sh
+      - name: integration-test
+        run: |
+          export PATH=`pwd`/build/install/muleflowdiagrams/bin:$PATH
+          cd itests
+          ./tests.sh
   testing:
     needs: build
     strategy:
