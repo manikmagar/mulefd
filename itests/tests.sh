@@ -39,10 +39,9 @@ assert_stderr(){
 #assert_stderr "echo foo" "bar"
 
 #http://stackoverflow.com/questions/3005963/how-can-i-have-a-newline-in-a-string-in-sh
-#http://stackoverflow.com/questions/3005963/how-can-i-have-a-newline-in-a-string-in-sh
 export NL=$'\n'
 
 
 echo Testing with `which muleflowdiagrams`
-
-assert_raises "muleflowdiagrams ./test-hello-app.xml -o $SCRATCH" 0
+assert "muleflowdiagrams ./test-hello-app.xml -o $SCRATCH"
+assert_raises "test -f $SCRATCH/mule-diagram.png" 0
