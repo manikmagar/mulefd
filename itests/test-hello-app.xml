@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4b9901d3-7256-4899-ba42-e48244bb84fd" >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <db:config name="Database_Config" doc:name="Database Config" doc:id="6d07f955-b6c6-4bb6-8dde-8461669e29f2" >
+        <db:my-sql-connection port="${db.port}" host="${db.hostname}"  user="${db.user}" password="${db.password}" database="${db.database}"/>
+    </db:config>
+
+    <configuration-properties doc:name="Configuration properties" doc:id="f535d8b1-e94a-47d3-8280-192dfc7f53b4" file="application.properties" />
+    <flow name="test-hello-appFlow1" doc:id="e8a2c60f-ec54-49af-85c7-6a4338658412" >
+        <vm:listener doc:name="Listener" doc:id="cedb163e-e702-4c04-9695-712e59e2a0b4" config-ref="Messages_VM" queueName="messagesToProcess"/>
+        <db:select doc:name="Select" doc:id="439a447d-3d96-4526-9b94-24e34bb9c938" config-ref="Database_Config">
+            <db:sql >select * from books;</db:sql>
+        </db:select>
+        <flow-ref doc:name="Flow Reference" doc:id="d606631b-f1f5-41d5-9ec8-9eec117bcc5b" name="sub-flow-level-1-1"/>
+    </flow>
+    <sub-flow name="sub-flow-level-1-1" doc:id="a33ad865-b9d8-4fbf-8d09-69d0b0300c99" >
+        <logger level="INFO" doc:name="Logger" doc:id="dd241f4f-b7b7-4152-a532-999384753969" />
+        <flow-ref doc:name="Flow Reference" doc:id="ae8ed341-07c1-4730-a728-8a5aa98b5e8d" name="sub-flow-level-2-1-1"/>
+    </sub-flow>
+    <sub-flow name="sub-flow-level-2-2-0" doc:id="a33ad865-b9d8-4fbf-8d09-69d0b0300c99" >
+        <logger level="INFO" doc:name="Logger" doc:id="dd241f4f-b7b7-4152-a532-999384753969" />
+    </sub-flow>
+    <sub-flow name="sub-flow-unused" doc:id="a33ad865-b9d8-4fbf-8d09-69d0b0300c99" >
+        <logger level="INFO" doc:name="Logger" doc:id="dd241f4f-b7b7-4152-a532-999384753969" />
+    </sub-flow>
+    <sub-flow name="sub-flow-loop" doc:id="a33ad865-b9d8-4fbf-8d09-69d0b0300c99" >
+        <logger level="INFO" doc:name="Logger" doc:id="dd241f4f-b7b7-4152-a532-999384753969" />
+        <flow-ref doc:name="Flow Reference" doc:id="ae8ed341-07c1-4730-a728-8a5aa98b5e8d" name="sub-flow-loop"/>
+    </sub-flow>
+    <sub-flow name="sub-flow-level-1-2" doc:id="5dced7e5-9fbc-4138-951f-586e0c1a766f" >
+        <logger level="INFO" doc:name="Logger" doc:id="d451a2c2-a520-489a-8660-fb226a246f2a" />
+        <flow-ref doc:name="Flow Reference" doc:id="1fb51667-42c9-4af6-9c7b-a3811e0e509a" name="sub-flow-level-2-2-0"/>
+        <async>
+            <flow-ref doc:name="Flow Reference" doc:id="1fb51667-42c9-4af6-9c7b-a3811e0e509a" name="sub-flow-level-2-1-1"/>
+        </async>
+        <flow-ref doc:name="Flow Reference" doc:id="1fb51667-42c9-4af6-9c7b-a3811e0e509a" name="sub-flow-level-2-2-1"/>
+    </sub-flow>
+    <sub-flow name="sub-flow-level-2-1-1" doc:id="1d7a1a3a-777d-4d4b-8461-f11185247ae3" >
+        <logger level="INFO" doc:name="Logger" doc:id="9e7481ed-b803-40a3-a720-3d9edf1b5500" />
+    </sub-flow>
+    <sub-flow name="sub-flow-level-2-2-1" doc:id="da46a247-0355-4ace-a255-c28a19e628b9" >
+        <logger level="INFO" doc:name="Logger" doc:id="2fabf827-7695-4830-ae9e-ec79eb38ba96" />
+        <flow-ref doc:name="Flow Reference" doc:id="1fb51667-42c9-4af6-9c7b-a3811e0e509a" name="sub-flow-level-2-2-2"/>
+    </sub-flow>
+    <sub-flow name="sub-flow-level-2-2-2" doc:id="da46a247-0355-4ace-a255-c28a19e628b9" >
+        <logger level="INFO" doc:name="Logger" doc:id="2fabf827-7695-4830-ae9e-ec79eb38ba96" />
+    </sub-flow>
+    <flow name="test-hello-appFlow" doc:id="c13c3670-cd7a-4181-bd9b-8d87f3f114d6" >
+        <http:listener doc:name="Listener" doc:id="b0b19843-27ad-45c9-8761-2910af952655" config-ref="HTTP_Listener_config" path="/sayhello"/>
+        <set-payload value="#['Hello from container']" doc:name="Set Payload" doc:id="2cfc464b-950a-4645-b7e3-355c5aeb7304" mimeType="text/plain"/>
+        <flow-ref doc:name="Flow Reference" doc:id="f8c61d95-28e4-4c4a-8a51-27dc059b89b1" name="sub-flow-level-1-2"/>
+        <flow-ref doc:name="Flow Reference" doc:id="f8c61d95-28e4-4c4a-8a51-27dc059b89b1" name="test-hello-appFlow1"/>
+    </flow>
+    <flow name="test-hello-appFlow-3" doc:id="c13c3670-cd7a-4181-bd9b-8d87f3f114d6" >
+        <http:listener doc:name="Listener" doc:id="b0b19843-27ad-45c9-8761-2910af952655" config-ref="HTTP_Listener_config" path="/sayhello2"/>
+        <vm:publish doc:id="7fdcd659-283b-40c7-9550-8b965fd8441f" sendCorrelationId="ALWAYS" correlationId="#[vars.formatType ++ '_' ++ vars.queueBody.properties.documentIdentifier ++ '_' ++ vars.queueBody.properties.serviceInstanceIdentifier]" queueName="messagesToProcess" doc:name="vm Publish" config-ref="VM_Config" transactionalAction="NOT_SUPPORTED" >
+            <error-mapping targetType="APP:TRANSMISSION_QUEUE_FAILED" />
+        </vm:publish>
+        <choice>
+            <when>
+                <flow-ref doc:name="Flow Reference" doc:id="f8c61d95-28e4-4c4a-8a51-27dc059b89b1" name="sub-flow-level-1-2"/>
+            </when>
+            <otherwise>
+                <logger level="INFO" doc:name="Logger" doc:id="2fabf827-7695-4830-ae9e-ec79eb38ba96" />
+            </otherwise>
+        </choice>
+    </flow>
+</mule>
