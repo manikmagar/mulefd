@@ -77,6 +77,6 @@ This project uses Gradle to compile and build. To create a zip distribution, run
 
 To install the distribution, run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory. You can verify binaries by executing `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --version`.
 
-##Copyright & License
+## Copyright & License
 
 Licensed under the MIT License, see the link:LICENSE[LICENSE] file for details.
