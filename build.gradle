@@ -99,6 +99,15 @@ buildConfig {
 	// 'UTF-8' if not set otherwise
 }
 
+githubRelease {
+	token project.hasProperty('github_token') ? getProperty('github_token') : "unknown_github_token" // This is your personal access token with Repo permissions
+	owner "manikmagar" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
+	repo "mule-flow-diagrams" // by default this is set to your project name
+	body "" // by default this is empty
+	draft true // by default this is false
+	releaseAssets distZip.destinationDirectory.asFile.get() // this points to which files you want to upload as assets with your release
+}
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
