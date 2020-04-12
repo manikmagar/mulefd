@@ -86,7 +86,7 @@ versioner {
 	git {
 		authentication {
 			https {
-				token = project.hasProperty('github_token') ? getProperty('github_token') : "unknown_github_token"
+				token = System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : "unknown_github_token"
 			}
 		}
 	}
@@ -100,7 +100,7 @@ buildConfig {
 }
 
 githubRelease {
-	token project.hasProperty('github_token') ? getProperty('github_token') : "unknown_github_token" // This is your personal access token with Repo permissions
+	token System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : "unknown_github_token" // This is your personal access token with Repo permissions
 	owner "manikmagar" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
 	repo "mule-flow-diagrams" // by default this is set to your project name
 	body "" // by default this is empty
