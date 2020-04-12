@@ -12,7 +12,7 @@ public class CommandModel {
 
   private Path sourcePath;
 
-  private Path resultPath;
+  private Path targetPath;
 
   private DiagramType diagramType;
 
@@ -26,12 +26,12 @@ public class CommandModel {
     this.outputFilename = outputFilename;
   }
 
-  public Path getResultPath() {
-    return resultPath;
+  public Path getTargetPath() {
+    return targetPath;
   }
 
-  public void setResultPath(Path resultPath) {
-    this.resultPath = resultPath;
+  public void setTargetPath(Path targetPath) {
+    this.targetPath = targetPath;
   }
 
   public Path getSourcePath() {

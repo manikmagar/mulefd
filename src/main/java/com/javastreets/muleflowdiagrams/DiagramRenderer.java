@@ -94,7 +94,7 @@ public class DiagramRenderer {
       if (diagram.supports(commandModel.getDiagramType())) {
         log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
             commandModel.getDiagramType());
-        log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getResultPath());
+        log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getTargetPath());
         drawn = diagram.draw(context);
         log.info("Generated {} at {}", diagram.name(), context.getOutputFile().getAbsolutePath());
         break;
@@ -106,7 +106,7 @@ public class DiagramRenderer {
   public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
-    context.setOutputFile(new File(model.getResultPath().toFile(), model.getOutputFilename()));
+    context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
     return context;
   }
 }

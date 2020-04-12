@@ -46,7 +46,7 @@ class DiagramRendererTest {
     CommandModel model = new CommandModel();
     model.setDiagramType(DiagramType.GRAPH);
     model.setOutputFilename("test-output-file");
-    model.setResultPath(Paths.get("dummy-result-path"));
+    model.setTargetPath(Paths.get("dummy-result-path"));
     model.setSourcePath(sourcePath);
 
     return model;
@@ -105,7 +105,7 @@ class DiagramRendererTest {
   void toDrawingContext() {
     assertThat(new DiagramRenderer(getCommandModel()).drawingContext(getCommandModel()))
         .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile)
-        .containsExactly(DiagramType.GRAPH, new File(getCommandModel().getResultPath().toFile(),
+        .containsExactly(DiagramType.GRAPH, new File(getCommandModel().getTargetPath().toFile(),
             getCommandModel().getOutputFilename()));
   }
 
