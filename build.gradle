@@ -103,9 +103,9 @@ githubRelease {
 	token System.getenv("GITHUB_TOKEN") != null ? System.getenv("GITHUB_TOKEN") : "unknown_github_token" // This is your personal access token with Repo permissions
 	owner "manikmagar" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
 	repo "mule-flow-diagrams" // by default this is set to your project name
-	body "" // by default this is empty
+	body "## News" // by default this is empty
 	draft true // by default this is false
-	releaseAssets distZip.destinationDirectory.asFile.get() // this points to which files you want to upload as assets with your release
+	releaseAssets distZip.destinationDirectory.asFileTree.toList() // this points to which files you want to upload as assets with your release
 }
 
 tasks.withType(JavaCompile) {
