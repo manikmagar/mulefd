@@ -1,1 +1,82 @@
-# mule-flow-graph
+# Mule Flow Diagrams
+
+image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
+image:https://github.com/manikmagar/mule-flow-diagrams/workflows/CI%20Build/badge.svg[Build Status,link=https://github.com/manikmagar/mule-flow-diagrams/actions]
+
+## Introduction
+Mule application can contain multiple flows and sub-flows. All these can reference each other for processing messages. Data can also be exchanged synchronously or asynchronously using connectors.
+
+A project can easily have multiple configuration files with flows/sub-flows that are spread across those files. When analyzing mule application, it could be difficult to see the complete data processing flow and their dependencies.
+
+Have you ever wished to visualize your flow dependencies? How does message flows through your application?
+
+If so, then try this `muleflowdiagrams` application. It can read your configuration files and generate a diagrams that can easily tell you how your flows are connected.
+
+[source, bash]
+----
+$ muleflowdiagrams
+Missing required parameter: <sourcePath>
+Usage: muleflowdiagrams [-hV] [-d=<diagramType>] [-o=<outputFilename>]
+                        [-t=<targetPath>] <sourcePath>
+Create Flow diagrams from mule configuration files.
+      <sourcePath>   Source directory path containing mule configuration files
+  -d, --diagram=<diagramType>
+                     Type of diagram to generate. Valid values: GRAPH, SEQUENCE
+                       Default: GRAPH
+  -h, --help         Show this help message and exit.
+  -o, --out=<outputFilename>
+                     Name of the output file
+                       Default: mule-diagram
+  -t, --target=<targetPath>
+                     Output directory path to generate diagram
+  -V, --version      Print version information and exit.
+
+Copyright: 2020 Manik Magar, License: MIT
+Website: https://github.com/manikmagar/mule-flow-diagrams
+----
+
+For an example mule configuration link:./itests/test-hello-app.xml[./itests/test-hello-app.xml], run following command to generate a flow diagram - 
+
+[source, bash]
+----
+$ muleflowdiagrams ./itests/test-hello-app.xml -t ./itests/output
+----
+
+image::./itests/output/mule-diagram.png[Mule flow diagrams]
+
+## Features
+* Visualize mule flow dependencies and data flow.
+* Identify unused mule flows and sub-flows.
+* Identify flow spaghetti situations
+* Visualize synchronous and asynchronous data processing points
+* Identify connector dependencies and usage
+* Detect a possible recursive flow loops.
+
+## Requirements
+At the minimum, Java 8 is required. The build pipeline also tests it against JDK 11+. 
+
+Tested and verified to use on OSX, Linux and Windows.
+
+## Installation
+
+### Homebrew
+
+(TODO)
+
+### Manual install
+. Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release]. 
+. Add `muleflowdiagrams-<version>/bin` folder in to your $PATH
+. Test running `muleflowdiagrams --version` in CLI.
+
+### Build and Run
+This project uses Gradle to compile and build. To create a zip distribution, run below command in project directory -
+[source, bash]
+----
+./gradlew distZip
+---- 
+
+To install the distribution, run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory. You can verify binaries by executing `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --version`.
+
+##Copyright & License
+
+Licensed under the MIT License, see the link:LICENSE[LICENSE] file for details.
