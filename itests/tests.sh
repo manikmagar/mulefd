@@ -43,5 +43,5 @@ export NL=$'\n'
 
 
 echo Testing with `which muleflowdiagrams`
-assert "muleflowdiagrams ./test-hello-app.xml -o $SCRATCH"
+assert "muleflowdiagrams ./test-hello-app.xml -t $SCRATCH"
 assert_raises "test -f $SCRATCH/mule-diagram.png" 0
