@@ -53,7 +53,9 @@ public class DiagramRenderer {
   public Boolean render() {
     try {
       List<Path> xmls = Files.walk(commandModel.getSourcePath())
-          .filter(path -> path.toFile().isFile()).collect(Collectors.toList());
+          .filter(
+              path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
+          .collect(Collectors.toList());
       List<FlowContainer> flows = new ArrayList<>();
       Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
