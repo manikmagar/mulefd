@@ -135,6 +135,7 @@ class DiagramRendererTest {
   @DisplayName("Prepare components from csv file")
   void prepareKnownComponents() {
     assertThat(new DiagramRenderer(getCommandModel()).prepareKnownComponents()).isNotEmpty()
-        .hasSize(4);
+        .hasSize(10);
   }
+
 }

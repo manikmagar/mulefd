@@ -226,13 +226,54 @@ class MuleXmlElementTest {
         Collections.singletonMap(item.qualifiedName(), item));
 
     MuleComponent expectedComponent = new MuleComponent("http", "/test");
-    expectedComponent.setAsync(true);
+    expectedComponent.setAsync(false);
     expectedComponent.setSource(true);
     expectedComponent.setPath(Attribute.with("path", "/test"));
     expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
 
     assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1)
         .allSatisfy(c -> assertThat(c).isEqualToComparingFieldByField(expectedComponent));
+
+  }
+
+  @Test
+  @DisplayName("Element with wildcard component entry")
+  void fillComponents_with_wildcard_known_components() {
+    Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    element.appendChild(
+        getElementWithAttributes("db:select", Attribute.with("configRef", "db-config")));
+    element.appendChild(
+        getElementWithAttributes("db:insert", Attribute.with("configRef", "db-config")));
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("db");
+    item.setOperation("*");
+    item.setSource(false);
+    item.setPathAttributeName("");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(element,
+        Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("db", "select");
+    expectedComponent.setAsync(false);
+    expectedComponent.setSource(false);
+    expectedComponent.setPath(null);
+    expectedComponent.setConfigRef(Attribute.with("configRef", "db-config"));
+
+    MuleComponent expectedComponent2 = new MuleComponent("db", "insert");
+    expectedComponent2.setAsync(false);
+    expectedComponent2.setSource(false);
+    expectedComponent2.setPath(null);
+    expectedComponent2.setConfigRef(Attribute.with("configRef", "db-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(2);
+    assertThat(components.stream()
+        .filter(component -> component.qualifiedName().equals("db:select")).findFirst().get())
+            .isEqualToComparingFieldByField(expectedComponent);
+    assertThat(components.stream()
+        .filter(component -> component.qualifiedName().equals("db:insert")).findFirst().get())
+            .isEqualToComparingFieldByField(expectedComponent2);
 
   }
 

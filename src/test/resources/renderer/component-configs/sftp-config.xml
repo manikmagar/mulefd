@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
+  <sftp:config name="SFTP_Config" doc:name="SFTP Config" doc:id="ee09f3e6-b768-480f-8b7a-41cf48c96c1f" >
+    <sftp:connection host="test" />
+  </sftp:config>
+  <flow name="sftp-configFlow9" doc:id="33229c61-b81f-4366-bce5-b4bb4f1b8e93" >
+    <sftp:listener doc:name="On New or Updated File" doc:id="40ca6944-fcb2-4c72-8de9-e05d52cdd37a" config-ref="SFTP_Config" directory="/home/test">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </sftp:listener>
+  </flow>
+  <flow name="sftp-configFlow8" doc:id="7bca3393-5ff8-4bc2-ad30-07bf7bf5725a" >
+    <sftp:rename doc:name="Rename" doc:id="3ed5aa18-a8fb-4966-acc1-c346708ea6e5" path="dfgdfg" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow7" doc:id="c271e87e-6e71-4fca-ba90-69ed012dec95" >
+    <sftp:move doc:name="Move" doc:id="3cdc7ba9-0fb2-42d2-9e53-89e8bc9d5969" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow6" doc:id="059c9b59-2f64-4957-9a10-b0d2bdbe1e6a" >
+    <sftp:list doc:name="List" doc:id="552ef06a-d93d-4b42-8491-0beca898e92d" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow5" doc:id="e42c5b9f-09a6-489d-8021-80377e9dc137" >
+    <sftp:delete doc:name="Delete" doc:id="c1502b37-fa83-4226-8b27-ffdcc4489a77" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow4" doc:id="cef5a80b-b20f-493a-a7a3-71db351337ea" >
+    <sftp:create-directory doc:name="Create directory" doc:id="6f05be65-9325-4a79-8cef-268e9a2f980e" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow3" doc:id="fd40e599-edb5-4410-8192-9a9baf4403ce" >
+    <sftp:copy doc:name="Copy" doc:id="4373a103-e7e3-428d-b52f-6f558e43a980" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow1" doc:id="350d3748-a87d-4615-8700-aeea76c1326b" >
+    <sftp:read doc:name="Read" doc:id="7b850cd8-98b0-479f-a883-f2403233007c" path="sdfsdfs" config-ref="SFTP_Config"/>
+  </flow>
+  <flow name="sftp-configFlow2" doc:id="975dabaa-7ac3-4322-8b7a-6fe94f2d65b4" >
+    <sftp:write doc:name="Write" doc:id="a63045f9-1fae-4a07-b015-979b483d73c6" config-ref="SFTP_Config"/>
+  </flow>
+</mule>

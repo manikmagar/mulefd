@@ -6,6 +6,7 @@ public class ComponentItem {
   private boolean source;
   private String configAttributeName;
   private String pathAttributeName;
+  private boolean async;
 
   public String getPathAttributeName() {
     return pathAttributeName;
@@ -51,4 +52,11 @@ public class ComponentItem {
     return prefix + ":" + operation;
   }
 
+  public boolean isAsync() {
+    return async;
+  }
+
+  public void setAsync(boolean async) {
+    this.async = async;
+  }
 }

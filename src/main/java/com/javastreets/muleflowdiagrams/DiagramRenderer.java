@@ -33,13 +33,21 @@ public class DiagramRenderer {
         .getContextClassLoader().getResourceAsStream("mule-components.csv")))) {
       for (String line; (line = br.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
+          log.debug("Reading component line - {}", line);
           String[] part = line.split(",");
+          if (part.length != 6) {
+            log.error(
+                "Found an invalid configuration line in mule components file. Column count must be 5. Line - {}",
+                line);
+            throw new RuntimeException("Invalid mule components configuration file.");
+          }
           ComponentItem item = new ComponentItem();
           item.setPrefix(part[0]);
           item.setOperation(part[1]);
           item.setSource(Boolean.valueOf(part[2]));
           item.setPathAttributeName(part[3]);
           item.setConfigAttributeName(part[4]);
+          item.setAsync(Boolean.valueOf(part[5]));
           items.putIfAbsent(item.qualifiedName(), item);
         }
       }
