@@ -53,7 +53,9 @@ public class DiagramRenderer {
   public Boolean render() {
     try {
       List<Path> xmls = Files.walk(commandModel.getSourcePath())
-          .filter(path -> path.toFile().isFile()).collect(Collectors.toList());
+          .filter(
+              path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
+          .collect(Collectors.toList());
       List<FlowContainer> flows = new ArrayList<>();
       Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
@@ -106,7 +108,14 @@ public class DiagramRenderer {
   public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
-    context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
+    File parent = model.getTargetPath() != null ? model.getTargetPath().toFile() : null;
+    if (parent == null) {
+      parent = model.getSourcePath().toFile();
+      if (parent.isFile()) {
+        parent = parent.getParentFile();
+      }
+    }
+    context.setOutputFile(new File(parent, model.getOutputFilename()));
     return context;
   }
 }

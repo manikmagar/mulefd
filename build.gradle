@@ -3,14 +3,14 @@
 */
 import org.gradle.crypto.checksum.Checksum
 plugins {
-	id 'java'
-	id 'maven-publish'
-	id 'application'
+	id "java"
+	id "maven-publish"
+	id "application"
 	id "com.diffplug.gradle.spotless" version "3.28.1"
 	id "io.toolebox.git-versioner" version "1.4.0"
-	id 'org.gradle.crypto.checksum' version "1.2.0"
+	id "org.gradle.crypto.checksum" version "1.2.0"
 	id "com.github.breadmoirai.github-release" version "2.2.12"
-	id 'de.fuerstenau.buildconfig' version '1.1.8'
+	id "de.fuerstenau.buildconfig" version "1.1.8"
 }
 
 application {
@@ -37,18 +37,9 @@ dependencies {
 	testImplementation 'io.github.netmikey.logunit:logunit-logback:1.1.0'
 }
 
-githubRelease {
-	releaseAssets = distZip.destinationDirectory.asFile.get().listFiles()
-	token = project.hasProperty('github_token') ? getProperty('github_token') : "unknown_github_token"
-	owner = "manikmagar"
-	draft = true
-	body = "## News"
-}
-
-
 spotless {
 	format 'misc', {
-		target '**/*.gradle', '**/*.md', '**/.gitignore'
+		target '**/*.gradle', '**/*.adoc', '**/.gitignore'
 
 		trimTrailingWhitespace()
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
@@ -108,10 +99,15 @@ githubRelease {
 	releaseAssets distZip.destinationDirectory.asFileTree.toList() // this points to which files you want to upload as assets with your release
 }
 
-tasks.withType(JavaCompile) {
+compileJava {
 	options.encoding = 'UTF-8'
+	// options.compilerArgs << "-Xlint:unchecked"
 }
 
+compileTestJava {
+	options.encoding = 'UTF-8'
+	// options.compilerArgs << "-Xlint:unchecked"
+}
 
 group = 'com.javastreets'
 sourceCompatibility = '1.8'
