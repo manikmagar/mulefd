@@ -1,9 +1,9 @@
-# Mule Flow Diagrams
+= Mule Flow Diagrams
 
 image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
 image:https://github.com/manikmagar/mule-flow-diagrams/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mule-flow-diagrams/actions]
 
-## Introduction
+== Introduction
 Mule application can contain multiple flows and sub-flows. All these can reference each other for processing messages. Data can also be exchanged synchronously or asynchronously using connectors.
 
 A project can easily have multiple configuration files with flows/sub-flows that are spread across those files. When analyzing mule application, it could be difficult to see the complete data processing flow and their dependencies.
@@ -44,7 +44,7 @@ $ muleflowdiagrams ./itests/test-hello-app.xml -t ./itests/output
 
 image::./itests/output/mule-diagram.png[Mule flow diagrams]
 
-## Features
+== Features
 * Visualize mule flow dependencies and data flow.
 * Identify unused mule flows and sub-flows.
 * Identify flow spaghetti situations
@@ -52,23 +52,40 @@ image::./itests/output/mule-diagram.png[Mule flow diagrams]
 * Identify connector dependencies and usage
 * Detect a possible recursive flow loops.
 
-## Requirements
+== Requirements
 At the minimum, Java 8 is required. The build pipeline also tests it against JDK 11+.
 
 Tested and verified to use on OSX, Linux and Windows.
 
-## Installation
+== Installation
 
-### Homebrew
+=== Homebrew icon:apple[]
 
-(TODO)
+On OSX you can install 'java' and `muleflowdiagrams` with https://brew.sh[Homebrew] using custom taps.
 
-### Manual install
+To install Java 8:
+
+[source, bash]
+----
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk8
+----
+
+Once Java is installed you can use brew with https://github.com/manikmagar/homebrew-tap/[manikmagar/tap] to get `muleflowdiagrams`:
+
+  brew install manikmagar/tap/muleflowdiagrams
+
+To upgrade to the latest version:
+
+  brew upgrade manikmagar/tap/muleflowdiagrams
+
+
+=== Manual install
 . Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
 . Add `muleflowdiagrams-<version>/bin` folder in to your $PATH
 . Test running `muleflowdiagrams --version` in CLI.
 
-### Build and Run
+=== Build and Run
 This project uses Gradle to compile and build. To create a zip distribution, run below command in project directory -
 [source, bash]
 ----
@@ -77,6 +94,6 @@ This project uses Gradle to compile and build. To create a zip distribution, run
 
 To install the distribution, run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory. You can verify binaries by executing `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --version`.
 
-## Copyright & License
+== Copyright & License
 
 Licensed under the MIT License, see the link:LICENSE[LICENSE] file for details.
