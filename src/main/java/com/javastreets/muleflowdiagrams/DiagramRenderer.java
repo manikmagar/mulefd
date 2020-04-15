@@ -33,13 +33,27 @@ public class DiagramRenderer {
         .getContextClassLoader().getResourceAsStream("mule-components.csv")))) {
       for (String line; (line = br.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
+          log.debug("Reading component line - {}", line);
           String[] part = line.split(",");
+          if (part.length != 6) {
+            log.error(
+                "Found an invalid configuration line in mule components file. Column count must be 5. Line - {}",
+                line);
+            throw new RuntimeException("Invalid mule components configuration file.");
+          }
           ComponentItem item = new ComponentItem();
           item.setPrefix(part[0]);
           item.setOperation(part[1]);
           item.setSource(Boolean.valueOf(part[2]));
+          if (item.getOperation().equals("*") && item.isSource()) {
+            log.error(
+                "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - {}",
+                line);
+            throw new RuntimeException("Invalid mule components configuration file.");
+          }
           item.setPathAttributeName(part[3]);
           item.setConfigAttributeName(part[4]);
+          item.setAsync(Boolean.valueOf(part[5]));
           items.putIfAbsent(item.qualifiedName(), item);
         }
       }
@@ -108,14 +122,7 @@ public class DiagramRenderer {
   public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
-    File parent = model.getTargetPath() != null ? model.getTargetPath().toFile() : null;
-    if (parent == null) {
-      parent = model.getSourcePath().toFile();
-      if (parent.isFile()) {
-        parent = parent.getParentFile();
-      }
-    }
-    context.setOutputFile(new File(parent, model.getOutputFilename()));
+    context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
     return context;
   }
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
+  <ftp:config name="FTP_Config" doc:name="FTP Config" doc:id="408fe022-fbfd-4aab-aeb4-915b54f0d9fa" >
+    <ftp:connection />
+  </ftp:config>
+  <flow name="ftp-configFlow" doc:id="ee8040cb-37c5-410d-a40d-a2987a2a0f12" >
+    <ftp:listener doc:name="On New or Updated File" doc:id="35718154-149d-42b6-9175-4496663e550f" config-ref="FTP_Config" directory="/home/test">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </ftp:listener>
+  </flow>
+  <flow name="ftp-configFlow2" doc:id="782c4ed0-c57d-46dc-bcf8-fa59e2da9ce3" >
+    <ftp:create-directory doc:name="Create directory" doc:id="5fb0bf68-97ec-4af2-9c74-9b1fafff4e3d" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow3" doc:id="88288e4f-57f1-441c-8f40-4966e3c9ae6e" >
+    <ftp:delete doc:name="Delete" doc:id="71c84801-71b7-42f1-b666-407775f5898e" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow4" doc:id="be5ae324-261f-4673-b9d6-3ebf8e21c919" >
+    <ftp:list doc:name="List" doc:id="9dc09ff3-034f-492c-bfc2-ad7d8e3dbe8d" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow5" doc:id="2efcf2ec-95b2-46f4-bdda-fa26aaaeea56" >
+    <ftp:move doc:name="Move" doc:id="3222edb9-5a01-46f8-beff-0158a110b974" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow6" doc:id="3eac521e-878e-4442-a001-2b261a28dba1" >
+    <ftp:read doc:name="Read" doc:id="73b8b902-7585-4513-89b4-27a9f2e01604" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow8" doc:id="c2ca1062-13d6-46cb-ae74-26acdc01382a" >
+    <ftp:write doc:name="Write" doc:id="4356e0e7-e5fa-40cd-8faf-533c66499b9e" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow7" doc:id="52bd145a-79a7-4511-aa61-33f20f86881b" >
+    <ftp:rename doc:name="Rename" doc:id="9120887e-e217-4dd1-9334-b4cca3490a18" config-ref="FTP_Config"/>
+  </flow>
+  <flow name="ftp-configFlow1" doc:id="2a591bdd-f893-4763-be75-249349ae6faa" >
+    <ftp:copy doc:name="Copy" doc:id="8d6dec21-8fcb-4f4e-bbf7-6c44adfb4215" config-ref="FTP_Config"/>
+  </flow>
+</mule>

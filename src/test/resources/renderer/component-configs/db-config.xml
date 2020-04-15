@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+  <db:config name="Database_Config" doc:name="Database Config" doc:id="44c8076a-a5bf-4cc5-8163-b0b5aa2f25d9" >
+    <db:data-source-connection dataSourceRef="test" />
+  </db:config>
+  <flow name="db-configFlow" doc:id="663c6c33-39a0-4910-9be6-9f91a0d301de" >
+    <db:listener table="sdfsd" doc:name="On Table Row" doc:id="2cb0d5b9-7daf-47d4-a02b-3e38eb501640" config-ref="Database_Config">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </db:listener>
+    <flow-ref doc:name="common-subflow" doc:id="c8be2c0a-3da1-466e-bebf-87f84ee81225" name="common-subflow"/>
+  </flow>
+  <sub-flow name="common-subflow" doc:id="a16cd0ca-24fa-4aca-9dca-034cc976dcb9" >
+    <logger level="INFO" doc:name="Logger" doc:id="3eedd851-dba7-4894-8abb-9f76b1ff666d" />
+  </sub-flow>
+  <flow name="db-configFlow1" doc:id="206d8e35-fa99-4782-ae23-520aee4828eb" >
+    <db:select doc:name="Select" doc:id="db442485-cb58-4757-a0b0-9ab25476576f" config-ref="Database_Config">
+      <db:sql >select 1</db:sql>
+    </db:select>
+    <flow-ref doc:name="common-subflow" doc:id="4ee1857d-235d-4b25-a67a-52c7be453f3b" name="common-subflow"/>
+  </flow>
+  <flow name="db-configFlow2" doc:id="0c74b02b-1e0c-4261-8119-fb848c8e8991" >
+    <async doc:name="Async" doc:id="23c704ff-4850-49e5-bf7d-ccdf54d3bd0b" >
+      <db:insert doc:name="Insert" doc:id="3ffef022-1dc5-439f-ba46-151b75be001b" config-ref="Database_Config">
+        <db:sql>insert into test values (1)</db:sql>
+      </db:insert>
+    </async>
+    <flow-ref doc:name="common-subflow" doc:id="c0c204aa-8ea4-4c0f-9327-a7324f9705df" name="common-subflow"/>
+  </flow>
+</mule>

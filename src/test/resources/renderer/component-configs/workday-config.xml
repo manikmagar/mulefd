@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:workday="http://www.mulesoft.org/schema/mule/workday" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/workday http://www.mulesoft.org/schema/mule/workday/current/mule-workday.xsd">
+  <workday:config-version-32-config name="Workday_Config_version_32" doc:name="Workday Config version 32" doc:id="9d735ea1-5eae-472a-8fc0-af1fc37d7070" >
+    <workday:basic-authentication-api-v32-connection />
+  </workday:config-version-32-config>
+  <flow name="workday-configFlow" doc:id="ad3d552c-25c3-41c6-8c8c-cb60ca7d47bf" >
+    <workday:new-objects-trigger objectType="ABSENCE_INPUTS" doc:name="On New Objects" doc:id="4da1c990-32d0-4309-a491-a9927cd8dee4" config-ref="Workday_Config_version_32">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </workday:new-objects-trigger>
+  </flow>
+  <flow name="workday-configFlow1" doc:id="0165586b-f9a4-4405-a8dd-f75b0358a6b0" >
+    <workday:academic-advising doc:name="Academic advising" doc:id="b7707f6f-1a7f-495f-b332-d1229a86f963" config-ref="Workday_Config_version_32"/>
+  </flow>
+  <flow name="workday-configFlow2" doc:id="2f036fca-7940-48fc-8f09-f4a56093d241" >
+    <workday:admissions doc:name="Admissions" doc:id="bb61034b-a86c-40af-9c77-65fddeaf7704" config-ref="Workday_Config_version_32"/>
+  </flow>
+</mule>

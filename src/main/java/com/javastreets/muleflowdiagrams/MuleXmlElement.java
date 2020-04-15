@@ -100,11 +100,26 @@ public class MuleXmlElement {
 
   static void processKnownComponents(Map<String, ComponentItem> knownComponents,
       List<MuleComponent> muleComponentList, Element element) {
-    if (knownComponents.containsKey(element.getTagName())) {
-      ComponentItem item = knownComponents.get(element.getTagName());
+    ComponentItem item = null;
+    String keyName = element.getTagName();
+    String[] wildcards = null;
+    if (knownComponents.containsKey(keyName)) {
+      item = knownComponents.get(keyName);
+    } else if (element.getTagName().contains(":")) {
+      wildcards = element.getTagName().split(":");
+      String wildcardEntry = wildcards[0] + ":*";
+      if (knownComponents.containsKey(wildcardEntry)) {
+        item = knownComponents.get(wildcardEntry);
+      }
+    }
+
+    if (item != null) {
       String name = item.qualifiedName();
       if (!item.getPathAttributeName().trim().isEmpty()) {
         name = element.getAttribute(item.getPathAttributeName());
+      }
+      if (wildcards != null && wildcards.length > 1) {
+        name = wildcards[1];
       }
       MuleComponent mc = new MuleComponent(item.getPrefix(), name);
       mc.setSource(item.isSource());
@@ -116,9 +131,11 @@ public class MuleXmlElement {
         mc.setPath(Attribute.with(item.getPathAttributeName(),
             element.getAttribute(item.getPathAttributeName())));
       }
-      mc.setAsync(true);
+      mc.setAsync(item.isAsync());
       muleComponentList.add(mc);
     }
+
+
   }
 
   /**
