@@ -1,5 +1,6 @@
 package com.javastreets.muleflowdiagrams.app;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
@@ -39,11 +40,23 @@ public class Application implements Callable<Boolean> {
 
   @Override
   public Boolean call() throws Exception {
+    CommandModel cm = getCommandModel();
+    return new DiagramRenderer(cm).render();
+  }
+
+  CommandModel getCommandModel() {
     CommandModel cm = new CommandModel();
     cm.setSourcePath(sourcePath);
-    cm.setTargetPath(targetPath);
+    Path resolvedTarget = targetPath;
+    if (targetPath == null) {
+      if (Files.isDirectory(sourcePath))
+        resolvedTarget = sourcePath;
+      if (Files.isRegularFile(sourcePath))
+        resolvedTarget = sourcePath.toFile().getParentFile().toPath();
+    }
+    cm.setTargetPath(resolvedTarget);
     cm.setDiagramType(diagramType);
     cm.setOutputFilename(outputFilename + ".png");
-    return new DiagramRenderer(cm).render();
+    return cm;
   }
 }

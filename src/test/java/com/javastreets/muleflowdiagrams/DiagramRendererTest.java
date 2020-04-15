@@ -110,28 +110,6 @@ class DiagramRendererTest {
   }
 
   @Test
-  @DisplayName("Create drawing context from command model without target path")
-  void toDrawingContextWithoutTarget() {
-    CommandModel commandModel = getCommandModel();
-    commandModel.setTargetPath(null);
-    assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
-        .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile)
-        .containsExactly(DiagramType.GRAPH,
-            new File(commandModel.getSourcePath().toFile(), commandModel.getOutputFilename()));
-  }
-
-  @Test
-  @DisplayName("Create drawing context from command model without target path but with source file")
-  void toDrawingContextWithSourceFile() {
-    CommandModel commandModel = getCommandModel("./renderer/single/example-config.xml");
-    commandModel.setTargetPath(null);
-    assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
-        .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile).containsExactly(
-            DiagramType.GRAPH, new File(commandModel.getSourcePath().toFile().getParent(),
-                commandModel.getOutputFilename()));
-  }
-
-  @Test
   @DisplayName("Prepare components from csv file")
   void prepareKnownComponents() {
     assertThat(new DiagramRenderer(getCommandModel()).prepareKnownComponents()).isNotEmpty();

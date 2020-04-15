@@ -122,14 +122,7 @@ public class DiagramRenderer {
   public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
-    File parent = model.getTargetPath() != null ? model.getTargetPath().toFile() : null;
-    if (parent == null) {
-      parent = model.getSourcePath().toFile();
-      if (parent.isFile()) {
-        parent = parent.getParentFile();
-      }
-    }
-    context.setOutputFile(new File(parent, model.getOutputFilename()));
+    context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
     return context;
   }
 }
