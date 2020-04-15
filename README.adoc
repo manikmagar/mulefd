@@ -73,11 +73,11 @@ brew cask install adoptopenjdk8
 
 Once Java is installed you can use brew with https://github.com/manikmagar/homebrew-tap/[manikmagar/tap] to get `muleflowdiagrams`:
 
-  brew install manikmagar/tap/muleflowdiagrams
+brew install manikmagar/tap/muleflowdiagrams
 
 To upgrade to the latest version:
 
-  brew upgrade manikmagar/tap/muleflowdiagrams
+brew upgrade manikmagar/tap/muleflowdiagrams
 
 
 === Manual install
