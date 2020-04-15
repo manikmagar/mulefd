@@ -45,6 +45,12 @@ public class DiagramRenderer {
           item.setPrefix(part[0]);
           item.setOperation(part[1]);
           item.setSource(Boolean.valueOf(part[2]));
+          if (item.getOperation().equals("*") && item.isSource()) {
+            log.error(
+                "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - {}",
+                line);
+            throw new RuntimeException("Invalid mule components configuration file.");
+          }
           item.setPathAttributeName(part[3]);
           item.setConfigAttributeName(part[4]);
           item.setAsync(Boolean.valueOf(part[5]));

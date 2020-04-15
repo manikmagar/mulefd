@@ -31,11 +31,15 @@ class ApplicationTest {
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     application.call();
-    assertThat(Paths.get(tempDir.getAbsolutePath(), filename + ".png")).exists();
+    String outputFilename = filename + ".png";
+    assertThat(Paths.get(tempDir.getAbsolutePath(), outputFilename)).exists();
+    // .hasSameBinaryContentAs(Paths.get(toAbsolutePath("./renderer/component-configs/"),
+    // outputFilename)); // This fails due to time stamp difference
   }
 
   static Stream<Arguments> componentConfigProvider() throws IOException {
     return Files.list(Paths.get(toAbsolutePath("./renderer/component-configs/")))
+        .filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
         .map(path -> Arguments.of(path.toAbsolutePath().toString(), path.getFileName().toString()));
   }
 }

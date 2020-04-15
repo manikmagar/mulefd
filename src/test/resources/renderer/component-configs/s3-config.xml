@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+  <s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="ca0e12bb-20d0-4b18-9ab7-02ff006f0c79" >
+    <s3:basic-connection />
+  </s3:config>
+  <flow name="s3-configFlow" doc:id="e0739f9a-9a64-49d4-98bc-1201e7f62116" >
+    <s3:new-object-trigger doc:name="On New Object" doc:id="b178a526-cf20-48e2-99f7-03edacd6e23f" config-ref="Amazon_S3_Configuration" bucketName="test">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </s3:new-object-trigger>
+  </flow>
+  <flow name="s3-configFlow1" doc:id="a5ef1b59-7931-43f5-b903-0d8a1d3a2077" >
+    <s3:deleted-object-trigger doc:name="On Deleted Object" doc:id="7a664072-7904-410e-af28-fa4263a1a2bd" config-ref="Amazon_S3_Configuration" bucketName="test2">
+      <scheduling-strategy >
+        <fixed-frequency />
+      </scheduling-strategy>
+    </s3:deleted-object-trigger>
+  </flow>
+  <flow name="s3-configFlow2" doc:id="1de97e05-3966-4d32-b998-3c2749dd342a" >
+    <s3:create-object doc:name="Create object" doc:id="0e578ab5-0cf1-4401-8362-60c7dea83739" config-ref="Amazon_S3_Configuration" bucketName="test2"/>
+  </flow>
+</mule>
