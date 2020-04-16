@@ -20,7 +20,7 @@ import com.javastreets.muleflowdiagrams.model.MuleComponent;
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.GraphvizJdkEngine;
+import guru.nidi.graphviz.engine.GraphvizV8Engine;
 import guru.nidi.graphviz.model.Factory;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
@@ -51,7 +51,7 @@ public class GraphDiagram implements Diagram {
         .addTo(graph);
     checkUnusedNodes(graph);
     try {
-      Graphviz.useEngine(new GraphvizJdkEngine());
+      Graphviz.useEngine(new GraphvizV8Engine());
       return Graphviz.fromGraph(graph).render(Format.PNG).toFile(drawingContext.getOutputFile())
           .exists();
     } catch (IOException e) {
