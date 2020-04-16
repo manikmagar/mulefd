@@ -59,3 +59,4 @@ jobs:
           java -version
           chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
+          ./build/install/muleflowdiagrams/bin/muleflowdiagrams ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
