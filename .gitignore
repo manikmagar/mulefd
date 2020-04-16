@@ -3,3 +3,6 @@ example
 target
 .idea
 *.iml
+.gradle
+build
+examples
