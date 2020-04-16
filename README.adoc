@@ -47,10 +47,10 @@ image::./itests/output/mule-diagram.png[Mule flow diagrams]
 == Features
 * Visualize mule flow dependencies and data flow.
 * Identify unused mule flows and sub-flows.
-* Identify flow spaghetti situations
-* Visualize synchronous and asynchronous data processing points
-* Identify connector dependencies and usage
-* Detect a possible recursive flow loops.
+* Identify flow spaghetti situations.
+* Visualize synchronous and asynchronous data processing points.
+* Identify connector dependencies and usage.
+* Detect a possible recursive flow executions.
 
 == Requirements
 At the minimum, Java 8 is required. The build pipeline also tests it against JDK 11+.
@@ -73,12 +73,13 @@ brew cask install adoptopenjdk8
 
 Once Java is installed you can use brew with https://github.com/manikmagar/homebrew-tap/[manikmagar/tap] to get `muleflowdiagrams`:
 
-brew install manikmagar/tap/muleflowdiagrams
+`brew install manikmagar/tap/muleflowdiagrams`
 
 To upgrade to the latest version:
 
-brew upgrade manikmagar/tap/muleflowdiagrams
+`brew upgrade manikmagar/tap/muleflowdiagrams`
 
+Test running `muleflowdiagrams --version` in CLI.
 
 === Manual install
 . Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
