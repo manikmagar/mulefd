@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java: [8,11,13]
+        java: [8,11,14]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-java@v1
