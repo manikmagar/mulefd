@@ -44,7 +44,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         java: [8,11,14]
     runs-on: ${{ matrix.os }}
     steps:
@@ -55,7 +55,15 @@ jobs:
         with:
           name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
-      - run: |
+      - name: Run on linux
+        if: runner.os != 'Windows'
+        run: |
           java -version
           chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
+      - name: Run on windows
+        if: runner.os == 'Windows'
+        run: |
+          java -version
+          chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat
+          ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version
