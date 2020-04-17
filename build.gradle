@@ -97,6 +97,7 @@ githubRelease {
 	repo "mule-flow-diagrams" // by default this is set to your project name
 	body "## News" // by default this is empty
 	draft true // by default this is false
+	allowUploadToExisting true	// Reuse releases already drafted by release-drafter plugin
 	releaseAssets distZip.destinationDirectory.asFileTree.toList() // this points to which files you want to upload as assets with your release
 }
 
