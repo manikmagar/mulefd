@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	  xmlns:spring="http://www.springframework.org/schema/beans"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+	<http:request-config name="HTTP_Request_Configuration" host="localhost" port="8082" doc:name="HTTP Request Configuration"/>
+	<vm:connector name="VM" validateConnections="true" doc:name="VM"/>
+	<flow name="flow-1">
+		<http:listener config-ref="HTTP_Listener_Configuration" path="/test" doc:name="HTTP"/>
+		<flow-ref name="sub-flow-1" doc:name="sub-flow-1"/>
+		<vm:outbound-endpoint exchange-pattern="one-way" path="/incoming-queue" connector-ref="VM" doc:name="VM"/>
+	</flow>
+	<flow name="flow-vm">
+		<vm:inbound-endpoint exchange-pattern="one-way" path="/incoming-queue" connector-ref="VM" doc:name="VM"/>
+		<logger level="INFO" doc:name="Logger"/>
+	</flow>
+	<flow name="flow-2">
+		<flow-ref name="sub-flow-2" doc:name="sub-flow-2"/>
+		<http:request config-ref="HTTP_Request_Configuration" path="/test-data" method="GET" doc:name="HTTP"/>
+	</flow>
+	<sub-flow name="sub-flow-common">
+		<logger level="INFO" doc:name="Logger"/>
+	</sub-flow>
+	<sub-flow name="sub-flow-1">
+		<logger level="INFO" doc:name="Logger"/>
+	</sub-flow>
+	<sub-flow name="sub-flow-2">
+		<logger level="INFO" doc:name="Logger"/>
+	</sub-flow>
+</mule>

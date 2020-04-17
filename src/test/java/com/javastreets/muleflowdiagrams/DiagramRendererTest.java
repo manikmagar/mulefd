@@ -38,8 +38,11 @@ class DiagramRendererTest {
   }
 
   private CommandModel getCommandModel(String sourcePath) {
-    return getCommandModel(
-        new File(getClass().getClassLoader().getResource(sourcePath).getFile()).toPath());
+    return getCommandModel(toAbsolutePath(sourcePath));
+  }
+
+  private Path toAbsolutePath(String sourcePath) {
+    return Paths.get(getClass().getClassLoader().getResource(sourcePath).getFile());
   }
 
   private CommandModel getCommandModel(Path sourcePath) {
@@ -115,4 +118,46 @@ class DiagramRendererTest {
     assertThat(new DiagramRenderer(getCommandModel()).prepareKnownComponents()).isNotEmpty();
   }
 
+  @Test
+  @DisplayName("Single config file as source")
+  void sourcePathXmlFile() {
+    assertThat(new DiagramRenderer(getCommandModel("./renderer/single/example-config.xml"))
+        .getMuleSourcePath()).as("Resolved mule configuration path")
+            .isEqualTo(toAbsolutePath("./renderer/single/example-config.xml"));
+    logs.assertContains(
+        "Reading source file " + toAbsolutePath("./renderer/single/example-config.xml").toString());
+  }
+
+  @Test
+  @DisplayName("Mule 4 source directory")
+  void sourcePathMule4Directory() {
+    String sourcePath = "./renderer/mule4-example";
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+        .as("Resolved mule configuration path")
+        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/mule"));
+    logs.assertContains(
+        "Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
+  }
+
+  @Test
+  @DisplayName("Mule 3 - non-maven source directory")
+  void sourcePathMule3NonMavenDirectory() {
+    String sourcePath = "./renderer/mule3-example";
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+        .as("Resolved mule configuration path")
+        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/app"));
+    logs.assertContains(
+        "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+  }
+
+  @Test
+  @DisplayName("Mule 3 - maven source directory")
+  void sourcePathMule3MavenDirectory() {
+    String sourcePath = "./renderer/mule3-maven-example";
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+        .as("Resolved mule configuration path")
+        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/app"));
+    logs.assertContains(
+        "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+  }
 }

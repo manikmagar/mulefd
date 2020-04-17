@@ -18,11 +18,6 @@ public class MuleXmlParser extends XmlParser {
     super(filePath);
   }
 
-  @Override
-  public void parse() {
-    super.parse();
-  }
-
   public boolean isMuleFile() {
     return getDocument().getDocumentElement().getNodeName().equalsIgnoreCase("mule");
   }

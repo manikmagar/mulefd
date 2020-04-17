@@ -18,6 +18,16 @@ public class CommandModel {
 
   private String outputFilename;
 
+  private Integer muleVersion = 4;
+
+  public Integer getMuleVersion() {
+    return muleVersion;
+  }
+
+  public void setMuleVersion(Integer muleVersion) {
+    this.muleVersion = muleVersion;
+  }
+
   public String getOutputFilename() {
     return outputFilename;
   }

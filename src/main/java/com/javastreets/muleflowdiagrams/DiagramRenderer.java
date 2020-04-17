@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,8 @@ import com.javastreets.muleflowdiagrams.model.ComponentItem;
 import com.javastreets.muleflowdiagrams.model.FlowContainer;
 
 public class DiagramRenderer {
+  public static final int MULE_VERSION_4 = 4;
+  public static final int MULE_VERSION_3 = 3;
   Logger log = LoggerFactory.getLogger(DiagramRenderer.class);
 
   private CommandModel commandModel;
@@ -66,20 +70,60 @@ public class DiagramRenderer {
 
   public Boolean render() {
     try {
-      List<Path> xmls = Files.walk(commandModel.getSourcePath())
-          .filter(
-              path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
-          .collect(Collectors.toList());
-      List<FlowContainer> flows = new ArrayList<>();
-      Map<String, ComponentItem> knownComponents = prepareKnownComponents();
-      for (Path path : xmls) {
-        flows(flows, knownComponents, path);
-      }
+      List<FlowContainer> flows = findFlows();
       return diagram(flows);
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
       return false;
     }
+  }
+
+  boolean existInSource(String path) {
+    return Files.exists(Paths.get(commandModel.getSourcePath().toString(), path));
+  }
+
+  List<FlowContainer> findFlows() throws IOException {
+    Path newSourcePath = getMuleSourcePath();
+    List<FlowContainer> flows = new ArrayList<>();
+    try (Stream<Path> paths = Files.walk(newSourcePath)) {
+      List<Path> xmls = paths
+          .filter(
+              path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
+          .collect(Collectors.toList());
+      Map<String, ComponentItem> knownComponents = prepareKnownComponents();
+      for (Path path : xmls) {
+        flows(flows, knownComponents, path);
+      }
+    }
+    return flows;
+  }
+
+  Path getMuleSourcePath() {
+    Path newSourcePath = commandModel.getSourcePath();
+    commandModel.setMuleVersion(MULE_VERSION_4);
+    if (Files.isDirectory(commandModel.getSourcePath())) {
+      log.debug("Source is a directory {}", commandModel.getSourcePath());
+      if (existInSource("src/main/mule/") && existInSource("mule-artifact.json")) {
+        log.info(
+            "Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
+        newSourcePath = Paths.get(commandModel.getSourcePath().toString(), "src/main/mule");
+        commandModel.setMuleVersion(MULE_VERSION_4);
+      } else if (existInSource("src/main/app/") && existInSource("mule-project.xml")) {
+        log.info(
+            "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+        newSourcePath = Paths.get(commandModel.getSourcePath().toString(), "src/main/app");
+        commandModel.setMuleVersion(MULE_VERSION_3);
+      } else {
+        log.warn(
+            "No known standard Mule (3/4) directory structure found (src/main/mule or src/main/app).");
+      }
+      log.info(
+          "Source directory '{}' will be scanned recursively to find Mule {} configuration files.",
+          newSourcePath, commandModel.getMuleVersion());
+    } else {
+      log.info("Reading source file {}", newSourcePath);
+    }
+    return newSourcePath;
   }
 
   void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) {
