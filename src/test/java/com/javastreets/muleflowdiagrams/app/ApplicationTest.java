@@ -49,6 +49,18 @@ class ApplicationTest {
   }
 
   @Test
+  @DisplayName("Render Mule 3 exmple config")
+  void mule3Rendering() throws Exception {
+    String[] args =
+        new String[] {toAbsolutePath("./renderer/mule3-example"), "-t", tempDir.toString()};
+    Application application = new Application();
+    new CommandLine(application).parseArgs(args);
+    application.call();
+    String outputFilename = "mule-diagram.png";
+    assertThat(Paths.get(tempDir.getAbsolutePath(), outputFilename)).exists();
+  }
+
+  @Test
   @DisplayName("Command line arguments - only source as directory")
   void commandLineWithSourceDirectory() {
     String[] args = new String[] {tempDir.getAbsolutePath()};

@@ -1,6 +1,11 @@
 package com.javastreets.muleflowdiagrams.util;
 
 public class Validations {
+
+  private Validations() {
+
+  }
+
   /**
    * Validates that passed value is true.
    * 
@@ -10,7 +15,7 @@ public class Validations {
    * @return true
    */
   public static boolean requireTrue(boolean value, String message) {
-    if (value == false) {
+    if (!value) {
       throw new IllegalArgumentException(message);
     }
     return true;
@@ -29,7 +34,7 @@ public class Validations {
    * @return true
    */
   public static boolean requireFalse(boolean value, String message) {
-    if (value == true) {
+    if (value) {
       throw new IllegalArgumentException(message);
     }
     return false;
