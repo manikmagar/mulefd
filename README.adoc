@@ -1,11 +1,10 @@
 = Mule Flow Diagrams
-:toc:
-:toc-placement!:
-
-toc::[]
+:toc: macro
 
 image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
 image:https://github.com/manikmagar/mule-flow-diagrams/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mule-flow-diagrams/actions]
+
+toc::[]
 
 == Introduction
 Mule application can contain multiple flows and sub-flows. All these can reference each other for processing messages. Data can also be exchanged synchronously or asynchronously using connectors.
