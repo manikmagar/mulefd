@@ -128,6 +128,24 @@ Copyright: 2020 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mule-flow-diagrams
 ----
 
+==== Out of memory errors?
+
+If your application is large and contains too many flows, process could fail with `Exception in thread "main" java.lang.OutOfMemoryError: Java heap space` error.
+
+Try increasing the JVM allocated memory using `-Xmx` flag.
+
+```bash
+$ JAVA_OPTS='-Xmx1024m' muleflowdiagrams ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+```
+
+For windows, you may need to set it at environment level -
+
+```bash
+set JAVA_OPTS=%JAVA_OPTS% -Xmx1024m
+muleflowdiagrams.bat ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+```
+
+
 === Source directory
 Source directory is a required argument. This argument specifies where mule xml configuration files be searched.
 
