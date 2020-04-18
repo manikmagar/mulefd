@@ -1,4 +1,5 @@
 = Mule Flow Diagrams
+:icons: font
 :toc: macro
 
 image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
@@ -84,7 +85,23 @@ To upgrade to the latest version:
 
 Test running `muleflowdiagrams --version` in CLI.
 
-=== Manual install
+=== Scoop icon:windows[]
+On Windows, you can install `muleflowdiagrams` using https://scoop.sh[Scoop] - A command-line installer for Windows.
+
+Once you have Scoop installed and JDK configured, you can run following commands to get `muleflowdiagrams` -
+
+```bash
+scoop bucket add manikmagar https://github.com/manikmagar/scoop-bucket
+scoop install muleflowdiagrams
+```
+
+To upgrade, you can run -
+
+```bash
+scoop update muleflowdiagrams
+```
+
+=== Manual install icon:apple[] icon:windows[] icon:linux[]
 . Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
 . Add `muleflowdiagrams-<version>/bin` folder in to your $PATH
 . Test running `muleflowdiagrams --version` in CLI.
