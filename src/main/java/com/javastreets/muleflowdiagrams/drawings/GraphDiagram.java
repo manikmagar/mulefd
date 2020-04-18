@@ -3,11 +3,12 @@ package com.javastreets.muleflowdiagrams.drawings;
 import static guru.nidi.graphviz.attribute.Arrow.*;
 import static guru.nidi.graphviz.model.Factory.*;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.javastreets.muleflowdiagrams.model.Component;
 import com.javastreets.muleflowdiagrams.model.FlowContainer;
 import com.javastreets.muleflowdiagrams.model.MuleComponent;
+import com.javastreets.muleflowdiagrams.util.Validations;
 
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
@@ -31,10 +33,8 @@ public class GraphDiagram implements Diagram {
 
   @Override
   public boolean draw(DrawingContext drawingContext) {
-    MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
-        .add(VEE.dir(DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
-            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0), GraphAttr.dpi(300),
-            Label.htmlLines(getDiagramHeaderLines()).locate(Label.Location.TOP));
+    MutableGraph rootGraph = initNewGraph();
+    File targetDirectory = drawingContext.getOutputFile().getParentFile();
 
     Map<String, Component> flowRefs = new HashMap<>();
     List<String> mappedFlowKinds = new ArrayList<>();
@@ -42,9 +42,13 @@ public class GraphDiagram implements Diagram {
     for (Component component : flows) {
       if (drawingContext.getFlowName() == null
           || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
+        MutableGraph flowGraph = initNewGraph();
         MutableNode flowNode =
-            processComponent(component, graph, drawingContext, flowRefs, mappedFlowKinds);
-        flowNode.addTo(graph);
+            processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
+
+        flowNode.addTo(flowGraph);
+        writeFlowGraph(component, targetDirectory, flowGraph);
+        flowGraph.addTo(rootGraph);
       }
     }
     if (drawingContext.getFlowName() == null) {
@@ -52,17 +56,51 @@ public class GraphDiagram implements Diagram {
           .add(Rank.inSubgraph(Rank.RankType.SAME), GraphAttr.splines(GraphAttr.SplineMode.LINE))
           .add(flows.stream().filter(Component::isaFlow).map(Component::qualifiedName)
               .map(Factory::node).collect(Collectors.toList()))
-          .addTo(graph);
-      checkUnusedNodes(graph);
+          .addTo(rootGraph);
+      checkUnusedNodes(rootGraph);
     }
+    return writGraphToFile(drawingContext.getOutputFile(), rootGraph);
+  }
+
+  boolean writeFlowGraph(Component flowComponent, File targetDirectory, MutableGraph flowGraph) {
+    Validations.requireTrue(targetDirectory.isDirectory(), "Target directory must be directory");
+    if (!flowComponent.isaFlow())
+      return false;
+    String flowName = flowComponent.getName();
+    Path targetPath = Paths.get(targetDirectory.getAbsolutePath(), "single-flow-diagrams",
+        flowName.concat(".png"));
+    log.info("Writing individual flow graph for {} at {}", flowName, targetPath.toString());
     try {
-      Graphviz.useEngine(new GraphvizV8Engine());
-      return Graphviz.fromGraph(graph).render(Format.PNG).toFile(drawingContext.getOutputFile())
-          .exists();
+      flowGraph.setName(flowComponent.qualifiedName());
+      Files.createDirectories(targetPath);
+      writGraphToFile(targetPath.toFile(), flowGraph);
     } catch (IOException e) {
-      log.error("Error while writing graph", e);
+      log.error("Error while creating parent directory for {}", targetPath, e);
+      log.error("Skipping individual graph generation for flow {}", flowName);
       return false;
     }
+    return true;
+  }
+
+  boolean writGraphToFile(File outputFilename, MutableGraph graph) {
+    try {
+      log.debug("Writing graph at path {}", outputFilename);
+      Graphviz.useEngine(new GraphvizV8Engine());
+      boolean generated =
+          Graphviz.fromGraph(graph).render(Format.PNG).toFile(outputFilename).exists();
+      Graphviz.releaseEngine();
+      return generated;
+    } catch (IOException e) {
+      log.error("Error while writing graph at {}", outputFilename, e);
+      return false;
+    }
+  }
+
+  MutableGraph initNewGraph() {
+    return mutGraph("mule").setDirected(true).linkAttrs().add(VEE.dir(DirType.FORWARD)).graphAttrs()
+        .add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT), GraphAttr.splines(GraphAttr.SplineMode.SPLINE),
+            GraphAttr.pad(2.0), GraphAttr.dpi(150),
+            Label.htmlLines(getDiagramHeaderLines()).locate(Label.Location.TOP));
   }
 
   private void checkUnusedNodes(MutableGraph graph) {
