@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -36,6 +36,7 @@ jobs:
           name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
       - name: integration-test
+        if: runner.os != 'Windows'
         run: |
           export PATH=`pwd`/build/install/muleflowdiagrams/bin:$PATH
           cd itests
@@ -44,7 +45,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         java: [8,11,14]
     runs-on: ${{ matrix.os }}
     steps:
@@ -55,8 +56,16 @@ jobs:
         with:
           name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
-      - run: |
+      - name: Test Linux build
+        if: runner.os == 'Linux'
+        run: |
           java -version
           chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+      - name: Test Windows build
+          if: runner.os == 'Windows'
+          run: |
+            java -version
+            ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version
+            ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
