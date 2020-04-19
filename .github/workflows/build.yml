@@ -1,13 +1,5 @@
 name: ci-build
-on:
-  push:
-    branches:
-      - '*.*'
-    tags-ignore:
-      - '*.*'
-  pull_request:
-    branches:
-      - master
+on: [push]
 
 jobs:
   build:
