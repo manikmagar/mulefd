@@ -2,7 +2,7 @@ name: ci-build
 on:
   push:
     branches:
-      - master
+      - *
     tags-ignore:
       - '*.*'
   pull_request:
@@ -64,8 +64,8 @@ jobs:
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
           ./build/install/muleflowdiagrams/bin/muleflowdiagrams ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
       - name: Test Windows build
-          if: runner.os == 'Windows'
-          run: |
-            java -version
-            ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version
-            ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+        if: runner.os == 'Windows'
+        run: |
+          java -version
+          ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version
+          ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
