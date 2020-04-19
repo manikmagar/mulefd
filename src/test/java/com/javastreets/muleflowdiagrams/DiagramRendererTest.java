@@ -37,14 +37,6 @@ class DiagramRendererTest {
     return getCommandModel(tempDir.toPath());
   }
 
-  private CommandModel getCommandModel(String sourcePath) {
-    return getCommandModel(toAbsolutePath(sourcePath));
-  }
-
-  private Path toAbsolutePath(String sourcePath) {
-    return Paths.get(getClass().getClassLoader().getResource(sourcePath).getFile());
-  }
-
   private CommandModel getCommandModel(Path sourcePath) {
     CommandModel model = new CommandModel();
     model.setDiagramType(DiagramType.GRAPH);
@@ -72,8 +64,8 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Skips rendering non-mule file")
   void skipsNonMuleFileRendering() {
-    DiagramRenderer renderer =
-        Mockito.spy(new DiagramRenderer(getCommandModel("./renderer/non-mule")));
+    Path sourcePath = Paths.get("src/test/resources/renderer/non-mule");
+    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(sourcePath)));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(anyList());
     assertThat(renderer.render()).isFalse();
@@ -82,16 +74,14 @@ class DiagramRendererTest {
     verify(renderer).diagram(captor.capture());
     assertThat(captor.getValue()).isEmpty();
     logs.assertContains(
-        (s) -> s.getMessage().startsWith("Not a mule configuration file: ")
-            && s.getMessage().endsWith("renderer/non-mule/non-mule-file.xml"),
-        "Non mule file log entry");
+        "Not a mule configuration file: " + Paths.get(sourcePath.toString(), "non-mule-file.xml"));
   }
 
   @Test
   @DisplayName("Source directory rendering with one config")
   void singleFileRendering() {
-    DiagramRenderer renderer =
-        Mockito.spy(new DiagramRenderer(getCommandModel("./renderer/single")));
+    DiagramRenderer renderer = Mockito
+        .spy(new DiagramRenderer(getCommandModel(Paths.get("src/test/resources/renderer/single"))));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(anyList());
     assertThat(renderer.render()).isFalse();
@@ -121,20 +111,19 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Single config file as source")
   void sourcePathXmlFile() {
-    assertThat(new DiagramRenderer(getCommandModel("./renderer/single/example-config.xml"))
-        .getMuleSourcePath()).as("Resolved mule configuration path")
-            .isEqualTo(toAbsolutePath("./renderer/single/example-config.xml"));
-    logs.assertContains(
-        "Reading source file " + toAbsolutePath("./renderer/single/example-config.xml").toString());
+    Path sourcePath = Paths.get("src/test/resources/renderer/single/example-config.xml");
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+        .as("Resolved mule configuration path").isEqualTo(sourcePath);
+    logs.assertContains("Reading source file " + sourcePath.toString());
   }
 
   @Test
   @DisplayName("Mule 4 source directory")
   void sourcePathMule4Directory() {
-    String sourcePath = "./renderer/mule4-example";
+    Path sourcePath = Paths.get("src/test/resources/renderer/mule4-example");
     assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
         .as("Resolved mule configuration path")
-        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/mule"));
+        .isEqualTo(Paths.get(sourcePath.toString(), "src/main/mule"));
     logs.assertContains(
         "Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
   }
@@ -142,10 +131,10 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Mule 3 - non-maven source directory")
   void sourcePathMule3NonMavenDirectory() {
-    String sourcePath = "./renderer/mule3-example";
+    Path sourcePath = Paths.get("src/test/resources/renderer/mule3-example");
     assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
         .as("Resolved mule configuration path")
-        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/app"));
+        .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
     logs.assertContains(
         "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
   }
@@ -153,10 +142,10 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Mule 3 - maven source directory")
   void sourcePathMule3MavenDirectory() {
-    String sourcePath = "./renderer/mule3-maven-example";
+    Path sourcePath = Paths.get("src/test/resources/renderer/mule3-maven-example");
     assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
         .as("Resolved mule configuration path")
-        .isEqualTo(Paths.get(toAbsolutePath(sourcePath).toString(), "src/main/app"));
+        .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
     logs.assertContains(
         "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
   }
