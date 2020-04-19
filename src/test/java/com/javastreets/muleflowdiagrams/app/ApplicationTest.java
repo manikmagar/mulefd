@@ -22,10 +22,6 @@ import picocli.CommandLine;
 
 class ApplicationTest {
 
-  static String toAbsolutePath(String path) {
-    return Application.class.getClassLoader().getResource(path).getFile();
-  }
-
   @TempDir
   File tempDir;
 
@@ -43,7 +39,7 @@ class ApplicationTest {
   }
 
   static Stream<Arguments> componentConfigProvider() throws IOException {
-    return Files.list(Paths.get(toAbsolutePath("./renderer/component-configs/")))
+    return Files.list(Paths.get("src/test/resources/renderer/component-configs/"))
         .filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
         .map(path -> Arguments.of(path.toAbsolutePath().toString(), path.getFileName().toString()));
   }
@@ -51,8 +47,9 @@ class ApplicationTest {
   @Test
   @DisplayName("Render Mule 3 exmple config")
   void mule3Rendering() throws Exception {
-    String[] args =
-        new String[] {toAbsolutePath("./renderer/mule3-example"), "-t", tempDir.toString()};
+    String[] args = new String[] {
+        Paths.get("src/test/resources/renderer/mule3-example").toAbsolutePath().toString(), "-t",
+        tempDir.toString()};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     application.call();
@@ -83,7 +80,8 @@ class ApplicationTest {
   void commandLineWithSourceFile() throws Exception {
     tempDir.createNewFile();
     Path sourceFile = Paths.get(tempDir.getAbsolutePath(), "db-config.xml");
-    Files.copy(Paths.get(toAbsolutePath("./renderer/component-configs/db-config.xml")), sourceFile);
+    Files.copy(Paths.get("src/test/resources/renderer/component-configs/db-config.xml"),
+        sourceFile);
     String[] args = new String[] {sourceFile.toString()};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
