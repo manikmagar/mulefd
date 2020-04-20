@@ -13,6 +13,15 @@ public class DrawingContext {
   private DiagramType diagramType;
   private File outputFile;
   private Map<String, ComponentItem> knownComponents;
+  private String flowName;
+
+  public String getFlowName() {
+    return flowName;
+  }
+
+  public void setFlowName(String flowName) {
+    this.flowName = flowName;
+  }
 
   public File getOutputFile() {
     return outputFile;
