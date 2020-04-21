@@ -155,6 +155,10 @@ public class DiagramRenderer {
         log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
             commandModel.getDiagramType());
         log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getTargetPath());
+        if (context.getFlowName() != null) {
+          log.info("Generating diagram for dependencies of single flow only - {}",
+              context.getFlowName());
+        }
         drawn = diagram.draw(context);
         log.info("Generated {} at {}", diagram.name(), context.getOutputFile().getAbsolutePath());
         break;
@@ -167,6 +171,7 @@ public class DiagramRenderer {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
     context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
+    context.setFlowName(model.getFlowName());
     return context;
   }
 }

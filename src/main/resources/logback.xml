@@ -3,10 +3,11 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <file>app.log</file>
         <encoder>
-            <pattern>%d{HH:mm:ss,SSS} %-5p [%c] - %m%n</pattern>
+            <pattern>%d %-5p [%c{10}] - %m%n</pattern>
         </encoder>
     </appender>
     <logger name="com.javastreets.muleflowdiagrams" level="INFO"/>
+    <logger name="guru.nidi.graphviz" level="ERROR"/>
     <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </root>

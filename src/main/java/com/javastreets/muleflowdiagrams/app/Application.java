@@ -4,8 +4,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.javastreets.muleflowdiagrams.DiagramRenderer;
 import com.javastreets.muleflowdiagrams.drawings.DiagramType;
+import com.javastreets.muleflowdiagrams.util.DateUtil;
+import com.javastreets.muleflowdiagrams.util.FileUtil;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -15,6 +20,8 @@ import picocli.CommandLine.Command;
     footer = "\nCopyright: 2020 Manik Magar, License: MIT\nWebsite: https://github.com/manikmagar/mule-flow-diagrams",
     description = "Create Flow diagrams from mule configuration files.", showDefaultValues = true)
 public class Application implements Callable<Boolean> {
+
+  Logger log = LoggerFactory.getLogger(Application.class);
 
   @CommandLine.Parameters(index = "0",
       description = "Source directory path containing mule configuration files")
@@ -32,6 +39,9 @@ public class Application implements Callable<Boolean> {
       description = "Name of the output file")
   private String outputFilename;
 
+  @CommandLine.Option(names = {"-fl", "--flowname"},
+      description = "Target flow name to generate diagram for. All flows/subflows not related to this flow will be excluded from the diagram.")
+  private String flowName;
 
   public static void main(String[] args) {
     int exitCode = new CommandLine(new Application()).execute(args);
@@ -40,8 +50,12 @@ public class Application implements Callable<Boolean> {
 
   @Override
   public Boolean call() throws Exception {
+    log.info("Mule Flow Diagrams - {}, Started at {}", new VersionProvider().getVersion()[0],
+        DateUtil.now());
     CommandModel cm = getCommandModel();
-    return new DiagramRenderer(cm).render();
+    Boolean rendered = new DiagramRenderer(cm).render();
+    log.info("Finished at {}", DateUtil.now());
+    return rendered;
   }
 
   CommandModel getCommandModel() {
@@ -56,7 +70,13 @@ public class Application implements Callable<Boolean> {
     }
     cm.setTargetPath(resolvedTarget);
     cm.setDiagramType(diagramType);
-    cm.setOutputFilename(outputFilename + ".png");
+    String filename =
+        (outputFilename).endsWith(".png") ? this.outputFilename : outputFilename + ".png";
+    if (flowName != null && outputFilename.equalsIgnoreCase("mule-diagram")) {
+      filename = flowName + ".png";
+    }
+    cm.setOutputFilename(FileUtil.sanitizeFilename(filename));
+    cm.setFlowName(flowName);
     return cm;
   }
 }

@@ -40,16 +40,21 @@ public class GraphDiagram implements Diagram {
     List<String> mappedFlowKinds = new ArrayList<>();
     List<Component> flows = drawingContext.getComponents();
     for (Component component : flows) {
-      MutableNode flowNode =
-          processComponent(component, graph, drawingContext, flowRefs, mappedFlowKinds);
-      flowNode.addTo(graph);
+      if (drawingContext.getFlowName() == null
+          || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
+        MutableNode flowNode =
+            processComponent(component, graph, drawingContext, flowRefs, mappedFlowKinds);
+        flowNode.addTo(graph);
+      }
     }
-    mutGraph().graphAttrs()
-        .add(Rank.inSubgraph(Rank.RankType.SAME), GraphAttr.splines(GraphAttr.SplineMode.LINE))
-        .add(flows.stream().filter(Component::isaFlow).map(Component::qualifiedName)
-            .map(Factory::node).collect(Collectors.toList()))
-        .addTo(graph);
-    checkUnusedNodes(graph);
+    if (drawingContext.getFlowName() == null) {
+      mutGraph().setName("subgraph-flows").graphAttrs()
+          .add(Rank.inSubgraph(Rank.RankType.SAME), GraphAttr.splines(GraphAttr.SplineMode.LINE))
+          .add(flows.stream().filter(Component::isaFlow).map(Component::qualifiedName)
+              .map(Factory::node).collect(Collectors.toList()))
+          .addTo(graph);
+      checkUnusedNodes(graph);
+    }
     try {
       Graphviz.useEngine(new GraphvizV8Engine());
       return Graphviz.fromGraph(graph).render(Format.PNG).toFile(drawingContext.getOutputFile())
@@ -67,7 +72,7 @@ public class GraphDiagram implements Diagram {
         .forEach(node -> node.add(Color.RED, Style.FILLED, Color.GRAY));
   }
 
-  private MutableNode processComponent(Component component, MutableGraph graph,
+  MutableNode processComponent(Component component, MutableGraph graph,
       DrawingContext drawingContext, Map<String, Component> flowRefs,
       List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;

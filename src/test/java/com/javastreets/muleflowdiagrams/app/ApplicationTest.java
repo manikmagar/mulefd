@@ -100,8 +100,8 @@ class ApplicationTest {
   void commandLineWithAllArgs() throws Exception {
     Path source = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "source"));
     Path target = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "target"));
-    String[] args =
-        new String[] {source.toString(), "-t", target.toString(), "-o", "test", "-d", "SEQUENCE"};
+    String[] args = new String[] {source.toString(), "-t", target.toString(), "-o", "test", "-d",
+        "SEQUENCE", "-fl", "test-flow"};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     CommandModel model = application.getCommandModel();
@@ -111,6 +111,27 @@ class ApplicationTest {
     expectedModel.setTargetPath(target.toAbsolutePath());
     expectedModel.setDiagramType(DiagramType.SEQUENCE);
     expectedModel.setOutputFilename("test.png");
+    expectedModel.setFlowName("test-flow");
+    assertThat(model).isEqualToComparingFieldByField(expectedModel);
+  }
+
+  @Test
+  @DisplayName("Parsing when flow name but not output filename uses flow name")
+  void commandLineWithFlowNameWithoutOutputfilename() throws Exception {
+    Path source = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "source"));
+    Path target = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "target"));
+    String[] args =
+        new String[] {source.toString(), "-t", target.toString(), "--flowname", "test-flow"};
+    Application application = new Application();
+    new CommandLine(application).parseArgs(args);
+    CommandModel model = application.getCommandModel();
+
+    CommandModel expectedModel = new CommandModel();
+    expectedModel.setSourcePath(source.toAbsolutePath());
+    expectedModel.setTargetPath(target.toAbsolutePath());
+    expectedModel.setDiagramType(DiagramType.GRAPH);
+    expectedModel.setOutputFilename("test-flow.png");
+    expectedModel.setFlowName("test-flow");
     assertThat(model).isEqualToComparingFieldByField(expectedModel);
   }
 
@@ -120,7 +141,7 @@ class ApplicationTest {
     Path source = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "source"));
     Path target = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "target"));
     String[] args = new String[] {source.toString(), "--target", target.toString(), "--out", "test",
-        "--diagram", "SEQUENCE"};
+        "--diagram", "SEQUENCE", "--flowname", "test-flow"};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     CommandModel model = application.getCommandModel();
@@ -130,6 +151,7 @@ class ApplicationTest {
     expectedModel.setTargetPath(target.toAbsolutePath());
     expectedModel.setDiagramType(DiagramType.SEQUENCE);
     expectedModel.setOutputFilename("test.png");
+    expectedModel.setFlowName("test-flow");
     assertThat(model).isEqualToComparingFieldByField(expectedModel);
   }
 }

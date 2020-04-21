@@ -18,7 +18,17 @@ public class CommandModel {
 
   private String outputFilename;
 
+  private String flowName;
+
   private Integer muleVersion = 4;
+
+  public String getFlowName() {
+    return flowName;
+  }
+
+  public void setFlowName(String flowName) {
+    this.flowName = flowName;
+  }
 
   public Integer getMuleVersion() {
     return muleVersion;
