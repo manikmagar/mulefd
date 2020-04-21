@@ -48,7 +48,7 @@ public class GraphDiagram implements Diagram {
       }
     }
     if (drawingContext.getFlowName() == null) {
-      mutGraph().graphAttrs()
+      mutGraph().setName("subgraph-flows").graphAttrs()
           .add(Rank.inSubgraph(Rank.RankType.SAME), GraphAttr.splines(GraphAttr.SplineMode.LINE))
           .add(flows.stream().filter(Component::isaFlow).map(Component::qualifiedName)
               .map(Factory::node).collect(Collectors.toList()))
@@ -72,7 +72,7 @@ public class GraphDiagram implements Diagram {
         .forEach(node -> node.add(Color.RED, Style.FILLED, Color.GRAY));
   }
 
-  private MutableNode processComponent(Component component, MutableGraph graph,
+  MutableNode processComponent(Component component, MutableGraph graph,
       DrawingContext drawingContext, Map<String, Component> flowRefs,
       List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;

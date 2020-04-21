@@ -96,10 +96,14 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Create drawing context from command model")
   void toDrawingContext() {
-    assertThat(new DiagramRenderer(getCommandModel()).drawingContext(getCommandModel()))
-        .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile)
-        .containsExactly(DiagramType.GRAPH, new File(getCommandModel().getTargetPath().toFile(),
-            getCommandModel().getOutputFilename()));
+    CommandModel commandModel = getCommandModel();
+    commandModel.setFlowName("test-flow");
+    assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
+        .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile,
+            DrawingContext::getFlowName)
+        .containsExactly(DiagramType.GRAPH,
+            new File(commandModel.getTargetPath().toFile(), commandModel.getOutputFilename()),
+            "test-flow");
   }
 
   @Test

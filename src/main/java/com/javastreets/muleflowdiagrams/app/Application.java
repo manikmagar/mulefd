@@ -39,8 +39,8 @@ public class Application implements Callable<Boolean> {
       description = "Name of the output file")
   private String outputFilename;
 
-  @CommandLine.Option(names = {"--flowname"},
-      description = "Target flow name to generate diagram for. All flows/subflows not related to this flow will be excluded from diagram")
+  @CommandLine.Option(names = {"-fl", "--flowname"},
+      description = "Target flow name to generate diagram for. All flows/subflows not related to this flow will be excluded from the diagram.")
   private String flowName;
 
   public static void main(String[] args) {
@@ -72,7 +72,7 @@ public class Application implements Callable<Boolean> {
     cm.setDiagramType(diagramType);
     String filename =
         (outputFilename).endsWith(".png") ? this.outputFilename : outputFilename + ".png";
-    if (flowName != null && !outputFilename.equalsIgnoreCase("mule-diagram")) {
+    if (flowName != null && outputFilename.equalsIgnoreCase("mule-diagram")) {
       filename = flowName + ".png";
     }
     cm.setOutputFilename(FileUtil.sanitizeFilename(filename));
