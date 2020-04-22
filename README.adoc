@@ -90,6 +90,15 @@ To upgrade to the latest version:
 
 Test running `muleflowdiagrams --version` in CLI.
 
+=== Docker icon:docker[]
+If you don't want to install `muleflowdiagrams`, you can run it via docker.
+
+```bash
+docker run -v `pwd`:/app manikmagar/muleflowdiagrams /app
+```
+
+This will generate diagrams in `pwd` or mounted directory.
+
 === Scoop icon:windows[]
 On Windows, you can install `muleflowdiagrams` using https://scoop.sh[Scoop] - A command-line installer for Windows.
 
