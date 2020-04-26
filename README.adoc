@@ -68,6 +68,44 @@ Tested and verified to use on OSX, Linux and Windows.
 
 == Installation
 
+=== SDKMan icon:linux[] icon:apple[]
+
+Recommended way to install both java and Mule flow diagrams is https://sdkman.io[sdkman] for Linux and OSX.
+
+To https://sdkman.io/install[install] SDKMAN and Java -
+[source, bash]
+----
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+sdk install java
+----
+
+Once Java is installed and ready, you install Mule Flow Diagrams -
+
+[source, bash]
+----
+sdk install mulefd
+----
+
+NOTE: `mulefd` is just a candidate name on SDKMAN. After installation, tool is executed same as for other installations i.e. using `muleflowdiagrams` command.
+
+To test your installation run:
+
+[source, bash]
+----
+muleflowdiagrams --help
+----
+
+This should print out usage information.
+
+For upgrading existing installations via SDKMAN,run:
+
+[source]
+----
+sdk upgrade mulefd
+----
+
 === Homebrew icon:apple[]
 
 On OSX you can install 'java' and `muleflowdiagrams` with https://brew.sh[Homebrew] using custom taps.
@@ -88,7 +126,7 @@ To upgrade to the latest version:
 
 `brew upgrade manikmagar/tap/muleflowdiagrams`
 
-Test running `muleflowdiagrams --version` in CLI.
+Test running `muleflowdiagrams --help` in CLI.
 
 === Docker icon:docker[]
 If you don't want to install `muleflowdiagrams`, you can run it via docker.
@@ -98,6 +136,8 @@ docker run -v `pwd`:/app manikmagar/muleflowdiagrams /app
 ```
 
 This will generate diagrams in `pwd` or mounted directory.
+
+Docker container resources are limited. Based on the size of your application, you may see outofmemory errors when executing with docker. You can allocate more memory with `-m` option to docker run command, Eg. `-m 512m`.
 
 === Scoop icon:windows[]
 On Windows, you can install `muleflowdiagrams` using https://scoop.sh[Scoop] - A command-line installer for Windows.
@@ -118,7 +158,7 @@ scoop update muleflowdiagrams
 === Manual install icon:apple[] icon:windows[] icon:linux[]
 . Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
 . Add `muleflowdiagrams-<version>/bin` folder in to your $PATH
-. Test running `muleflowdiagrams --version` in CLI.
+. Test running `muleflowdiagrams --help` in CLI.
 
 === Build and Run
 This project uses Gradle to compile and build. To create a zip distribution, run below command in project directory -
@@ -132,8 +172,8 @@ To install the distribution -
 . Clone the project
 . Run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory.
 . You can verify binaries by executing -
-.. icon:apple[] icon:linux[] : `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --version`
-.. icon:windows[] : `./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version`
+.. icon:apple[] icon:linux[] : `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --help`
+.. icon:windows[] : `./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --help`
 
 == Usage
 
