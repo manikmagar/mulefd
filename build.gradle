@@ -6,7 +6,7 @@ plugins {
 	id "java"
 	id "maven-publish"
 	id "application"
-	id "com.diffplug.gradle.spotless" version "3.29.0"
+	id "com.diffplug.gradle.spotless" version "3.30.0"
 	id "io.toolebox.git-versioner" version "1.5.0"
 	id "org.gradle.crypto.checksum" version "1.2.0"
 	id "com.github.breadmoirai.github-release" version "2.2.12"
