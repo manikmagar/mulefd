@@ -28,7 +28,7 @@ test {
 dependencies {
 	implementation 'guru.nidi:graphviz-java-all-j2v8:0.16.0'
 	implementation 'ch.qos.logback:logback-classic:1.2.3'
-	implementation 'info.picocli:picocli:4.2.0'
+	implementation 'info.picocli:picocli:4.3.1'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
