@@ -14,6 +14,7 @@ import com.javastreets.muleflowdiagrams.util.FileUtil;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 @Command(name = "muleflowdiagrams", mixinStandardHelpOptions = true,
     versionProvider = VersionProvider.class,
@@ -27,21 +28,24 @@ public class Application implements Callable<Boolean> {
       description = "Source directory path containing mule configuration files")
   private Path sourcePath;
 
-  @CommandLine.Option(names = {"-t", "--target"},
-      description = "Output directory path to generate diagram")
+  @Option(names = {"-t", "--target"}, description = "Output directory path to generate diagram")
   private Path targetPath;
 
-  @CommandLine.Option(names = {"-d", "--diagram"}, defaultValue = "GRAPH",
+  @Option(names = {"-d", "--diagram"}, defaultValue = "GRAPH",
       description = "Type of diagram to generate. Valid values: ${COMPLETION-CANDIDATES}")
   private DiagramType diagramType;
 
-  @CommandLine.Option(names = {"-o", "--out"}, defaultValue = "mule-diagram",
+  @Option(names = {"-o", "--out"}, defaultValue = "mule-diagram",
       description = "Name of the output file")
   private String outputFilename;
 
-  @CommandLine.Option(names = {"-fl", "--flowname"},
+  @Option(names = {"-fl", "--flowname"},
       description = "Target flow name to generate diagram for. All flows/subflows not related to this flow will be excluded from the diagram.")
   private String flowName;
+
+  @Option(names = {"-gs", "--genSingles"}, defaultValue = "false",
+      description = "Generate individual diagrams for each flow.")
+  private boolean generateSingles;
 
   public static void main(String[] args) {
     int exitCode = new CommandLine(new Application()).execute(args);
@@ -61,6 +65,7 @@ public class Application implements Callable<Boolean> {
   CommandModel getCommandModel() {
     CommandModel cm = new CommandModel();
     cm.setSourcePath(sourcePath);
+    cm.setGenerateSingles(generateSingles);
     Path resolvedTarget = targetPath;
     if (targetPath == null) {
       if (Files.isDirectory(sourcePath))

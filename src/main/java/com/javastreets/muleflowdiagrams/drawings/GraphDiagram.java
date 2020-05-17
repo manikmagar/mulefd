@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.javastreets.muleflowdiagrams.model.Component;
 import com.javastreets.muleflowdiagrams.model.FlowContainer;
 import com.javastreets.muleflowdiagrams.model.MuleComponent;
-import com.javastreets.muleflowdiagrams.util.Validations;
+import com.javastreets.muleflowdiagrams.util.DateUtil;
 
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
@@ -39,6 +39,8 @@ public class GraphDiagram implements Diagram {
     Map<String, Component> flowRefs = new HashMap<>();
     List<String> mappedFlowKinds = new ArrayList<>();
     List<Component> flows = drawingContext.getComponents();
+    Path singleFlowDirPath = Paths.get(targetDirectory.getAbsolutePath(), "single-flow-diagrams",
+        DateUtil.now("ddMMyyyy-HHmmss"));
     for (Component component : flows) {
       if (drawingContext.getFlowName() == null
           || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
@@ -47,7 +49,9 @@ public class GraphDiagram implements Diagram {
             processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
 
         flowNode.addTo(flowGraph);
-        writeFlowGraph(component, targetDirectory, flowGraph);
+        if (drawingContext.isGenerateSingles()) {
+          writeFlowGraph(component, singleFlowDirPath, flowGraph);
+        }
         flowGraph.addTo(rootGraph);
       }
     }
@@ -62,13 +66,11 @@ public class GraphDiagram implements Diagram {
     return writGraphToFile(drawingContext.getOutputFile(), rootGraph);
   }
 
-  boolean writeFlowGraph(Component flowComponent, File targetDirectory, MutableGraph flowGraph) {
-    Validations.requireTrue(targetDirectory.isDirectory(), "Target directory must be directory");
+  boolean writeFlowGraph(Component flowComponent, Path targetDirectory, MutableGraph flowGraph) {
     if (!flowComponent.isaFlow())
       return false;
     String flowName = flowComponent.getName();
-    Path targetPath = Paths.get(targetDirectory.getAbsolutePath(), "single-flow-diagrams",
-        flowName.concat(".png"));
+    Path targetPath = Paths.get(targetDirectory.toString(), flowName.concat(".png"));
     log.info("Writing individual flow graph for {} at {}", flowName, targetPath.toString());
     try {
       flowGraph.setName(flowComponent.qualifiedName());

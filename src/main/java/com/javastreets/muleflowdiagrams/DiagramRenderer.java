@@ -172,6 +172,7 @@ public class DiagramRenderer {
     context.setDiagramType(model.getDiagramType());
     context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
     context.setFlowName(model.getFlowName());
+    context.setGenerateSingles(model.isGenerateSingles());
     return context;
   }
 }

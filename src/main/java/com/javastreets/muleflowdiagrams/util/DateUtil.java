@@ -10,9 +10,14 @@ public class DateUtil {
   }
 
   public static String now() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss.SSS");
+    return now("dd-MMM-yyyy HH:mm:ss.SSS");
+  }
+
+  public static String now(String pattern) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
     LocalDateTime date = LocalDateTime.now();
     return date.format(formatter);
   }
+
 
 }

@@ -14,6 +14,7 @@ public class DrawingContext {
   private File outputFile;
   private Map<String, ComponentItem> knownComponents;
   private String flowName;
+  private boolean generateSingles;
 
   public String getFlowName() {
     return flowName;
@@ -53,5 +54,13 @@ public class DrawingContext {
 
   public void setKnownComponents(Map<String, ComponentItem> knownComponents) {
     this.knownComponents = Collections.unmodifiableMap(knownComponents);
+  }
+
+  public boolean isGenerateSingles() {
+    return generateSingles;
+  }
+
+  public void setGenerateSingles(boolean generateSingles) {
+    this.generateSingles = generateSingles;
   }
 }
