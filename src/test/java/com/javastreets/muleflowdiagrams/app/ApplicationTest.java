@@ -92,6 +92,7 @@ class ApplicationTest {
     expectedModel.setTargetPath(tempDir.toPath());
     expectedModel.setDiagramType(DiagramType.GRAPH);
     expectedModel.setOutputFilename("mule-diagram.png");
+    expectedModel.setGenerateSingles(false);
     assertThat(model).isEqualToComparingFieldByField(expectedModel);
   }
 
@@ -101,7 +102,7 @@ class ApplicationTest {
     Path source = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "source"));
     Path target = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "target"));
     String[] args = new String[] {source.toString(), "-t", target.toString(), "-o", "test", "-d",
-        "SEQUENCE", "-fl", "test-flow"};
+        "SEQUENCE", "-fl", "test-flow", "-gs"};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     CommandModel model = application.getCommandModel();
@@ -112,6 +113,7 @@ class ApplicationTest {
     expectedModel.setDiagramType(DiagramType.SEQUENCE);
     expectedModel.setOutputFilename("test.png");
     expectedModel.setFlowName("test-flow");
+    expectedModel.setGenerateSingles(true);
     assertThat(model).isEqualToComparingFieldByField(expectedModel);
   }
 
@@ -141,7 +143,7 @@ class ApplicationTest {
     Path source = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "source"));
     Path target = Files.createDirectory(Paths.get(tempDir.getAbsolutePath(), "target"));
     String[] args = new String[] {source.toString(), "--target", target.toString(), "--out", "test",
-        "--diagram", "SEQUENCE", "--flowname", "test-flow"};
+        "--diagram", "SEQUENCE", "--flowname", "test-flow", "--genSingles"};
     Application application = new Application();
     new CommandLine(application).parseArgs(args);
     CommandModel model = application.getCommandModel();
@@ -152,6 +154,7 @@ class ApplicationTest {
     expectedModel.setDiagramType(DiagramType.SEQUENCE);
     expectedModel.setOutputFilename("test.png");
     expectedModel.setFlowName("test-flow");
+    expectedModel.setGenerateSingles(true);
     assertThat(model).isEqualToComparingFieldByField(expectedModel);
   }
 }

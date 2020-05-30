@@ -49,7 +49,7 @@ public class GraphDiagram implements Diagram {
             processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
 
         flowNode.addTo(flowGraph);
-        if (drawingContext.isGenerateSingles()) {
+        if (drawingContext.isGenerateSingles() && component.isaFlow()) {
           writeFlowGraph(component, singleFlowDirPath, flowGraph);
         }
         flowGraph.addTo(rootGraph);
@@ -71,7 +71,7 @@ public class GraphDiagram implements Diagram {
       return false;
     String flowName = flowComponent.getName();
     Path targetPath = Paths.get(targetDirectory.toString(), flowName.concat(".png"));
-    log.info("Writing individual flow graph for {} at {}", flowName, targetPath.toString());
+    log.info("Writing individual flow graph for {} at {}", flowName, targetPath);
     try {
       flowGraph.setName(flowComponent.qualifiedName());
       Files.createDirectories(targetPath);
