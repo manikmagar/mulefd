@@ -30,26 +30,26 @@ If so, then try this `muleflowdiagrams` application. It can read your configurat
 $ muleflowdiagrams
 Missing required parameter: '<sourcePath>'
 Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
-                        [-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
+						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
-      <sourcePath>        Source directory path containing mule configuration
-                            files
-  -d, --diagram=<diagramType>
-                          Type of diagram to generate. Valid values: GRAPH,
-                            SEQUENCE
-                            Default: GRAPH
-      -fl, --flowname=<flowName>
-                          Target flow name to generate diagram for. All
-                            flows/subflows not related to this flow will be
-                            excluded from the diagram.
-      -gs, --genSingles   Generate individual diagrams for each flow.
-  -h, --help              Show this help message and exit.
-  -o, --out=<outputFilename>
-                          Name of the output file
-                            Default: mule-diagram
-  -t, --target=<targetPath>
-                          Output directory path to generate diagram
-  -V, --version           Print version information and exit.
+	<sourcePath>        Source directory path containing mule configuration
+							files
+-d, --diagram=<diagramType>
+						Type of diagram to generate. Valid values: GRAPH,
+							SEQUENCE
+							Default: GRAPH
+	-fl, --flowname=<flowName>
+						Target flow name to generate diagram for. All
+							flows/subflows not related to this flow will be
+							excluded from the diagram.
+	-gs, --genSingles   Generate individual diagrams for each flow.
+-h, --help              Show this help message and exit.
+-o, --out=<outputFilename>
+						Name of the output file
+							Default: mule-diagram
+-t, --target=<targetPath>
+						Output directory path to generate diagram
+-V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mule-flow-diagrams
@@ -199,26 +199,26 @@ Example:
 $ muleflowdiagrams
 Missing required parameter: '<sourcePath>'
 Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
-                        [-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
+						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
-      <sourcePath>        Source directory path containing mule configuration
-                            files
-  -d, --diagram=<diagramType>
-                          Type of diagram to generate. Valid values: GRAPH,
-                            SEQUENCE
-                            Default: GRAPH
-      -fl, --flowname=<flowName>
-                          Target flow name to generate diagram for. All
-                            flows/subflows not related to this flow will be
-                            excluded from the diagram.
-      -gs, --genSingles   Generate individual diagrams for each flow.
-  -h, --help              Show this help message and exit.
-  -o, --out=<outputFilename>
-                          Name of the output file
-                            Default: mule-diagram
-  -t, --target=<targetPath>
-                          Output directory path to generate diagram
-  -V, --version           Print version information and exit.
+	<sourcePath>        Source directory path containing mule configuration
+							files
+-d, --diagram=<diagramType>
+						Type of diagram to generate. Valid values: GRAPH,
+							SEQUENCE
+							Default: GRAPH
+	-fl, --flowname=<flowName>
+						Target flow name to generate diagram for. All
+							flows/subflows not related to this flow will be
+							excluded from the diagram.
+	-gs, --genSingles   Generate individual diagrams for each flow.
+-h, --help              Show this help message and exit.
+-o, --out=<outputFilename>
+						Name of the output file
+							Default: mule-diagram
+-t, --target=<targetPath>
+						Output directory path to generate diagram
+-V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mule-flow-diagrams
