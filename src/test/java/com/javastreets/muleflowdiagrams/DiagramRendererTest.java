@@ -100,10 +100,24 @@ class DiagramRendererTest {
     commandModel.setFlowName("test-flow");
     assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
         .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile,
-            DrawingContext::getFlowName)
+            DrawingContext::getFlowName, DrawingContext::isGenerateSingles)
         .containsExactly(DiagramType.GRAPH,
             new File(commandModel.getTargetPath().toFile(), commandModel.getOutputFilename()),
-            "test-flow");
+            "test-flow", false);
+  }
+
+  @Test
+  @DisplayName("Create drawing context from command model with single generation as true")
+  void toDrawingContextForSingles() {
+    CommandModel commandModel = getCommandModel();
+    commandModel.setFlowName("test-flow");
+    commandModel.setGenerateSingles(true);
+    assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
+        .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile,
+            DrawingContext::getFlowName, DrawingContext::isGenerateSingles)
+        .containsExactly(DiagramType.GRAPH,
+            new File(commandModel.getTargetPath().toFile(), commandModel.getOutputFilename()),
+            "test-flow", true);
   }
 
   @Test

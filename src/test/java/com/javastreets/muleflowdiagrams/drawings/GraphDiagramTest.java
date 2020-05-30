@@ -1,9 +1,14 @@
 package com.javastreets.muleflowdiagrams.drawings;
 
+import static guru.nidi.graphviz.attribute.Arrow.VEE;
+import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -18,6 +23,10 @@ import com.javastreets.muleflowdiagrams.model.Component;
 import com.javastreets.muleflowdiagrams.model.FlowContainer;
 import com.javastreets.muleflowdiagrams.model.MuleComponent;
 
+import guru.nidi.graphviz.attribute.Arrow;
+import guru.nidi.graphviz.attribute.GraphAttr;
+import guru.nidi.graphviz.attribute.Label;
+import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.model.MutableGraph;
 import io.github.netmikey.logunit.api.LogCapturer;
 
@@ -55,13 +64,48 @@ class GraphDiagramTest {
     context.setComponents(Arrays.asList(flowContainer, subflow));
     context.setKnownComponents(Collections.emptyMap());
 
-    GraphDiagram graphDiagram = new GraphDiagram();
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
     long memory = runtime.totalMemory() - runtime.freeMemory();
     System.out.println("Used memory is bytes: " + memory);
     System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
+    Mockito.verify(graphDiagram, Mockito.times(0)).writeFlowGraph(any(), any(), any());
+    logs.assertContains(
+        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+  }
+
+  @Test
+  void drawWithSinglesGeneration() {
+    // Get the Java runtime
+    Runtime runtime = Runtime.getRuntime();
+    // Run the garbage collector
+    runtime.gc();
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setGenerateSingles(true);
+    FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
+    flowContainer.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
+    FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
+
+    // Add reference to same sub-flow, resulting loop
+    subflow.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
+
+    context.setComponents(Arrays.asList(flowContainer, subflow));
+    context.setKnownComponents(Collections.emptyMap());
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    graphDiagram.draw(context);
+    runtime.gc();
+    long memory = runtime.totalMemory() - runtime.freeMemory();
+    System.out.println("Used memory is bytes: " + memory);
+    System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
+    assertThat(output).exists();
+    Mockito.verify(graphDiagram, Mockito.times(1)).writeFlowGraph(any(), any(), any());
+    Mockito.verify(graphDiagram, Mockito.times(1)).writeFlowGraph(eq(flowContainer), any(), any());
     logs.assertContains(
         "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
@@ -115,5 +159,50 @@ class GraphDiagramTest {
   void name() {
     GraphDiagram graphDiagram = new GraphDiagram();
     assertThat(graphDiagram.name()).isEqualTo("Graph");
+  }
+
+  @Test
+  void initNewGraph() {
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    Mockito.when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test"});
+    MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
+        .add(VEE.dir(Arrow.DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0), GraphAttr.dpi(150),
+            Label.htmlLines(new String[] {"Test"}).locate(Label.Location.TOP));
+    MutableGraph returnedGraph = graphDiagram.initNewGraph();
+    assertThat(returnedGraph).isEqualTo(graph);
+  }
+
+  @Test
+  void writGraphToFile() throws Exception {
+    GraphDiagram graphDiagram = new GraphDiagram();
+    MutableGraph graph = graphDiagram.initNewGraph();
+    boolean generated = graphDiagram.writGraphToFile(new File(tempDir, "test.png"), graph);
+    assertThat(generated).isTrue();
+  }
+
+  @Test
+  void writeFlowGraphWithFlow() {
+    GraphDiagram graphDiagram = new GraphDiagram();
+    MutableGraph graph = graphDiagram.initNewGraph();
+    FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
+    flowContainer.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
+    FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
+    Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
+    boolean written = graphDiagram.writeFlowGraph(flowContainer, outputFilePath, graph);
+    assertThat(written).isTrue();
+    assertThat(graph.name().toString()).isEqualTo(flowContainer.qualifiedName());
+    assertThat(Files.exists(Paths.get(outputFilePath.toString(), flowContainer.getName() + ".png")))
+        .isTrue();
+  }
+
+  @Test
+  void writeFlowGraphWithSubFlow() {
+    GraphDiagram graphDiagram = new GraphDiagram();
+    MutableGraph graph = graphDiagram.initNewGraph();
+    FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
+    Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
+    boolean written = graphDiagram.writeFlowGraph(subflow, outputFilePath, graph);
+    assertThat(written).isFalse();
   }
 }

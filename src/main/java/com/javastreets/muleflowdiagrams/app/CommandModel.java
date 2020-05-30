@@ -20,6 +20,8 @@ public class CommandModel {
 
   private String flowName;
 
+  private boolean generateSingles;
+
   private Integer muleVersion = 4;
 
   public String getFlowName() {
@@ -69,5 +71,13 @@ public class CommandModel {
 
   public void setDiagramType(DiagramType diagramType) {
     this.diagramType = diagramType;
+  }
+
+  public boolean isGenerateSingles() {
+    return generateSingles;
+  }
+
+  public void setGenerateSingles(boolean generateSingles) {
+    this.generateSingles = generateSingles;
   }
 }
