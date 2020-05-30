@@ -1,5 +1,12 @@
 = Mule Flow Diagrams
-:icons: font
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
 :toc: macro
 
 image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
@@ -21,25 +28,28 @@ If so, then try this `muleflowdiagrams` application. It can read your configurat
 [source, bash]
 ----
 $ muleflowdiagrams
-Missing required parameter: <sourcePath>
-Usage: muleflowdiagrams [-hV] [-d=<diagramType>] [-fl=<flowName>]
-						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
+Missing required parameter: '<sourcePath>'
+Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
+                        [-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
-	<sourcePath>   Source directory path containing mule configuration files
--d, --diagram=<diagramType>
-					Type of diagram to generate. Valid values: GRAPH, SEQUENCE
-					Default: GRAPH
-	-fl, --flowname=<flowName>
-					Target flow name to generate diagram for. All
-					flows/subflows not related to this flow will be excluded
-					from the diagram.
--h, --help         Show this help message and exit.
--o, --out=<outputFilename>
-					Name of the output file
-					Default: mule-diagram
--t, --target=<targetPath>
-					Output directory path to generate diagram
--V, --version      Print version information and exit.
+      <sourcePath>        Source directory path containing mule configuration
+                            files
+  -d, --diagram=<diagramType>
+                          Type of diagram to generate. Valid values: GRAPH,
+                            SEQUENCE
+                            Default: GRAPH
+      -fl, --flowname=<flowName>
+                          Target flow name to generate diagram for. All
+                            flows/subflows not related to this flow will be
+                            excluded from the diagram.
+      -gs, --genSingles   Generate individual diagrams for each flow.
+  -h, --help              Show this help message and exit.
+  -o, --out=<outputFilename>
+                          Name of the output file
+                            Default: mule-diagram
+  -t, --target=<targetPath>
+                          Output directory path to generate diagram
+  -V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mule-flow-diagrams
@@ -187,25 +197,28 @@ Example:
 [source, bash]
 ----
 $ muleflowdiagrams
-Missing required parameter: <sourcePath>
-Usage: muleflowdiagrams [-hV] [-d=<diagramType>] [-fl=<flowName>]
-						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
+Missing required parameter: '<sourcePath>'
+Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
+                        [-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
-	<sourcePath>   Source directory path containing mule configuration files
--d, --diagram=<diagramType>
-					Type of diagram to generate. Valid values: GRAPH, SEQUENCE
-					Default: GRAPH
-	-fl, --flowname=<flowName>
-					Target flow name to generate diagram for. All
-					flows/subflows not related to this flow will be excluded
-					from the diagram.
--h, --help         Show this help message and exit.
--o, --out=<outputFilename>
-					Name of the output file
-					Default: mule-diagram
--t, --target=<targetPath>
-					Output directory path to generate diagram
--V, --version      Print version information and exit.
+      <sourcePath>        Source directory path containing mule configuration
+                            files
+  -d, --diagram=<diagramType>
+                          Type of diagram to generate. Valid values: GRAPH,
+                            SEQUENCE
+                            Default: GRAPH
+      -fl, --flowname=<flowName>
+                          Target flow name to generate diagram for. All
+                            flows/subflows not related to this flow will be
+                            excluded from the diagram.
+      -gs, --genSingles   Generate individual diagrams for each flow.
+  -h, --help              Show this help message and exit.
+  -o, --out=<outputFilename>
+                          Name of the output file
+                            Default: mule-diagram
+  -t, --target=<targetPath>
+                          Output directory path to generate diagram
+  -V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mule-flow-diagrams
@@ -239,6 +252,13 @@ This argument value can be one of the following:
 ** Mule 3: All configurations from `src/main/app/` are scanned to generate a diagram.
 ** Mule 4: All configurations from `src/main/mule/` are scanned to generate a diagram.
 * Path to any non-mule project directory.
+
+=== Generate Individual flow diagrams
+When running against a large mule application, the generated `mule-diagram.png` can contain too many flows. To simplify understanding each flow, it can be helpful to generate diagrams per flow (not sub-flows).
+
+You can specify `-gs` or `--genSingles` option to generate individual flow diagrams, in addition to the consolidated one.
+
+These diagrams are generated at `{targetPath}/single-flow-diagrams/{currentDateTime}` directory. Each generated diagram has the same name as flow it represents.
 
 === Flowname
 If you just want to generate diagram for a single flow then specify it with `-fl` or `--flowname` option. This will exclude all flows and subflows that are not related to this target flow.
