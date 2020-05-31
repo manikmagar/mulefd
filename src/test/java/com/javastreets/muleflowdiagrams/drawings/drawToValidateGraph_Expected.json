@@ -1,0 +1,316 @@
+{
+  "name": "mule",
+  "directed": true,
+  "strict": false,
+  "_draw_": 
+  [
+    {
+      "op": "c",
+      "grad": "none",
+      "color": "#fffffe00"
+    },
+    {
+      "op": "C",
+      "grad": "none",
+      "color": "#ffffff"
+    },
+    {
+      "op": "P",
+      "points": [[-144.000,-144.000],[-144.000,222.800],[497.950,222.800],[497.950,-144.000]]
+    }
+  ],
+  "_ldraw_": 
+  [
+    {
+      "op": "F",
+      "size": 14.000,
+      "face": "Times-Roman"
+    },
+    {
+      "op": "c",
+      "grad": "none",
+      "color": "#000000"
+    },
+    {
+      "op": "T",
+      "pt": [138.680,62.200],
+      "align": "l",
+      "width": 76.580,
+      "text": "Test Diagram"
+    }
+  ],
+  "bb": "0,0,353.95,78.8",
+  "dpi": "150",
+  "label": "Test Diagram<br\/>",
+  "labelloc": "t",
+  "lheight": "0.23",
+  "lp": "176.97,66.4",
+  "lwidth": "1.06",
+  "pad": "2.0",
+  "rankdir": "LR",
+  "splines": "spline",
+  "xdotversion": "1.7",
+  "_subgraph_cnt": 1,
+  "objects": [
+    {
+      "name": "subgraph-flows",
+      "dpi": "150",
+      "label": "Test Diagram<br\/>",
+      "labelloc": "t",
+      "pad": "2.0",
+      "rank": "same",
+      "rankdir": "LR",
+      "splines": "line",
+      "_gvid": 0,
+      "nodes": [
+        1
+      ]
+    },
+    {
+      "_gvid": 1,
+      "name": "flow:test-flow",
+      "_draw_": 
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#0000ff"
+        },
+        {
+          "op": "p",
+          "points": [[98.710,36.000],[0.100,36.000],[0.100,0.000],[98.710,0.000]]
+        }
+      ],
+      "_ldraw_": 
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [8.000,14.800],
+          "align": "l",
+          "width": 25.660,
+          "text": "flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [33.660,14.800],
+          "align": "l",
+          "width": 57.150,
+          "text": ": test-flow"
+        }
+      ],
+      "color": "blue",
+      "height": "0.5",
+      "label": "<b>flow<\/b>: test-flow",
+      "pos": "49.404,18",
+      "shape": "rectangle",
+      "width": "1.3723"
+    },
+    {
+      "_gvid": 2,
+      "name": "sub-flow:test-sub-flow",
+      "_draw_": 
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [252.540,18.000,101.320,18.000]
+        }
+      ],
+      "_ldraw_": 
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [187.030,14.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [236.790,14.800],
+          "align": "l",
+          "width": 81.250,
+          "text": ": test-sub-flow"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: test-sub-flow",
+      "pos": "252.54,18",
+      "shape": "ellipse",
+      "width": "2.8169"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 1,
+      "head": 2,
+      "_draw_": 
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "b",
+          "points": [[98.840,18.000],[111.680,18.000],[126.090,18.000],[140.800,18.000]]
+        }
+      ],
+      "_hdraw_": 
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "P",
+          "points": [[151.010,18.000],[141.010,22.500],[146.010,18.000],[141.010,18.000],[141.010,18.000],[141.010,18.000],[146.010,18.000],[141.010,13.500],[151.010,18.000]]
+        }
+      ],
+      "_ldraw_": 
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "T",
+          "pt": [124.970,22.200],
+          "align": "c",
+          "width": 16.320,
+          "text": "(1)"
+        }
+      ],
+      "arrowhead": "vee",
+      "dir": "forward",
+      "label": "(1)",
+      "lp": "124.97,26.4",
+      "pos": "e,151.01,18 98.836,18 111.68,18 126.09,18 140.8,18",
+      "style": "solid"
+    },
+    {
+      "_gvid": 1,
+      "tail": 2,
+      "head": 2,
+      "_draw_": 
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "b",
+          "points": [[229.890,35.780],[226.040,45.310],[233.590,54.000],[252.540,54.000],[264.090,54.000],[271.400,50.770],[274.480,46.100]]
+        }
+      ],
+      "_hdraw_": 
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "P",
+          "points": [[275.190,35.780],[278.990,46.070],[274.850,40.770],[274.500,45.760],[274.500,45.760],[274.500,45.760],[274.850,40.770],[270.010,45.450],[275.190,35.780]]
+        }
+      ],
+      "arrowhead": "vee",
+      "dir": "forward",
+      "label": "",
+      "pos": "e,275.19,35.782 229.89,35.782 226.04,45.315 233.59,54 252.54,54 264.09,54 271.4,50.775 274.48,46.098"
+    }
+  ]
+}

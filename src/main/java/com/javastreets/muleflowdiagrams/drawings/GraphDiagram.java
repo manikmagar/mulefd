@@ -52,7 +52,7 @@ public class GraphDiagram implements Diagram {
         if (drawingContext.isGenerateSingles() && component.isaFlow()) {
           writeFlowGraph(component, singleFlowDirPath, flowGraph);
         }
-        flowGraph.addTo(rootGraph);
+        flowNode.addTo(rootGraph);
       }
     }
     if (drawingContext.getFlowName() == null) {
