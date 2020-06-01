@@ -46,7 +46,7 @@ public class GraphDiagram implements Diagram {
           || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
         MutableGraph flowGraph = initNewGraph();
         MutableNode flowNode =
-            processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
+            processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
 
         flowNode.addTo(flowGraph);
 
@@ -113,9 +113,8 @@ public class GraphDiagram implements Diagram {
         .forEach(node -> node.add(Color.RED, Style.FILLED, Color.GRAY));
   }
 
-  MutableNode processComponent(Component component, MutableGraph graph,
-      DrawingContext drawingContext, Map<String, Component> flowRefs,
-      List<String> mappedFlowKinds) {
+  MutableNode processComponent(Component component, DrawingContext drawingContext,
+      Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isaSubFlow()) {
@@ -142,7 +141,7 @@ public class GraphDiagram implements Diagram {
           } else {
             name = refComponent.qualifiedName();
             if (!mappedFlowKinds.contains(name)) {
-              processComponent(refComponent, graph, drawingContext, flowRefs, mappedFlowKinds);
+              processComponent(refComponent, drawingContext, flowRefs, mappedFlowKinds);
             }
           }
         }

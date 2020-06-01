@@ -197,8 +197,8 @@ class GraphDiagramTest {
     System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
     ArgumentCaptor<Component> compArg = ArgumentCaptor.forClass(Component.class);
-    verify(graphDiagram, Mockito.times(2)).processComponent(compArg.capture(),
-        any(MutableGraph.class), eq(context), anyMap(), anyList());
+    verify(graphDiagram, Mockito.times(2)).processComponent(compArg.capture(), eq(context),
+        anyMap(), anyList());
     assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow);
     logs.assertContains(
         "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
