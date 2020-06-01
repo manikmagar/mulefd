@@ -49,6 +49,7 @@ public class GraphDiagram implements Diagram {
             processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
 
         flowNode.addTo(flowGraph);
+
         if (drawingContext.isGenerateSingles() && component.isaFlow()) {
           writeFlowGraph(component, singleFlowDirPath, flowGraph);
         }
@@ -158,9 +159,7 @@ public class GraphDiagram implements Diagram {
       mappedFlowKinds.add(name);
     }
     if (sourceNode != null) {
-      sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD)).addTo(graph);
-    } else {
-      flowNode.addTo(graph);
+      flowNode = sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD));
     }
     return flowNode;
   }

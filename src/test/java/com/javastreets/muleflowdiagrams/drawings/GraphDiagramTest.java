@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,11 +20,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.event.Level;
 
-import com.javastreets.muleflowdiagrams.model.Component;
-import com.javastreets.muleflowdiagrams.model.FlowContainer;
-import com.javastreets.muleflowdiagrams.model.MuleComponent;
+import com.javastreets.muleflowdiagrams.model.*;
 
 import guru.nidi.graphviz.attribute.Arrow;
 import guru.nidi.graphviz.attribute.GraphAttr;
@@ -62,6 +61,11 @@ class GraphDiagramTest {
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
     FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
+    MuleComponent source = new MuleComponent("vm", "listner");
+    source.setSource(true);
+    source.setConfigRef(Attribute.with("config-ref", "test"));
+    source.setPath(Attribute.with("queueName", "testVmQ"));
+    flowContainer.addComponent(source);
     flowContainer.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
     FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
 
@@ -85,19 +89,33 @@ class GraphDiagramTest {
 
   @Test
   @DisplayName("Validate generated graph when generated as JSON.")
-  void drawToValidateGraph() throws IOException {
+  void drawToValidateGraph() throws Exception {
 
     File output = new File(".", "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
     FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
+
+    MuleComponent source = new MuleComponent("vm", "listener");
+    source.setSource(true);
+    source.setConfigRef(Attribute.with("config-ref", "test"));
+    source.setPath(Attribute.with("queueName", "testVmQ"));
+    flowContainer.addComponent(source);
     flowContainer.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
     FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
     // Add reference to same sub-flow, resulting loop
     subflow.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
     context.setComponents(Arrays.asList(flowContainer, subflow));
-    context.setKnownComponents(Collections.emptyMap());
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("vm");
+    item.setOperation("listener");
+    item.setSource(true);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("queueName");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
     graphDiagram.draw(context);
@@ -105,10 +123,10 @@ class GraphDiagramTest {
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
     Graphviz.useEngine(new GraphvizV8Engine());
-    String dotGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/muleflowdiagrams/drawings/drawToValidateGraph_Expected.json")));
-    assertThat(dotGraph).isEqualTo(ref);
+    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
     Graphviz.releaseEngine();
 
   }
