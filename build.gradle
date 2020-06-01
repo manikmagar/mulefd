@@ -36,6 +36,7 @@ dependencies {
 	testImplementation 'org.mockito:mockito-core:3.3.3'
 	testImplementation 'io.github.netmikey.logunit:logunit-core:1.1.0'
 	testImplementation 'io.github.netmikey.logunit:logunit-logback:1.1.0'
+	testImplementation 'org.skyscreamer:jsonassert:1.5.0'
 }
 
 spotless {

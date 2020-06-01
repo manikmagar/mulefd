@@ -46,13 +46,14 @@ public class GraphDiagram implements Diagram {
           || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
         MutableGraph flowGraph = initNewGraph();
         MutableNode flowNode =
-            processComponent(component, flowGraph, drawingContext, flowRefs, mappedFlowKinds);
+            processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
 
         flowNode.addTo(flowGraph);
+
         if (drawingContext.isGenerateSingles() && component.isaFlow()) {
           writeFlowGraph(component, singleFlowDirPath, flowGraph);
         }
-        flowGraph.addTo(rootGraph);
+        flowNode.addTo(rootGraph);
       }
     }
     if (drawingContext.getFlowName() == null) {
@@ -112,9 +113,8 @@ public class GraphDiagram implements Diagram {
         .forEach(node -> node.add(Color.RED, Style.FILLED, Color.GRAY));
   }
 
-  MutableNode processComponent(Component component, MutableGraph graph,
-      DrawingContext drawingContext, Map<String, Component> flowRefs,
-      List<String> mappedFlowKinds) {
+  MutableNode processComponent(Component component, DrawingContext drawingContext,
+      Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isaSubFlow()) {
@@ -141,7 +141,7 @@ public class GraphDiagram implements Diagram {
           } else {
             name = refComponent.qualifiedName();
             if (!mappedFlowKinds.contains(name)) {
-              processComponent(refComponent, graph, drawingContext, flowRefs, mappedFlowKinds);
+              processComponent(refComponent, drawingContext, flowRefs, mappedFlowKinds);
             }
           }
         }
@@ -158,9 +158,7 @@ public class GraphDiagram implements Diagram {
       mappedFlowKinds.add(name);
     }
     if (sourceNode != null) {
-      sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD)).addTo(graph);
-    } else {
-      flowNode.addTo(graph);
+      flowNode = sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD));
     }
     return flowNode;
   }
