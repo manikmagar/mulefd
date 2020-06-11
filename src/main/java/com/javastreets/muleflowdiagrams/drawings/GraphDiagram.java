@@ -1,5 +1,6 @@
 package com.javastreets.muleflowdiagrams.drawings;
 
+import static com.javastreets.muleflowdiagrams.util.FileUtil.sanitizeFilename;
 import static guru.nidi.graphviz.attribute.Arrow.*;
 import static guru.nidi.graphviz.model.Factory.*;
 
@@ -71,7 +72,8 @@ public class GraphDiagram implements Diagram {
     if (!flowComponent.isaFlow())
       return false;
     String flowName = flowComponent.getName();
-    Path targetPath = Paths.get(targetDirectory.toString(), flowName.concat(".png"));
+    Path targetPath =
+        Paths.get(targetDirectory.toString(), sanitizeFilename(flowName.concat(".png")));
     log.info("Writing individual flow graph for {} at {}", flowName, targetPath);
     try {
       flowGraph.setName(flowComponent.qualifiedName());

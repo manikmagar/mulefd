@@ -260,6 +260,8 @@ You can specify `-gs` or `--genSingles` option to generate individual flow diagr
 
 These diagrams are generated at `{targetPath}/single-flow-diagrams/{currentDateTime}` directory. Each generated diagram has the same name as flow it represents.
 
+NOTE: Some flow names, especially the APIKit generated flows can contain characters not valid for some OS. Names are thus sanitized. Any character not in `a-zA-Z0-9.-` is replaced with `_`.
+
 === Flowname
 If you just want to generate diagram for a single flow then specify it with `-fl` or `--flowname` option. This will exclude all flows and subflows that are not related to this target flow.
 

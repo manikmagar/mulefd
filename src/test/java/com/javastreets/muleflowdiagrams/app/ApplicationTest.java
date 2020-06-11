@@ -45,6 +45,20 @@ class ApplicationTest {
   }
 
   @Test
+  void renderFileWithBadFlowNamesForFiles() throws Exception {
+    Path filePath = Paths.get("src/test/resources/test-api.xml");
+    String[] args = new String[] {filePath.toAbsolutePath().toString(), "--out",
+        filePath.getFileName().toString(), "-t", tempDir.getAbsolutePath(), "-gs"};
+    Application application = new Application();
+    new CommandLine(application).parseArgs(args);
+    application.call();
+    String outputFilename = filePath.getFileName().toString() + ".png";
+    assertThat(Paths.get(tempDir.getAbsolutePath(), outputFilename)).exists();
+    // .hasSameBinaryContentAs(Paths.get(toAbsolutePath("./renderer/component-configs/"),
+    // outputFilename)); // This fails due to time stamp difference
+  }
+
+  @Test
   @DisplayName("Render Mule 3 exmple config")
   void mule3Rendering() throws Exception {
     String[] args = new String[] {
