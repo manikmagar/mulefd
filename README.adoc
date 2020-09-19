@@ -23,13 +23,13 @@ A project can easily have multiple configuration files with flows/sub-flows that
 
 Have you ever wished to visualize your flow dependencies? How does message flows through your application?
 
-If so, then try this `muleflowdiagrams` application. It can read your configuration files and generate a diagrams that can easily tell you how your flows are connected.
+If so, then try this `mulefd` application. It can read your configuration files and generate a diagrams that can easily tell you how your flows are connected.
 
 [source, bash]
 ----
-$ muleflowdiagrams
+$ mulefd
 Missing required parameter: '<sourcePath>'
-Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
+Usage: mulefd [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
 						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
 	<sourcePath>        Source directory path containing mule configuration
@@ -59,7 +59,7 @@ For an example mule configuration link:./itests/test-hello-app.xml[./itests/test
 
 [source, bash]
 ----
-$ muleflowdiagrams ./itests/test-hello-app.xml -t ./itests/output
+$ mulefd ./itests/test-hello-app.xml -t ./itests/output
 ----
 
 image::./itests/output/mule-diagram.png[Mule flow diagrams]
@@ -100,13 +100,11 @@ Once Java is installed and ready, you install Mule Flow Diagrams -
 sdk install mulefd
 ----
 
-NOTE: `mulefd` is just a candidate name on SDKMAN. After installation, tool is executed same as for other installations i.e. using `muleflowdiagrams` command.
-
 To test your installation run:
 
 [source, bash]
 ----
-muleflowdiagrams --help
+mulefd --help
 ----
 
 This should print out usage information.
@@ -120,7 +118,7 @@ sdk upgrade mulefd
 
 === Homebrew icon:apple[]
 
-On OSX you can install 'java' and `muleflowdiagrams` with https://brew.sh[Homebrew] using custom taps.
+On OSX you can install 'java' and `mulefd` with https://brew.sh[Homebrew] using custom taps.
 
 To install Java 8:
 
@@ -130,47 +128,50 @@ brew tap AdoptOpenJDK/openjdk
 brew cask install adoptopenjdk8
 ----
 
-Once Java is installed you can use brew with https://github.com/manikmagar/homebrew-tap/[manikmagar/tap] to get `muleflowdiagrams`:
+Once Java is installed you can use brew with https://github.com/manikmagar/homebrew-tap/[manikmagar/tap] to get `mulefd`:
 
-`brew install manikmagar/tap/muleflowdiagrams`
+`brew install manikmagar/tap/mulefd`
 
 To upgrade to the latest version:
 
-`brew upgrade manikmagar/tap/muleflowdiagrams`
+`brew upgrade manikmagar/tap/mulefd`
 
-Test running `muleflowdiagrams --help` in CLI.
+Test running `mulefd --help` in CLI.
 
 === Docker icon:docker[]
-If you don't want to install `muleflowdiagrams`, you can run it via docker.
+If you don't want to install `mulefd`, you can run it via docker.
 
-```bash
-docker run -v `pwd`:/app manikmagar/muleflowdiagrams /app
-```
+[source,bash]
+----
+docker run -v `pwd`:/app manikmagar/mulefd /app
+----
 
 This will generate diagrams in `pwd` or mounted directory.
 
 Docker container resources are limited. Based on the size of your application, you may see outofmemory errors when executing with docker. You can allocate more memory with `-m` option to docker run command, Eg. `-m 512m`.
 
 === Scoop icon:windows[]
-On Windows, you can install `muleflowdiagrams` using https://scoop.sh[Scoop] - A command-line installer for Windows.
+On Windows, you can install `mulefd` using https://scoop.sh[Scoop] - A command-line installer for Windows.
 
-Once you have Scoop installed and JDK configured, you can run following commands to get `muleflowdiagrams` -
+Once you have Scoop installed and JDK configured, you can run following commands to get `mulefd` -
 
-```bash
+[source,bash]
+----
 scoop bucket add manikmagar https://github.com/manikmagar/scoop-bucket
-scoop install muleflowdiagrams
-```
+scoop install mulefd
+----
 
 To upgrade, you can run -
 
-```bash
-scoop update muleflowdiagrams
-```
+[source,bash]
+----
+scoop update mulefd
+----
 
 === Manual install icon:apple[] icon:windows[] icon:linux[]
 . Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
-. Add `muleflowdiagrams-<version>/bin` folder in to your $PATH
-. Test running `muleflowdiagrams --help` in CLI.
+. Add `mulefd-<version>/bin` folder in to your $PATH
+. Test running `mulefd --help` in CLI.
 
 === Build and Run
 This project uses Gradle to compile and build. To create a zip distribution, run below command in project directory -
@@ -184,21 +185,21 @@ To install the distribution -
 . Clone the project
 . Run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory.
 . You can verify binaries by executing -
-.. icon:apple[] icon:linux[] : `sh build/install/muleflowdiagrams/bin/muleflowdiagrams --help`
-.. icon:windows[] : `./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --help`
+.. icon:apple[] icon:linux[] : `sh build/install/mulefd/bin/mulefd --help`
+.. icon:windows[] : `./build/install/mulefd/bin/mulefd.bat --help`
 
 == Usage
 
-`muleflowdiagrams` support various arguments for generating diagrams.
+`mulefd` support various arguments for generating diagrams.
 
 Example:
-`muleflowdiagrams ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo`
+`mulefd ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo`
 
 [source, bash]
 ----
-$ muleflowdiagrams
+$ mulefd
 Missing required parameter: '<sourcePath>'
-Usage: muleflowdiagrams [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
+Usage: mulefd [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
 						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
 Create Flow diagrams from mule configuration files.
 	<sourcePath>        Source directory path containing mule configuration
@@ -230,16 +231,18 @@ If your application is large and contains too many flows, process could fail wit
 
 Try increasing the JVM allocated memory using `-Xmx` flag.
 
-```bash
-$ JAVA_OPTS='-Xmx1024m' muleflowdiagrams ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
-```
+[source,bash]
+----
+$ JAVA_OPTS='-Xmx1024m' mulefd ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+----
 
 For windows, you may need to set it at environment level -
 
-```bash
+[source,bash]
+----
 set JAVA_OPTS=%JAVA_OPTS% -Xmx1024m
-muleflowdiagrams.bat ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
-```
+mulefd.bat ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+----
 
 
 === Source directory

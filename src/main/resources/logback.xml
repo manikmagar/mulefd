@@ -6,7 +6,7 @@
             <pattern>%d %-5p [%c{10}] - %m%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.javastreets.muleflowdiagrams" level="INFO"/>
+    <logger name="com.javastreets.mulefd" level="INFO"/>
     <logger name="guru.nidi.graphviz" level="ERROR"/>
     <root level="DEBUG">
         <appender-ref ref="CONSOLE" />

@@ -38,7 +38,7 @@ jobs:
       - name: integration-test
         if: runner.os != 'Windows'
         run: |
-          export PATH=`pwd`/build/install/muleflowdiagrams/bin:$PATH
+          export PATH=`pwd`/build/install/mulefd/bin:$PATH
           cd itests
           ./tests.sh
   testing:
@@ -60,12 +60,12 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           java -version
-          chmod +x ./build/install/muleflowdiagrams/bin/muleflowdiagrams
-          ./build/install/muleflowdiagrams/bin/muleflowdiagrams --version
-          ./build/install/muleflowdiagrams/bin/muleflowdiagrams ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+          chmod +x ./build/install/mulefd/bin/mulefd
+          ./build/install/mulefd/bin/mulefd --version
+          ./build/install/mulefd/bin/mulefd ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
       - name: Test Windows build
         if: runner.os == 'Windows'
         run: |
           java -version
-          ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat --version
-          ./build/install/muleflowdiagrams/bin/muleflowdiagrams.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+          ./build/install/mulefd/bin/mulefd.bat --version
+          ./build/install/mulefd/bin/mulefd.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
