@@ -42,6 +42,6 @@ assert_stderr(){
 export NL=$'\n'
 
 
-echo Testing with `which muleflowdiagrams`
-assert "muleflowdiagrams ./test-hello-app.xml -t $SCRATCH"
+echo Testing with `which mulefd`
+assert "mulefd ./test-hello-app.xml -t $SCRATCH"
 assert_raises "test -f $SCRATCH/mule-diagram.png" 0

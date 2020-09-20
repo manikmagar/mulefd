@@ -15,7 +15,7 @@ plugins {
 }
 
 application {
-	mainClassName = 'com.javastreets.muleflowdiagrams.app.Application'
+	mainClassName = 'com.javastreets.mulefd.app.Application'
 }
 repositories {
 	mavenCentral()
@@ -87,7 +87,7 @@ versioner {
 
 buildConfig {
 	clsName = 'BuildConfig'      // sets the name of the BuildConfig class
-	packageName = 'com.javastreets.muleflowdiagrams.app'  // sets the package of the BuildConfig class,
+	packageName = 'com.javastreets.mulefd.app'  // sets the package of the BuildConfig class,
 	charset = 'UTF-8'            // sets charset of the generated class,
 	// 'UTF-8' if not set otherwise
 }

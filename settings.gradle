@@ -14,4 +14,4 @@ gradleEnterprise {
 	}
 }
 
-rootProject.name = 'muleflowdiagrams'
+rootProject.name = 'mulefd'

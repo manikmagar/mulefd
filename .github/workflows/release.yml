@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew clean build install --build-cache --scan -s
       - name: integration-test
         run: |
-          export PATH=`pwd`/build/install/muleflowdiagrams/bin:$PATH
+          export PATH=`pwd`/build/install/mulefd/bin:$PATH
           pastdir=`pwd`
           cd itests
           ./tests.sh
