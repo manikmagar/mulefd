@@ -20,7 +20,7 @@ public class Attribute<K, V> {
     this.name = name;
   }
 
-  public static <K, V> Attribute with(K name, V value) {
+  public static <K, V> Attribute<K, V> with(K name, V value) {
     Attribute<K, V> attr = new Attribute<>();
     attr.setName(name);
     attr.setValue(value);

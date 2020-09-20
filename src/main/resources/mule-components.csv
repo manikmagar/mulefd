@@ -1,6 +1,7 @@
 prefix,operation,sourceFlag,path,configName,async
 http,listener,true,path,config-ref,true
 http,request,false,path,config-ref,false
+apikit,*,false,api,config-ref,false
 vm,listener,true,queueName,config-ref,true
 vm,publish,false,queueName,config-ref,false
 db,listener,true,table,config-ref,false

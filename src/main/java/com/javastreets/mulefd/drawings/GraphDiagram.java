@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,6 @@ import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizV8Engine;
-import guru.nidi.graphviz.model.Factory;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
 
@@ -58,11 +57,6 @@ public class GraphDiagram implements Diagram {
       }
     }
     if (drawingContext.getFlowName() == null) {
-      mutGraph().setName("subgraph-flows").graphAttrs()
-          .add(Rank.inSubgraph(Rank.RankType.SAME), GraphAttr.splines(GraphAttr.SplineMode.LINE))
-          .add(flows.stream().filter(Component::isaFlow).map(Component::qualifiedName)
-              .map(Factory::node).collect(Collectors.toList()))
-          .addTo(rootGraph);
       checkUnusedNodes(rootGraph);
     }
     return writGraphToFile(drawingContext.getOutputFile(), rootGraph);
@@ -118,11 +112,12 @@ public class GraphDiagram implements Diagram {
   MutableNode processComponent(Component component, DrawingContext drawingContext,
       Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
     FlowContainer flow = (FlowContainer) component;
+    Consumer<MutableNode> asFlow = flowNode -> flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isaSubFlow()) {
       flowNode.add(Color.BLACK).add(Shape.ELLIPSE);
     } else {
-      flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
+      asFlow.accept(flowNode);
     }
     MutableNode sourceNode = null;
     boolean hasSource = false;
@@ -153,6 +148,25 @@ public class GraphDiagram implements Diagram {
         sourceNode =
             mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE).add("sourceNode", Boolean.TRUE).add(
                 Label.htmlLines("<b>" + muleComponent.getType() + "</b>", muleComponent.getName()));
+      } else if (muleComponent.getType().equals("apikit")) {
+        // APIKit auto generated flows follow a naming pattern
+        // "{httpMethod}:\{resource-name}:{apikitConfigName}"
+        // 1. Create a new apikit node for this component
+        // 2. Find all flows with name ending with ":{apikiConfigName}"
+        // 3. Link those flows with apiKit flow.
+        MutableNode apiKitNode =
+            mutNode(muleComponent.getType().concat(muleComponent.getConfigRef().getValue()))
+                .add(Label.htmlLines("<b>" + muleComponent.getType() + "</b>",
+                    muleComponent.getConfigRef().getValue()))
+                .add(Shape.DOUBLE_CIRCLE, Color.CYAN, Style.FILLED);
+        for (Component component1 : searchFlowBySuffix(
+            ":" + muleComponent.getConfigRef().getValue(), drawingContext.getComponents())) {
+          MutableNode node =
+              mutNode(component1.qualifiedName()).add(Label.markdown(getNodeLabel(component1)));
+          asFlow.accept(node);
+          apiKitNode.addLink(to(node).with(Style.SOLID));
+        }
+        flowNode.addLink(to(apiKitNode).with(Style.SOLID, Label.of("(" + (j - 1) + ")")));
       } else {
         addSubNodes(flowNode, hasSource ? j - 1 : j, muleComponent, name);
       }

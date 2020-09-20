@@ -50,24 +50,10 @@
   "rankdir": "LR",
   "splines": "spline",
   "xdotversion": "1.7",
-  "_subgraph_cnt": 1,
+  "_subgraph_cnt": 0,
   "objects": [
     {
-      "name": "subgraph-flows",
-      "dpi": "150",
-      "label": "Test Diagram<br\/>",
-      "labelloc": "t",
-      "pad": "2.0",
-      "rank": "same",
-      "rankdir": "LR",
-      "splines": "line",
       "_gvid": 0,
-      "nodes": [
-        2
-      ]
-    },
-    {
-      "_gvid": 1,
       "name": "vm:listener",
       "_draw_":
       [
@@ -141,7 +127,7 @@
       "width": "1.2975"
     },
     {
-      "_gvid": 2,
+      "_gvid": 1,
       "name": "flow:test-flow",
       "_draw_":
       [
@@ -208,7 +194,7 @@
       "width": "1.3723"
     },
     {
-      "_gvid": 3,
+      "_gvid": 2,
       "name": "sub-flow:test-sub-flow",
       "_draw_":
       [
@@ -278,8 +264,8 @@
   "edges": [
     {
       "_gvid": 0,
-      "tail": 1,
-      "head": 2,
+      "tail": 0,
+      "head": 1,
       "_draw_":
       [
         {
@@ -329,8 +315,8 @@
     },
     {
       "_gvid": 1,
-      "tail": 2,
-      "head": 3,
+      "tail": 1,
+      "head": 2,
       "_draw_":
       [
         {
@@ -397,8 +383,8 @@
     },
     {
       "_gvid": 2,
-      "tail": 3,
-      "head": 3,
+      "tail": 2,
+      "head": 2,
       "_draw_":
       [
         {

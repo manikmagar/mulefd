@@ -1,5 +1,6 @@
 package com.javastreets.mulefd;
 
+import static com.javastreets.mulefd.DiagramRendererTestUtil.getCommandModel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.*;
@@ -33,25 +34,10 @@ class DiagramRendererTest {
   @TempDir
   File tempDir;
 
-  private CommandModel getCommandModel() {
-    return getCommandModel(tempDir.toPath());
-  }
-
-  private CommandModel getCommandModel(Path sourcePath) {
-    CommandModel model = new CommandModel();
-    model.setDiagramType(DiagramType.GRAPH);
-    model.setOutputFilename("test-output-file");
-    model.setTargetPath(Paths.get("dummy-result-path"));
-    model.setSourcePath(sourcePath);
-
-    return model;
-  }
-
-
   @Test
   @DisplayName("Empty source directory rendering return false")
-  void emptySouceDirRendering() {
-    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel()));
+  void emptySourceDirRendering() {
+    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(tempDir.toPath())));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(anyList());
     assertThat(renderer.render()).isFalse();
@@ -96,7 +82,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Create drawing context from command model")
   void toDrawingContext() {
-    CommandModel commandModel = getCommandModel();
+    CommandModel commandModel = getCommandModel(tempDir.toPath());
     commandModel.setFlowName("test-flow");
     assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
         .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile,
@@ -109,7 +95,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Create drawing context from command model with single generation as true")
   void toDrawingContextForSingles() {
-    CommandModel commandModel = getCommandModel();
+    CommandModel commandModel = getCommandModel(tempDir.toPath());
     commandModel.setFlowName("test-flow");
     commandModel.setGenerateSingles(true);
     assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
@@ -123,7 +109,8 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Prepare components from csv file")
   void prepareKnownComponents() {
-    assertThat(new DiagramRenderer(getCommandModel()).prepareKnownComponents()).isNotEmpty();
+    assertThat(new DiagramRenderer(getCommandModel(tempDir.toPath())).prepareKnownComponents())
+        .isNotEmpty();
   }
 
   @Test
