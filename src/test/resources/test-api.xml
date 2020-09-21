@@ -130,9 +130,11 @@ output application/json
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="put:\users\(userId):test-api-config" />
+        <flow-ref name="test-sub-flow"/>
     </flow>
     <flow name="get:\users:test-api-config">
         <logger level="INFO" message="get:\users:test-api-config" />
+        <flow-ref name="test-sub-flow"/>
     </flow>
     <flow name="get:\users\(userId):test-api-config">
         <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
@@ -141,8 +143,18 @@ output application/json
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="get:\users\(userId):test-api-config" />
+        <flow-ref name="test-sub-flow"/>
     </flow>
     <flow name="post:\users:test-api-config">
         <logger level="INFO" message="post:\users:test-api-config" />
+        <flow-ref name="test-sub-flow"/>
     </flow>
+    <sub-flow name="test-sub-flow">
+        <logger level="INFO" message="test-sub-flow" />
+        <flow-ref name="test-sub-flow1"/>
+    </sub-flow>
+    <sub-flow name="test-sub-flow1">
+        <logger level="INFO" message="test-sub-flow1" />
+
+    </sub-flow>
 </mule>

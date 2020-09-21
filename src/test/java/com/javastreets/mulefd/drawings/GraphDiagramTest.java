@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.event.Level;
 
+import com.javastreets.mulefd.DiagramRendererTestUtil;
 import com.javastreets.mulefd.model.*;
 
 import guru.nidi.graphviz.attribute.Arrow;
@@ -61,7 +63,7 @@ class GraphDiagramTest {
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
     FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
-    MuleComponent source = new MuleComponent("vm", "listner");
+    MuleComponent source = new MuleComponent("vm", "listener");
     source.setSource(true);
     source.setConfigRef(Attribute.with("config-ref", "test"));
     source.setPath(Attribute.with("queueName", "testVmQ"));
@@ -130,6 +132,42 @@ class GraphDiagramTest {
     Graphviz.releaseEngine();
 
   }
+
+
+  @Test
+  @DisplayName("Validate generated graph for APIKIT flows when generated as JSON.")
+  void drawToValidateGraph_APIKIT() throws Exception {
+
+    List flows = DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/test-api.xml"));
+    File output = new File(".", "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("apikit");
+    item.setOperation("*");
+    item.setSource(false);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("config-ref");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    Graphviz.useEngine(new GraphvizV8Engine());
+    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String ref = new String(Files.readAllBytes(Paths.get(
+        "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.json")));
+    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+    Graphviz.releaseEngine();
+
+  }
+
 
   @Test
   void drawWithSinglesGeneration() {
@@ -207,7 +245,7 @@ class GraphDiagramTest {
   @Test
   void supports() {
     GraphDiagram graphDiagram = new GraphDiagram();
-    assertThat(graphDiagram.supports(DiagramType.GRAPH)).isEqualTo(true);
+    assertThat(graphDiagram.supports(DiagramType.GRAPH)).isTrue();
   }
 
   @Test
@@ -223,7 +261,7 @@ class GraphDiagramTest {
     MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
         .add(VEE.dir(Arrow.DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
             GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0), GraphAttr.dpi(150),
-            Label.htmlLines(new String[] {"Test"}).locate(Label.Location.TOP));
+            Label.htmlLines("Test").locate(Label.Location.TOP));
     MutableGraph returnedGraph = graphDiagram.initNewGraph();
     assertThat(returnedGraph).isEqualTo(graph);
   }
@@ -246,7 +284,7 @@ class GraphDiagramTest {
     Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
     boolean written = graphDiagram.writeFlowGraph(flowContainer, outputFilePath, graph);
     assertThat(written).isTrue();
-    assertThat(graph.name().toString()).isEqualTo(flowContainer.qualifiedName());
+    assertThat(graph.name()).isEqualTo(Label.of(flowContainer.qualifiedName()));
     assertThat(Files.exists(Paths.get(outputFilePath.toString(), flowContainer.getName() + ".png")))
         .isTrue();
   }
