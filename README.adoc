@@ -1,4 +1,4 @@
-= Mule Flow Diagrams
+= Mule Flow Diagrams [mulefd]
 ifndef::env-github[:icons: font]
 ifdef::env-github[]
 :caution-caption: :fire:
@@ -9,9 +9,9 @@ ifdef::env-github[]
 endif::[]
 :toc: macro
 
-image:https://img.shields.io/github/release/manikmagar/mule-flow-diagrams.svg[Release,link=https://github.com/manikmagar/mule-flow-diagrams/releases]
-image:https://github.com/manikmagar/mule-flow-diagrams/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mule-flow-diagrams/actions]
-image:https://api.dependabot.com/badges/status?host=github&repo=manikmagar/mule-flow-diagrams[Dependabot Status,https://dependabot.com]
+image:https://img.shields.io/github/release/manikmagar/mulefd.svg[Release,link=https://github.com/manikmagar/mulefd/releases]
+image:https://github.com/manikmagar/mulefd/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mulefd/actions]
+image:https://api.dependabot.com/badges/status?host=github&repo=manikmagar/mulefd[Dependabot Status,https://dependabot.com]
 
 
 toc::[]
@@ -38,11 +38,11 @@ Create Flow diagrams from mule configuration files.
 						Type of diagram to generate. Valid values: GRAPH,
 							SEQUENCE
 							Default: GRAPH
-	-fl, --flowname=<flowName>
+-fl, --flowname=<flowName>
 						Target flow name to generate diagram for. All
 							flows/subflows not related to this flow will be
 							excluded from the diagram.
-	-gs, --genSingles   Generate individual diagrams for each flow.
+-gs, --genSingles   Generate individual diagrams for each flow.
 -h, --help              Show this help message and exit.
 -o, --out=<outputFilename>
 						Name of the output file
@@ -52,7 +52,7 @@ Create Flow diagrams from mule configuration files.
 -V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
-Website: https://github.com/manikmagar/mule-flow-diagrams
+Website: https://github.com/manikmagar/mulefd
 ----
 
 For an example mule configuration link:./itests/test-hello-app.xml[./itests/test-hello-app.xml], run following command to generate a flow diagram -
@@ -169,7 +169,7 @@ scoop update mulefd
 ----
 
 === Manual install icon:apple[] icon:windows[] icon:linux[]
-. Unzip the https://github.com/manikmagar/mule-flow-diagrams/releases/latest[latest binary release].
+. Unzip the https://github.com/manikmagar/mulefd/releases/latest[latest binary release].
 . Add `mulefd-<version>/bin` folder in to your $PATH
 . Test running `mulefd --help` in CLI.
 
@@ -193,7 +193,7 @@ To install the distribution -
 `mulefd` support various arguments for generating diagrams.
 
 Example:
-`mulefd ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo`
+`mulefd ~/AnypointStudio/studio-workspace/mulefd-demo`
 
 [source, bash]
 ----
@@ -208,11 +208,11 @@ Create Flow diagrams from mule configuration files.
 						Type of diagram to generate. Valid values: GRAPH,
 							SEQUENCE
 							Default: GRAPH
-	-fl, --flowname=<flowName>
+-fl, --flowname=<flowName>
 						Target flow name to generate diagram for. All
 							flows/subflows not related to this flow will be
 							excluded from the diagram.
-	-gs, --genSingles   Generate individual diagrams for each flow.
+-gs, --genSingles   Generate individual diagrams for each flow.
 -h, --help              Show this help message and exit.
 -o, --out=<outputFilename>
 						Name of the output file
@@ -222,7 +222,7 @@ Create Flow diagrams from mule configuration files.
 -V, --version           Print version information and exit.
 
 Copyright: 2020 Manik Magar, License: MIT
-Website: https://github.com/manikmagar/mule-flow-diagrams
+Website: https://github.com/manikmagar/mulefd
 ----
 
 *_Out of memory errors?_*
@@ -233,7 +233,7 @@ Try increasing the JVM allocated memory using `-Xmx` flag.
 
 [source,bash]
 ----
-$ JAVA_OPTS='-Xmx1024m' mulefd ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+$ JAVA_OPTS='-Xmx1024m' mulefd ~/AnypointStudio/studio-workspace/mulefd-demo
 ----
 
 For windows, you may need to set it at environment level -
@@ -241,7 +241,7 @@ For windows, you may need to set it at environment level -
 [source,bash]
 ----
 set JAVA_OPTS=%JAVA_OPTS% -Xmx1024m
-mulefd.bat ~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo
+mulefd.bat ~/AnypointStudio/studio-workspace/mulefd-demo
 ----
 
 
@@ -251,7 +251,7 @@ Source directory is a required argument. This argument specifies where mule xml 
 This argument value can be one of the following:
 
 * Path of the individual mule xml file. Eg. `~/Downloads/test-app-config.xml`. In this case, diagram for just this file is generated.
-* Path to a standard mule 4 or mule 3 project root. Eg. `~/AnypointStudio/studio-workspace/mule-flow-diagrams-demo`.
+* Path to a standard mule 4 or mule 3 project root. Eg. `~/AnypointStudio/studio-workspace/mulefd-demo`.
 ** Mule 3: All configurations from `src/main/app/` are scanned to generate a diagram.
 ** Mule 4: All configurations from `src/main/mule/` are scanned to generate a diagram.
 * Path to any non-mule project directory.
