@@ -17,7 +17,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(name = "mulefd", mixinStandardHelpOptions = true, versionProvider = VersionProvider.class,
-    footer = "\nCopyright: 2020 Manik Magar, License: MIT\nWebsite: https://github.com/manikmagar/mule-flow-diagrams",
+    footer = "\nCopyright: 2020 Manik Magar, License: MIT\nWebsite: https://github.com/manikmagar/mulefd",
     description = "Create Flow diagrams from mule configuration files.", showDefaultValues = true)
 public class Application implements Callable<Boolean> {
 
