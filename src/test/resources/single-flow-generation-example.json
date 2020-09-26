@@ -1,0 +1,674 @@
+{
+  "name": "mule",
+  "directed": true,
+  "strict": false,
+  "_draw_":
+  [
+    {
+      "op": "c",
+      "grad": "none",
+      "color": "#fffffe00"
+    },
+    {
+      "op": "C",
+      "grad": "none",
+      "color": "#ffffff"
+    },
+    {
+      "op": "P",
+      "points": [[-144.000,-144.000],[-144.000,312.800],[1057.220,312.800],[1057.220,-144.000]]
+    }
+  ],
+  "_ldraw_":
+  [
+    {
+      "op": "F",
+      "size": 14.000,
+      "face": "Times-Roman"
+    },
+    {
+      "op": "c",
+      "grad": "none",
+      "color": "#000000"
+    },
+    {
+      "op": "T",
+      "pt": [418.320,152.200],
+      "align": "l",
+      "width": 76.580,
+      "text": "Test Diagram"
+    }
+  ],
+  "bb": "0,0,913.22,168.8",
+  "dpi": "150",
+  "label": "Test Diagram<br\/>",
+  "labelloc": "t",
+  "lheight": "0.23",
+  "lp": "456.61,156.4",
+  "lwidth": "1.06",
+  "pad": "2.0",
+  "rankdir": "LR",
+  "splines": "spline",
+  "xdotversion": "1.7",
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "sub-flow:sub-flow-level-1-2",
+      "_draw_":
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [122.860,72.000,122.710,18.000]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [41.800,68.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [91.560,68.800],
+          "align": "l",
+          "width": 112.350,
+          "text": ": sub-flow-level-1-2"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: sub-flow-level-1-2",
+      "pos": "122.86,72",
+      "shape": "ellipse",
+      "width": "3.4127"
+    },
+    {
+      "_gvid": 1,
+      "name": "sub-flow:sub-flow-level-2-2-0",
+      "_draw_":
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [468.200,126.000,130.800,18.000]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [381.310,122.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [431.080,122.800],
+          "align": "l",
+          "width": 124.010,
+          "text": ": sub-flow-level-2-2-0"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: sub-flow-level-2-2-0",
+      "pos": "468.2,126",
+      "shape": "ellipse",
+      "width": "3.6361"
+    },
+    {
+      "_gvid": 2,
+      "name": "sub-flow:sub-flow-level-2-1-1",
+      "_draw_":
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [468.200,72.000,130.800,18.000]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [381.310,68.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [431.080,68.800],
+          "align": "l",
+          "width": 124.010,
+          "text": ": sub-flow-level-2-1-1"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: sub-flow-level-2-1-1",
+      "pos": "468.2,72",
+      "shape": "ellipse",
+      "width": "3.6361"
+    },
+    {
+      "_gvid": 3,
+      "name": "sub-flow:sub-flow-level-2-2-1",
+      "_draw_":
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [468.200,18.000,130.800,18.000]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [381.310,14.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [431.080,14.800],
+          "align": "l",
+          "width": 124.010,
+          "text": ": sub-flow-level-2-2-1"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: sub-flow-level-2-2-1",
+      "pos": "468.2,18",
+      "shape": "ellipse",
+      "width": "3.6361"
+    },
+    {
+      "_gvid": 4,
+      "name": "sub-flow:sub-flow-level-2-2-2",
+      "_draw_":
+      [
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "e",
+          "rect": [782.320,18.000,130.800,18.000]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 1
+        },
+        {
+          "op": "T",
+          "pt": [695.430,14.800],
+          "align": "l",
+          "width": 49.760,
+          "text": "sub-flow"
+        },
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "t",
+          "fontchar": 0
+        },
+        {
+          "op": "T",
+          "pt": [745.200,14.800],
+          "align": "l",
+          "width": 124.010,
+          "text": ": sub-flow-level-2-2-2"
+        }
+      ],
+      "color": "black",
+      "height": "0.5",
+      "label": "<b>sub-flow<\/b>: sub-flow-level-2-2-2",
+      "pos": "782.32,18",
+      "shape": "ellipse",
+      "width": "3.6361"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 1,
+      "_draw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "b",
+          "points": [[207.410,85.140],[256.820,92.910],[319.580,102.780],[371.040,110.880]]
+        }
+      ],
+      "_hdraw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "P",
+          "points": [[381.180,112.470],[370.600,115.360],[376.240,111.690],[371.300,110.920],[371.300,110.920],[371.300,110.920],[376.240,111.690],[372.000,106.470],[381.180,112.470]]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "T",
+          "pt": [291.510,106.200],
+          "align": "c",
+          "width": 16.320,
+          "text": "(1)"
+        }
+      ],
+      "arrowhead": "vee",
+      "dir": "forward",
+      "label": "(1)",
+      "lp": "291.51,110.4",
+      "pos": "e,381.18,112.47 207.41,85.141 256.82,92.911 319.58,102.78 371.04,110.88",
+      "style": "solid"
+    },
+    {
+      "_gvid": 1,
+      "tail": 0,
+      "head": 2,
+      "_draw_":
+      [
+        {
+          "op": "S",
+          "style": "setlinewidth(2)"
+        },
+        {
+          "op": "S",
+          "style": "dashed"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#a52a2a"
+        },
+        {
+          "op": "b",
+          "points": [[245.870,72.000],[272.110,72.000],[300.040,72.000],[326.900,72.000]]
+        }
+      ],
+      "_hdraw_":
+      [
+        {
+          "op": "S",
+          "style": "setlinewidth(2)"
+        },
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#a52a2a"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#a52a2a"
+        },
+        {
+          "op": "P",
+          "points": [[337.140,72.000],[327.140,76.500],[332.140,72.500],[327.140,72.500],[327.140,72.000],[327.140,71.500],[332.140,71.500],[327.140,67.500],[337.140,72.000]]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "T",
+          "pt": [291.510,76.200],
+          "align": "c",
+          "width": 55.590,
+          "text": "(2) Async"
+        }
+      ],
+      "arrowhead": "vee",
+      "color": "brown",
+      "dir": "forward",
+      "label": "(2) Async",
+      "lp": "291.51,80.4",
+      "pos": "e,337.14,72 245.87,72 272.11,72 300.04,72 326.9,72",
+      "style": "dashed,bold"
+    },
+    {
+      "_gvid": 2,
+      "tail": 0,
+      "head": 3,
+      "_draw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "b",
+          "points": [[207.410,58.860],[256.820,51.090],[319.580,41.220],[371.040,33.120]]
+        }
+      ],
+      "_hdraw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "P",
+          "points": [[381.180,31.530],[372.000,37.530],[376.240,32.310],[371.300,33.080],[371.300,33.080],[371.300,33.080],[376.240,32.310],[370.600,28.640],[381.180,31.530]]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "T",
+          "pt": [291.510,54.200],
+          "align": "c",
+          "width": 16.320,
+          "text": "(3)"
+        }
+      ],
+      "arrowhead": "vee",
+      "dir": "forward",
+      "label": "(3)",
+      "lp": "291.51,58.4",
+      "pos": "e,381.18,31.529 207.41,58.859 256.82,51.089 319.58,41.217 371.04,33.123",
+      "style": "solid"
+    },
+    {
+      "_gvid": 3,
+      "tail": 3,
+      "head": 4,
+      "_draw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "b",
+          "points": [[599.310,18.000],[613.100,18.000],[627.180,18.000],[641.080,18.000]]
+        }
+      ],
+      "_hdraw_":
+      [
+        {
+          "op": "S",
+          "style": "solid"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "C",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "P",
+          "points": [[651.170,18.000],[641.170,22.500],[646.170,18.000],[641.170,18.000],[641.170,18.000],[641.170,18.000],[646.170,18.000],[641.170,13.500],[651.170,18.000]]
+        }
+      ],
+      "_ldraw_":
+      [
+        {
+          "op": "F",
+          "size": 14.000,
+          "face": "Times-Roman"
+        },
+        {
+          "op": "c",
+          "grad": "none",
+          "color": "#000000"
+        },
+        {
+          "op": "T",
+          "pt": [625.260,22.200],
+          "align": "c",
+          "width": 16.320,
+          "text": "(1)"
+        }
+      ],
+      "arrowhead": "vee",
+      "dir": "forward",
+      "label": "(1)",
+      "lp": "625.26,26.4",
+      "pos": "e,651.17,18 599.31,18 613.1,18 627.18,18 641.08,18",
+      "style": "solid"
+    }
+  ]
+}

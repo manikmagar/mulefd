@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.app.CommandModel;
+import com.javastreets.mulefd.app.DrawingException;
 import com.javastreets.mulefd.drawings.Diagram;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.model.ComponentItem;
@@ -43,7 +44,7 @@ public class DiagramRenderer {
             log.error(
                 "Found an invalid configuration line in mule components file. Column count must be 5. Line - {}",
                 line);
-            throw new RuntimeException("Invalid mule components configuration file.");
+            throw new DrawingException("Invalid mule components configuration file.");
           }
           ComponentItem item = new ComponentItem();
           item.setPrefix(part[0]);
@@ -53,7 +54,7 @@ public class DiagramRenderer {
             log.error(
                 "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - {}",
                 line);
-            throw new RuntimeException("Invalid mule components configuration file.");
+            throw new DrawingException("Invalid mule components configuration file.");
           }
           item.setPathAttributeName(part[3]);
           item.setConfigAttributeName(part[4]);
@@ -71,6 +72,10 @@ public class DiagramRenderer {
   public Boolean render() {
     try {
       List<FlowContainer> flows = findFlows();
+      if (commandModel.getFlowName() != null && flows.stream().noneMatch(
+          flowContainer -> flowContainer.getName().equalsIgnoreCase(commandModel.getFlowName()))) {
+        throw new DrawingException("Flow not found - " + commandModel.getFlowName());
+      }
       return diagram(flows);
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
