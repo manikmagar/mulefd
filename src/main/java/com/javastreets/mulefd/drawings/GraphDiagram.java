@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.javastreets.mulefd.app.DrawingException;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
 import com.javastreets.mulefd.model.MuleComponent;
@@ -41,16 +42,32 @@ public class GraphDiagram implements Diagram {
     List<Component> flows = drawingContext.getComponents();
     Path singleFlowDirPath = Paths.get(targetDirectory.getAbsolutePath(), "single-flow-diagrams",
         DateUtil.now("ddMMyyyy-HHmmss"));
+    if (drawingContext.getFlowName() != null) {
+      Component component = flows.stream()
+          .filter(component1 -> component1.getName().equalsIgnoreCase(drawingContext.getFlowName()))
+          .findFirst().orElseThrow(() -> new DrawingException(
+              "Target flow not found - " + drawingContext.getFlowName()));
+      MutableNode flowNode = processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
+      flowNode.addTo(rootGraph);
+    }
+
     for (Component component : flows) {
       if (drawingContext.getFlowName() == null
-          || component.getName().equalsIgnoreCase(drawingContext.getFlowName())) {
-        MutableGraph flowGraph = initNewGraph();
+          || mappedFlowKinds.contains(component.qualifiedName())) {
+
         MutableNode flowNode =
             processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
 
-        flowNode.addTo(flowGraph);
-
         if (drawingContext.isGenerateSingles() && component.isaFlow()) {
+          MutableGraph flowGraph = initNewGraph();
+          flowNode.addTo(flowGraph);
+          for (Component component2 : flows) {
+            if (mappedFlowKinds.contains(component2.qualifiedName())) {
+              MutableNode flowNode3 =
+                  processComponent(component2, drawingContext, flowRefs, mappedFlowKinds);
+              flowNode3.addTo(flowGraph);
+            }
+          }
           writeFlowGraph(component, singleFlowDirPath, flowGraph);
         }
         flowNode.addTo(rootGraph);
@@ -111,6 +128,7 @@ public class GraphDiagram implements Diagram {
 
   MutableNode processComponent(Component component, DrawingContext drawingContext,
       Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
+    log.debug("Processing flow - {}", component.qualifiedName());
     FlowContainer flow = (FlowContainer) component;
     Consumer<MutableNode> asFlow = flowNode -> flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
@@ -121,8 +139,8 @@ public class GraphDiagram implements Diagram {
     }
     MutableNode sourceNode = null;
     boolean hasSource = false;
-    for (int j = 1; j <= flow.getComponents().size(); j++) {
-      MuleComponent muleComponent = flow.getComponents().get(j - 1);
+    for (int componentIdx = 1; componentIdx <= flow.getComponents().size(); componentIdx++) {
+      MuleComponent muleComponent = flow.getComponents().get(componentIdx - 1);
       // Link style should be done with .linkTo()
       String name = muleComponent.qualifiedName();
       if (muleComponent.isaFlowRef()) {
@@ -154,6 +172,7 @@ public class GraphDiagram implements Diagram {
         // 1. Create a new apikit node for this component
         // 2. Find all flows with name ending with ":{apikiConfigName}"
         // 3. Link those flows with apiKit flow.
+        log.debug("Processing apikit component - {}", component.qualifiedName());
         MutableNode apiKitNode =
             mutNode(muleComponent.getType().concat(muleComponent.getConfigRef().getValue()))
                 .add(Label.htmlLines("<b>" + muleComponent.getType() + "</b>",
@@ -166,9 +185,10 @@ public class GraphDiagram implements Diagram {
           asFlow.accept(node);
           apiKitNode.addLink(to(node).with(Style.SOLID));
         }
-        flowNode.addLink(to(apiKitNode).with(Style.SOLID, Label.of("(" + (j - 1) + ")")));
+        flowNode
+            .addLink(to(apiKitNode).with(Style.SOLID, Label.of("(" + (componentIdx - 1) + ")")));
       } else {
-        addSubNodes(flowNode, hasSource ? j - 1 : j, muleComponent, name);
+        addSubNodes(flowNode, hasSource ? componentIdx - 1 : componentIdx, muleComponent, name);
       }
 
       mappedFlowKinds.add(name);
@@ -183,12 +203,13 @@ public class GraphDiagram implements Diagram {
     return String.format("**%s**: %s", component.getType(), component.getName());
   }
 
-  private void addSubNodes(MutableNode flowNode, int j, MuleComponent muleComponent, String name) {
+  private void addSubNodes(MutableNode flowNode, int callSequence, MuleComponent muleComponent,
+      String name) {
     if (muleComponent.isAsync()) {
       flowNode.addLink(to(mutNode(name)).with(Style.DASHED.and(Style.BOLD),
-          Label.of("(" + j + ") Async"), Color.BROWN));
+          Label.of("(" + callSequence + ") Async"), Color.BROWN));
     } else {
-      flowNode.addLink(to(mutNode(name)).with(Style.SOLID, Label.of("(" + j + ")")));
+      flowNode.addLink(to(mutNode(name)).with(Style.SOLID, Label.of("(" + callSequence + ")")));
     }
   }
 

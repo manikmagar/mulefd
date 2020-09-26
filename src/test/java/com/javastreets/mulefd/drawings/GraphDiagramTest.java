@@ -3,6 +3,7 @@ package com.javastreets.mulefd.drawings;
 import static guru.nidi.graphviz.attribute.Arrow.VEE;
 import static guru.nidi.graphviz.model.Factory.mutGraph;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -168,6 +169,35 @@ class GraphDiagramTest {
 
   }
 
+  @Test
+  @DisplayName("Validate generated graph for Single flow when generated as JSON.")
+  void drawToValidateGraph_SingleFlow() throws Exception {
+
+    List flows = DiagramRendererTestUtil
+        .getFlows(Paths.get("src/test/resources/single-flow-generation-example.xml"));
+    File output = new File(".", "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+    context.setFlowName("sub-flow-level-1-2");
+    context.setKnownComponents(Collections.emptyMap());
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    Graphviz.useEngine(new GraphvizV8Engine());
+    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    System.out.println(jsonGraph);
+    String ref = new String(
+        Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
+    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+    Graphviz.releaseEngine();
+
+  }
 
   @Test
   void drawWithSinglesGeneration() {
@@ -235,11 +265,34 @@ class GraphDiagramTest {
     System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
     ArgumentCaptor<Component> compArg = ArgumentCaptor.forClass(Component.class);
-    verify(graphDiagram, Mockito.times(2)).processComponent(compArg.capture(), eq(context),
+    verify(graphDiagram, Mockito.times(3)).processComponent(compArg.capture(), eq(context),
         anyMap(), anyList());
-    assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow);
+    assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow, subflow);
     logs.assertContains(
         "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+  }
+
+
+  @Test
+  @DisplayName("Throw error when given flow name not found")
+  void drawASingleFlow_WhenFlowNotFound() {
+    // Get the Java runtime
+    Runtime runtime = Runtime.getRuntime();
+    // Run the garbage collector
+    runtime.gc();
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setFlowName("wrong-flow-name");
+    FlowContainer flowContainer = new FlowContainer("flow", "test-flow-1");
+
+    context.setComponents(Arrays.asList(flowContainer));
+    context.setKnownComponents(Collections.emptyMap());
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    Throwable throwable = catchThrowable(() -> graphDiagram.draw(context));
+    assertThat(throwable).isNotNull().hasMessage("Target flow not found - wrong-flow-name");
   }
 
   @Test
