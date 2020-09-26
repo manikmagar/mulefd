@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.javastreets.mulefd.app.DrawingException;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
 import com.javastreets.mulefd.model.MuleComponent;
@@ -44,7 +45,7 @@ public class GraphDiagram implements Diagram {
     if (drawingContext.getFlowName() != null) {
       Component component = flows.stream()
           .filter(component1 -> component1.getName().equalsIgnoreCase(drawingContext.getFlowName()))
-          .findFirst().orElseThrow(() -> new RuntimeException(
+          .findFirst().orElseThrow(() -> new DrawingException(
               "Target flow not found - " + drawingContext.getFlowName()));
       MutableNode flowNode = processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
       flowNode.addTo(rootGraph);
