@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
+import guru.nidi.graphviz.model.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,6 @@ public class GraphDiagram implements Diagram {
   public boolean draw(DrawingContext drawingContext) {
     MutableGraph rootGraph = initNewGraph();
     File targetDirectory = drawingContext.getOutputFile().getParentFile();
-
     Map<String, Component> flowRefs = new HashMap<>();
     List<String> mappedFlowKinds = new ArrayList<>();
     List<Component> flows = drawingContext.getComponents();
@@ -76,9 +76,42 @@ public class GraphDiagram implements Diagram {
     if (drawingContext.getFlowName() == null) {
       checkUnusedNodes(rootGraph);
     }
+    addLegends(rootGraph);
     return writGraphToFile(drawingContext.getOutputFile(), rootGraph);
   }
 
+  void addLegends(MutableGraph rootGraph){
+    graph("legend")
+            .directed()
+            .cluster()
+            .graphAttr().with(
+                    Label.html("<b>Legend</b>"), Style.DASHED)
+            .with(
+                    asFlow(mutNode("a Flow"))
+                            .addLink(to(asSubFlow(mutNode(" a sub-flow"))).with(Style.INVIS)),
+                    asSubFlow(mutNode(" a sub-flow"))
+                            .addLink(to(asUnusedFlow(mutNode("An unused flow/sub-flow"))).with(Style.INVIS)),
+                    asSourceNode("a flow source")
+                      .addLink(to(asFlow(mutNode("a Flow calling itself"))).with(Style.INVIS)),
+                    asFlow(mutNode("a Flow calling itself"))
+                            .addLink(asFlow(mutNode("a Flow calling itself")))
+                            .addLink(to(
+                    asSubFlow(mutNode("a sub-flow calling itself"))
+                            .addLink(asSubFlow(mutNode("a sub-flow calling itself")))).with(Style.INVIS)),
+                    node("Direction weight represents call sequence").with(Shape.NONE)
+                    .link(to(
+                    node("Flow A")
+                            .link(
+                                    to(node("sub-flow-1")).with(Label.of("(1)")))).with(Style.DOTTED)),
+                    node("Direction label Asynchronous call to a sub-flow").with(Shape.NONE)
+                            .link(to(
+                                    node("Flow C")
+                                            .link(
+                                                    to(node("sub-flow-C1")).with(Label.of("(1) Async")))).with(Style.DOTTED)),
+                    asApikitNode("apikit")
+            )
+            .addTo(rootGraph);
+  }
   boolean writeFlowGraph(Component flowComponent, Path targetDirectory, MutableGraph flowGraph) {
     if (!flowComponent.isaFlow())
       return false;
@@ -113,6 +146,12 @@ public class GraphDiagram implements Diagram {
   }
 
   MutableGraph initNewGraph() {
+    return initNewGraph(getDiagramHeaderLines());
+  }
+  MutableGraph initNewGraph(String label) {
+    return initNewGraph(new String[]{label});
+  }
+  MutableGraph initNewGraph(String[] label) {
     return mutGraph("mule").setDirected(true).linkAttrs().add(VEE.dir(DirType.FORWARD)).graphAttrs()
         .add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT), GraphAttr.splines(GraphAttr.SplineMode.SPLINE),
             GraphAttr.pad(2.0), GraphAttr.dpi(150),
@@ -123,19 +162,29 @@ public class GraphDiagram implements Diagram {
     graph.nodes().stream()
         .filter(node -> node.links().isEmpty() && graph.edges().stream().noneMatch(
             edge -> edge.to().name().equals(node.name()) || edge.from().name().equals(node.name())))
-        .forEach(node -> node.add(Color.RED, Style.FILLED, Color.GRAY));
+        .forEach(this::asUnusedFlow);
+  }
+
+  MutableNode asUnusedFlow(MutableNode node) {
+    return node.add(Color.RED, Style.FILLED, Color.GRAY);
+  }
+
+  MutableNode asFlow(MutableNode node) {
+    return node.add(Shape.RECTANGLE).add(Color.BLUE);
+  }
+  MutableNode asSubFlow(MutableNode node) {
+    return node.add(Color.BLACK).add(Shape.ELLIPSE);
   }
 
   MutableNode processComponent(Component component, DrawingContext drawingContext,
       Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
     log.debug("Processing flow - {}", component.qualifiedName());
     FlowContainer flow = (FlowContainer) component;
-    Consumer<MutableNode> asFlow = flowNode -> flowNode.add(Shape.RECTANGLE).add(Color.BLUE);
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isaSubFlow()) {
-      flowNode.add(Color.BLACK).add(Shape.ELLIPSE);
+      asSubFlow(flowNode);
     } else {
-      asFlow.accept(flowNode);
+      asFlow(flowNode);
     }
     MutableNode sourceNode = null;
     boolean hasSource = false;
@@ -164,7 +213,7 @@ public class GraphDiagram implements Diagram {
       if (muleComponent.isSource()) {
         hasSource = true;
         sourceNode =
-            mutNode(name).add(Shape.HEXAGON, Color.DARKORANGE).add("sourceNode", Boolean.TRUE).add(
+            asSourceNode(name).add(
                 Label.htmlLines("<b>" + muleComponent.getType() + "</b>", muleComponent.getName()));
       } else if (muleComponent.getType().equals("apikit")) {
         // APIKit auto generated flows follow a naming pattern
@@ -174,15 +223,15 @@ public class GraphDiagram implements Diagram {
         // 3. Link those flows with apiKit flow.
         log.debug("Processing apikit component - {}", component.qualifiedName());
         MutableNode apiKitNode =
-            mutNode(muleComponent.getType().concat(muleComponent.getConfigRef().getValue()))
+            asApikitNode(muleComponent.getType().concat(muleComponent.getConfigRef().getValue()))
                 .add(Label.htmlLines("<b>" + muleComponent.getType() + "</b>",
                     muleComponent.getConfigRef().getValue()))
-                .add(Shape.DOUBLE_CIRCLE, Color.CYAN, Style.FILLED);
+                ;
         for (Component component1 : searchFlowBySuffix(
             ":" + muleComponent.getConfigRef().getValue(), drawingContext.getComponents())) {
           MutableNode node =
               mutNode(component1.qualifiedName()).add(Label.markdown(getNodeLabel(component1)));
-          asFlow.accept(node);
+          asFlow(node);
           apiKitNode.addLink(to(node).with(Style.SOLID));
         }
         flowNode
@@ -194,9 +243,18 @@ public class GraphDiagram implements Diagram {
       mappedFlowKinds.add(name);
     }
     if (sourceNode != null) {
-      flowNode = sourceNode.add(Style.FILLED, Color.CYAN).addLink(to(flowNode).with(Style.BOLD));
+      flowNode = sourceNode.addLink(to(flowNode).with(Style.BOLD));
     }
     return flowNode;
+  }
+
+  MutableNode asApikitNode(String name) {
+    return mutNode(name)
+            .add(Shape.DOUBLE_CIRCLE, Color.CYAN, Style.FILLED);
+  }
+
+  MutableNode asSourceNode(String name) {
+    return mutNode(name).add(Shape.HEXAGON, Style.FILLED, Color.CYAN).add("sourceNode", Boolean.TRUE);
   }
 
   private String getNodeLabel(Component component) {
