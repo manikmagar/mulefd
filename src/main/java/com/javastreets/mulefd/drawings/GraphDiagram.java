@@ -102,11 +102,12 @@ public class GraphDiagram implements Diagram {
                 .addLink(to(asSubFlow(sizedNode("sub-flow", 1))).with(Style.INVIS)),
             asSubFlow(sizedNode("sub-flow", 1))
                 .addLink(to(asUnusedFlow(sizedNode("Unused sub/-flow", 2))).with(Style.INVIS)),
-            sizedNode("Flow A", 1).addLink(callSequenceLink(1, sizedNode("sub-flow-1", 1))),
-            sizedNode("Flow C", 1).addLink(asAsyncLink(1, sizedNode("sub-flow-C1", 1))
-                .with(Label.lines("Asynchronous call").tail())),
+            sizedNode("Flow A", 1).addLink(callSequenceLink(1, sizedNode("sub-flow-1", 1.25))
+                .with(Label.lines("Call Sequence").tail(-5, 8))),
+            sizedNode("Flow C", 1).addLink(asAsyncLink(1, sizedNode("sub-flow-C1", 1.25))
+                .with(Label.lines("Asynchronous call").tail(-5, 8))),
             asSourceNode(sizedNode("flow source", 1.5))
-                .addLink(to(asFlow(sizedNode("flow self-call", 1))).with(Style.INVIS)),
+                .addLink(to(asFlow(sizedNode("flow self-call", 1.25))).with(Style.INVIS)),
             asFlow(sizedNode("flow self-call", 2)).addLink(asFlow(sizedNode("flow self-call", 2)))
                 .addLink(to(asSubFlow(sizedNode("sub-flow self-call", 2))
                     .addLink(asSubFlow(sizedNode("sub-flow self-call", 2)))).with(Style.INVIS)))
