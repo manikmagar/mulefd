@@ -191,7 +191,6 @@ class GraphDiagramTest {
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
     Graphviz.useEngine(new GraphvizV8Engine());
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
-    System.out.println(jsonGraph);
     String ref = new String(
         Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
@@ -313,16 +312,16 @@ class GraphDiagramTest {
     Mockito.when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test"});
     MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
         .add(VEE.dir(Arrow.DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
-            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(2.0), GraphAttr.dpi(150),
-            Label.htmlLines("Test").locate(Label.Location.TOP));
-    MutableGraph returnedGraph = graphDiagram.initNewGraph();
+            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(1, 0.5),
+            GraphAttr.dpi(150), Label.htmlLines("Test").locate(Label.Location.TOP));
+    MutableGraph returnedGraph = graphDiagram.initNewGraph("Test");
     assertThat(returnedGraph).isEqualTo(graph);
   }
 
   @Test
   void writGraphToFile() throws Exception {
     GraphDiagram graphDiagram = new GraphDiagram();
-    MutableGraph graph = graphDiagram.initNewGraph();
+    MutableGraph graph = graphDiagram.initNewGraph("Test");
     boolean generated = graphDiagram.writGraphToFile(new File(tempDir, "test.png"), graph);
     assertThat(generated).isTrue();
   }
@@ -330,7 +329,7 @@ class GraphDiagramTest {
   @Test
   void writeFlowGraphWithFlow() {
     GraphDiagram graphDiagram = new GraphDiagram();
-    MutableGraph graph = graphDiagram.initNewGraph();
+    MutableGraph graph = graphDiagram.initNewGraph("Test");
     FlowContainer flowContainer = new FlowContainer("flow", "test-flow");
     flowContainer.addComponent(new MuleComponent("flow-ref", "test-sub-flow"));
     FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
@@ -345,7 +344,7 @@ class GraphDiagramTest {
   @Test
   void writeFlowGraphWithSubFlow() {
     GraphDiagram graphDiagram = new GraphDiagram();
-    MutableGraph graph = graphDiagram.initNewGraph();
+    MutableGraph graph = graphDiagram.initNewGraph("Test");
     FlowContainer subflow = new FlowContainer("sub-flow", "test-sub-flow");
     Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
     boolean written = graphDiagram.writeFlowGraph(subflow, outputFilePath, graph);
