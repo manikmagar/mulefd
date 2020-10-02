@@ -9,8 +9,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  sonar-analysis:
-    name: Build
+  code-analysis:
+    name: code-analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
