@@ -12,6 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -193,6 +194,30 @@ class GraphDiagramTest {
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(
         Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
+    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+    Graphviz.releaseEngine();
+
+  }
+
+  @Test
+  @DisplayName("Validate generated graph in json for components from mulefd-components.csv file")
+  void drawToValidateGraph_Mulefd_Components() throws Exception {
+    Files.copy(Paths.get("src/test/resources/mulefd-components.csv"),
+        Paths.get("./mulefd-components.csv"), StandardCopyOption.REPLACE_EXISTING);
+
+    DrawingContext context = DiagramRendererTestUtil.getDrawingContext(
+        Paths.get("src/test/resources/kafka-flows-mulefd-components-example.xml"));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    Graphviz.useEngine(new GraphvizV8Engine());
+    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String ref = new String(Files
+        .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
     Graphviz.releaseEngine();
 

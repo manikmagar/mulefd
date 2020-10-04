@@ -1,0 +1,3 @@
+prefix,operation,sourceFlag,path,configName,async
+kafka,message-listener,true,topic,config-ref,true
+kafka,*,false,topic,config-ref,true

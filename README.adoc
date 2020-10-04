@@ -12,7 +12,8 @@ endif::[]
 image:https://img.shields.io/github/release/manikmagar/mulefd.svg[Release,link=https://github.com/manikmagar/mulefd/releases]
 image:https://github.com/manikmagar/mulefd/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mulefd/actions]
 image:https://api.dependabot.com/badges/status?host=github&repo=manikmagar/mulefd[Dependabot Status,https://dependabot.com]
-
+image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=vulnerabilities[SonarCloud Vulnerability]
+image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=alert_status[SonarCloud Quality]
 
 toc::[]
 
@@ -275,6 +276,32 @@ Current release supports generating `Graph` diagram only.
 Target directory to output generated diagram can be specified with `-t {directoryPath}` option. This is an optional argument and defaults to the source directory (or parent directory if source is a file).
 
 The file name for diagram defaults to `mule-diagram.png`. This can be changed by specifying `-o {filename}` argument.
+
+== Known modules/connectors
+Mule has many connectors/modules that can be used for building flows and sub-flows, and list keeps growing. This tool maintains a list of known components with their supported operations for including in the generated diagram.
+
+You can find this list in source code link:src/main/resources/default-mule-components.csv[].
+
+Each record in this file has following columns -
+
+[source, csv]
+----
+prefix,operation,sourceFlag,path,configName,async
+
+----
+* **prefix**: Namespace of module/connector. Eg. `vm`, `http` etc.
+* **operation**: Name of an operation or input source in that namespace. Eg. `listener`, `consume` in `vm` etc. This supports wildcard entries (values defined as `*`) for non-source (`sourceFlag=false`) entries.
+* **sourceFlag**: `true` if `operation` is an input source withing that namespace. Eg. `listener` in `vm`.
+* **path**: Name of the attribute on operation which can help identify resource path. Eg. `queueName` for `vm:listener` or `path` for `http:request`. For sources, this is visible on source nodes in diagram.
+* **configName**: Name of the module configuration. Eg. `config-ref` attribute name for `vm:listener`. For sources, this is visible on source nodes in diagram. This can help identify source uniquely when multiple configuration exists.
+* **async**: `true` if this is an asynchronous operation. Defaults to `false`.
+
+=== Registering custom modules
+If any module is missing in the default list - either being a new module or a custom module, then it is possible for users to register their modules.
+
+If `mulefd-components.csv` named CSV file exists in `sourcePath`, then all modules/connectors within that file are registered as known components. Structure of this file must be same as default components file explained above.
+
+See example file at link:src/test/resources/mulefd-components.csv[].
 
 == Copyright & License
 
