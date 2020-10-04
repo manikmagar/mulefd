@@ -131,7 +131,7 @@ compileTestJava {
 
 sonarqube {
 	properties {
-		property "sonar.projectKey", "manikmagar_mule-flow-diagrams"
+		property "sonar.projectKey", "manikmagar_mulefd"
 		property "sonar.organization", "manikmagar"
 		property "sonar.host.url", "https://sonarcloud.io"
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/jacocoXml"
