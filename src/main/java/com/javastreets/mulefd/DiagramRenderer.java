@@ -24,6 +24,8 @@ import com.javastreets.mulefd.model.FlowContainer;
 public class DiagramRenderer {
   public static final int MULE_VERSION_4 = 4;
   public static final int MULE_VERSION_3 = 3;
+  public static final String DEFAULT_MULE_COMPONENTS_CSV = "default-mule-components.csv";
+  public static final String MULE_CUSTOM_COMPONENTS_CSV = "mulefd-components.csv";
   Logger log = LoggerFactory.getLogger(DiagramRenderer.class);
 
   private CommandModel commandModel;
@@ -36,20 +38,20 @@ public class DiagramRenderer {
     Map<String, ComponentItem> items = new HashMap<>();
     try {
       loadComponentsFile(items, new InputStreamReader(Objects.requireNonNull(Thread.currentThread()
-          .getContextClassLoader().getResourceAsStream("default-mule-components.csv"))));
+          .getContextClassLoader().getResourceAsStream(DEFAULT_MULE_COMPONENTS_CSV))));
     } catch (IOException e) {
       log.error("Error while loading default mule components file.", e);
     }
     Path mulefdComponents = this.commandModel.getSourcePath().toFile().isDirectory()
-        ? this.commandModel.getSourcePath().resolve("./mulefd-components.csv")
-        : this.commandModel.getSourcePath().resolveSibling("./mulefd-components.csv");
+        ? this.commandModel.getSourcePath().resolve(MULE_CUSTOM_COMPONENTS_CSV)
+        : this.commandModel.getSourcePath().resolveSibling(MULE_CUSTOM_COMPONENTS_CSV);
     if (Files.exists(mulefdComponents)) {
       try {
         log.info("Found {}. This will be loaded to register any custom modules/connectors.",
             mulefdComponents);
         loadComponentsFile(items, new InputStreamReader(Files.newInputStream(mulefdComponents)));
       } catch (IOException e) {
-        throw new DrawingException("Unable to load mulefd-components.csv file.", e);
+        throw new DrawingException("Unable to load file - " + MULE_CUSTOM_COMPONENTS_CSV, e);
       }
     }
     return items;
