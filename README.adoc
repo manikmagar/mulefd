@@ -12,7 +12,8 @@ endif::[]
 image:https://img.shields.io/github/release/manikmagar/mulefd.svg[Release,link=https://github.com/manikmagar/mulefd/releases]
 image:https://github.com/manikmagar/mulefd/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mulefd/actions]
 image:https://api.dependabot.com/badges/status?host=github&repo=manikmagar/mulefd[Dependabot Status,https://dependabot.com]
-
+image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=vulnerabilities[SonarCloud Vulnerability]
+image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=alert_status[SonarCloud Quality]
 
 toc::[]
 
