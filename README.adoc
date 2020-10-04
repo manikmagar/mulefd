@@ -276,6 +276,32 @@ Target directory to output generated diagram can be specified with `-t {director
 
 The file name for diagram defaults to `mule-diagram.png`. This can be changed by specifying `-o {filename}` argument.
 
+== Known modules/connectors
+Mule has many connectors/modules that can be used for building flows and sub-flows. This list keeps growing. This tool maintains a list of known components with their supported operations for including in the generate diagram.
+
+You can find this list in source code link:src/main/resources/default-mule-components.csv[].
+
+Each record in this file has following columns -
+
+[source, csv]
+----
+prefix,operation,sourceFlag,path,configName,async
+
+----
+* **prefix**: Namespace of module/connector. eg. `vm`
+* **operation**: Name of the operations or input source in that namespace. eg. `listener`, `consume` in `vm` etc.
+* **sourceFlag**: `true` if `operation` is an input source withing that namespace. eg. `listener` in `vm`.
+* **path**: Name of the attribute on operation which can help identify resource path. eg. `queueName` for `vm:listener` or `path` for `http:request`. For sources, this is visible on source nodes in diagram.
+* **configName**: Name of the module configuration. For sources, this is visible on source nodes in diagram. This can help identify source uniquely when multiple configuration exists.
+* **async**: `true` if this is an asynchronous operation. Defaults to `false`.
+
+=== Registering custom modules
+If any module is missing in the default list - either being a new module or a custom module, then it is possible for users to register their modules.
+
+If `mulefd-components.csv` named CSV file exists in `sourcePath`, then all modules/connectors within that file are registered as known components. Structure of this file must be same as default components file explained above.
+
+See example file at link:src/test/resources/mulefd-components.csv[].
+
 == Copyright & License
 
 Licensed under the MIT License, see the link:LICENSE[LICENSE] file for details.

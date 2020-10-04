@@ -6,10 +6,9 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ import org.slf4j.event.Level;
 import com.javastreets.mulefd.app.CommandModel;
 import com.javastreets.mulefd.drawings.DiagramType;
 import com.javastreets.mulefd.drawings.DrawingContext;
-import com.javastreets.mulefd.model.FlowContainer;
+import com.javastreets.mulefd.model.Component;
 
 import io.github.netmikey.logunit.api.LogCapturer;
 
@@ -39,13 +38,14 @@ class DiagramRendererTest {
   void emptySourceDirRendering() {
     DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(tempDir.toPath())));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
-    doReturn(false).when(renderer).diagram(anyList());
+    doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
     verify(renderer).prepareKnownComponents();
-    ArgumentCaptor<List<FlowContainer>> captor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<DrawingContext> captor = ArgumentCaptor.forClass(DrawingContext.class);
     verify(renderer).diagram(captor.capture());
-    assertThat(captor.getValue()).isEmpty();
+    assertThat(captor.getValue().getComponents()).isEmpty();
   }
+
 
   @Test
   @DisplayName("Skips rendering non-mule file")
@@ -53,12 +53,12 @@ class DiagramRendererTest {
     Path sourcePath = Paths.get("src/test/resources/renderer/non-mule");
     DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(sourcePath)));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
-    doReturn(false).when(renderer).diagram(anyList());
+    doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
     verify(renderer).prepareKnownComponents();
-    ArgumentCaptor<List<FlowContainer>> captor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<DrawingContext> captor = ArgumentCaptor.forClass(DrawingContext.class);
     verify(renderer).diagram(captor.capture());
-    assertThat(captor.getValue()).isEmpty();
+    assertThat(captor.getValue().getComponents()).isEmpty();
     logs.assertContains(
         "Not a mule configuration file: " + Paths.get(sourcePath.toString(), "non-mule-file.xml"));
   }
@@ -69,13 +69,13 @@ class DiagramRendererTest {
     DiagramRenderer renderer = Mockito
         .spy(new DiagramRenderer(getCommandModel(Paths.get("src/test/resources/renderer/single"))));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
-    doReturn(false).when(renderer).diagram(anyList());
+    doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
     verify(renderer).prepareKnownComponents();
-    ArgumentCaptor<List<FlowContainer>> captor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<DrawingContext> captor = ArgumentCaptor.forClass(DrawingContext.class);
     verify(renderer).diagram(captor.capture());
-    assertThat(captor.getValue()).as("Flow container list").hasSize(1)
-        .extracting(FlowContainer::getType, FlowContainer::getName)
+    assertThat(captor.getValue().getComponents()).as("Flow container list").hasSize(1)
+        .extracting(Component::getType, Component::getName)
         .containsExactly(tuple("flow", "test-hello-appFlow"));
   }
 
@@ -111,6 +111,16 @@ class DiagramRendererTest {
   void prepareKnownComponents() {
     assertThat(new DiagramRenderer(getCommandModel(tempDir.toPath())).prepareKnownComponents())
         .isNotEmpty();
+  }
+
+  @Test
+  @DisplayName("Prepare components from mulefd csv file")
+  void prepareKnownComponentsWithMulefdFile() throws IOException {
+    Files.copy(Paths.get("src/test/resources/mulefd-components.csv"),
+        tempDir.toPath().resolve("mulefd-components.csv"), StandardCopyOption.REPLACE_EXISTING);
+    assertThat(new DiagramRenderer(getCommandModel(tempDir.toPath())).prepareKnownComponents())
+        .isNotEmpty().containsKey("kafka:message-listener");
+    Files.deleteIfExists(Paths.get("./mulefd-components.csv"));
   }
 
   @Test

@@ -34,8 +34,30 @@ public class DiagramRenderer {
 
   Map<String, ComponentItem> prepareKnownComponents() {
     Map<String, ComponentItem> items = new HashMap<>();
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(Thread.currentThread()
-        .getContextClassLoader().getResourceAsStream("mule-components.csv")))) {
+    try {
+      loadComponentsFile(items, new InputStreamReader(Objects.requireNonNull(Thread.currentThread()
+          .getContextClassLoader().getResourceAsStream("default-mule-components.csv"))));
+    } catch (IOException e) {
+      log.error("Error while loading default mule components file.", e);
+    }
+    Path mulefdComponents = this.commandModel.getSourcePath().toFile().isDirectory()
+        ? this.commandModel.getSourcePath().resolve("./mulefd-components.csv")
+        : this.commandModel.getSourcePath().resolveSibling("./mulefd-components.csv");
+    if (Files.exists(mulefdComponents)) {
+      try {
+        log.info("Found {}. This will be loaded to register any custom modules/connectors.",
+            mulefdComponents);
+        loadComponentsFile(items, new InputStreamReader(Files.newInputStream(mulefdComponents)));
+      } catch (IOException e) {
+        throw new DrawingException("Unable to load mulefd-components.csv file.", e);
+      }
+    }
+    return items;
+  }
+
+  private void loadComponentsFile(Map<String, ComponentItem> items, InputStreamReader reader)
+      throws IOException {
+    try (BufferedReader br = new BufferedReader(reader)) {
       for (String line; (line = br.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
           log.debug("Reading component line - {}", line);
@@ -63,20 +85,19 @@ public class DiagramRenderer {
         }
       }
       // line is not visible here.
-    } catch (IOException e) {
-      log.error("mule-components file not found", e);
     }
-    return items;
   }
 
   public Boolean render() {
     try {
-      List<FlowContainer> flows = findFlows();
+      DrawingContext context = drawingContext(commandModel);
+      List<FlowContainer> flows = findFlows(context);
+      context.setComponents(Collections.unmodifiableList(flows));
       if (commandModel.getFlowName() != null && flows.stream().noneMatch(
           flowContainer -> flowContainer.getName().equalsIgnoreCase(commandModel.getFlowName()))) {
         throw new DrawingException("Flow not found - " + commandModel.getFlowName());
       }
-      return diagram(flows);
+      return diagram(context);
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
       return false;
@@ -87,7 +108,7 @@ public class DiagramRenderer {
     return Files.exists(Paths.get(commandModel.getSourcePath().toString(), path));
   }
 
-  List<FlowContainer> findFlows() throws IOException {
+  List<FlowContainer> findFlows(DrawingContext context) throws IOException {
     Path newSourcePath = getMuleSourcePath();
     List<FlowContainer> flows = new ArrayList<>();
     try (Stream<Path> paths = Files.walk(newSourcePath)) {
@@ -95,9 +116,8 @@ public class DiagramRenderer {
           .filter(
               path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".xml"))
           .collect(Collectors.toList());
-      Map<String, ComponentItem> knownComponents = prepareKnownComponents();
       for (Path path : xmls) {
-        flows(flows, knownComponents, path);
+        flows(flows, context.getKnownComponents(), path);
       }
     }
     return flows;
@@ -142,14 +162,11 @@ public class DiagramRenderer {
     }
   }
 
-  Boolean diagram(List<FlowContainer> flows) {
-    if (flows.isEmpty()) {
+  Boolean diagram(DrawingContext context) {
+    if (context.getComponents().isEmpty()) {
       log.warn("No mule flows found for creating diagram.");
       return false;
     }
-    DrawingContext context = drawingContext(commandModel);
-    context.setComponents(Collections.unmodifiableList(flows));
-    context.setKnownComponents(prepareKnownComponents());
     ServiceLoader<Diagram> diagramServices = ServiceLoader.load(Diagram.class);
     Iterator<Diagram> its = diagramServices.iterator();
     boolean drawn = false;
@@ -178,6 +195,7 @@ public class DiagramRenderer {
     context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
     context.setFlowName(model.getFlowName());
     context.setGenerateSingles(model.isGenerateSingles());
+    context.setKnownComponents(prepareKnownComponents());
     return context;
   }
 }

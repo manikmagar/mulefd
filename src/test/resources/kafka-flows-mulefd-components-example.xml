@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:Kafka="http://www.mulesoft.org/schema/mule/Kafka"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/http
+  http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+  http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-current.xsd
+	http://www.mulesoft.org/schema/mule/core
+	http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	http://www.mulesoft.org/schema/mule/http
+	http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+	http://www.mulesoft.org/schema/mule/ee/core
+	http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+	http://www.mulesoft.org/schema/mule/kafka
+	http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
+    <configuration-properties file="mule-app.properties">
+    </configuration-properties>
+    <http:listener-config name="HTTP_Listener_config"
+                          doc:name="HTTP Listener config"  >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+
+    <kafka:consumer-config name="Apache_Kafka_Consumer_configuration"
+                           doc:name="Apache Kafka Consumer configuration" >
+        <kafka:consumer-plaintext-connection groupId="${consumer.groupId}" >
+            <kafka:bootstrap-servers >
+                <kafka:bootstrap-server value="${config.basic.bootstrapServers}" />
+            </kafka:bootstrap-servers>
+            <kafka:topic-patterns >
+                <kafka:topic-pattern value='${topic1}
+	    &lt;kafka:topic-pattern value="topic-1" /&gt;
+	    &lt;kafka:topic-pattern value="topic-2" /&gt;
+	    &lt;/kafka:topic-patterns&gt;]' />
+            </kafka:topic-patterns>
+        </kafka:consumer-plaintext-connection>
+    </kafka:consumer-config>
+    <kafka:producer-config name="Apache_Kafka_Producer_configuration"
+                           doc:name="Apache Kafka Producer configuration" >
+        <kafka:producer-plaintext-connection >
+            <kafka:bootstrap-servers >
+                <kafka:bootstrap-server value="${config.basic.bootstrapServers}" />
+            </kafka:bootstrap-servers>
+        </kafka:producer-plaintext-connection>
+    </kafka:producer-config>
+    <kafka:consumer-config name="Apache_Kafka_Consumer_configuration1" doc:name="Apache Kafka Consumer configuration" >
+        <kafka:consumer-plaintext-connection groupId="${consumer.groupId}" >
+            <kafka:bootstrap-servers >
+                <kafka:bootstrap-server value="${config.basic.bootstrapServers}" />
+            </kafka:bootstrap-servers>
+            <kafka:topic-patterns >
+                <kafka:topic-pattern value="${config.topics}" />
+            </kafka:topic-patterns>
+        </kafka:consumer-plaintext-connection>
+    </kafka:consumer-config>
+    <flow name="Producer-Flow" >
+        <http:listener doc:name="Push message endpoint" config-ref="HTTP_Listener_config" path="/pushMessage" />
+        <logger level="INFO" doc:name="Logger" message="&amp;quot;Message: '&amp;quot; ++ payload.message ++ &amp;quot;' is going to be published to topic: '&amp;quot; ++ payload.topic ++ &amp;quot;'.&amp;quot;" />
+        <kafka:publish doc:name="Producer" topic="#[payload.topic]" key="#[now()]" config-ref="Apache_Kafka_Producer_configuration" />
+        <set-payload value="Message successfully sent to Apache Kafka topic." doc:name="Push response builder" />
+    </flow>
+    <flow name="Consumer-Flow" >
+        <kafka:message-listener doc:name="Consume message endpoint" config-ref="Apache_Kafka_Consumer_configuration"/>
+        <logger level="INFO" doc:name="Logger" message="'New message arrived: ' ++ payload ++ &amp;quot;, key:&amp;quot; ++ attributes.key ++ &amp;quot;, partition:&amp;quot; ++ attributes.partition ++ &amp;quot;, offset:&amp;quot; ++ attributes.offset"/>
+    </flow>
+</mule>
+
