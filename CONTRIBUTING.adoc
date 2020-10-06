@@ -1,0 +1,86 @@
+= Contributing
+
+Anyone is welcome to open issues and/or pull-requests for bugfixes, feature-requests and/or ideas.
+
+== How to build
+
+Clone the repository, cd `mulefd` and run `./gradlew build`.
+There will be a warning in the output but don't despair - that is just
+Java being picky.
+
+[source, bash]
+----
+$ git clone https://github.com/manikmagar/mulefd
+$ cd mulefd
+$ ./gradlew build
+----
+
+== Conventional Commits + squash and merge
+
+To make releasing as automated and fast as possible we (since 05-Oct-2020) use https://www.conventionalcommits.org.
+
+*TODO:* Add https://github.com/zeke/semantic-pull-requests on PRs to sanitize that at least PR title or one commit uses the conventional commit format.
+
+Intent is that on merge we squash to get as clean as changelog as possible.
+
+== Source formatting
+
+The build uses the https://github.com/diffplug/spotless[spotless] plugin to ensure Java and other files are formatted uniformly.
+If your build fails due to formatting errors then run `gradle spotlessApply` and it will reformat to be compatible.
+
+== Versioning
+
+`mulefd` uses semi-automatic versioning via the https://github.com/toolebox-io/gradle-git-versioner[git-versioner] plugin.
+This plugin uses the git log to derive what version number are the current one by looking for `[major]`, `[minor]` and `[patch]` in commit messages.
+
+This means there is no place in code or meta-data that we need to manually maintain version info.
+
+You can see the current version by running `./gradlew printVersion` - if you have 3 commits since last bump at `0.10.1` you would get a version number like `0.10.1.3`.
+
+For pull-requests don't try and trigger bump of a version; we'll apply that once its time for release.
+
+NOTE: The `com.javastreets.mulefd.app.VersionProvider` class will show a compile error in IDE's but ignore that, the `BUILDCONFIG` class gets generated during the Gradle build.
+
+== How releases are made
+
+Run a build check to see if things are clean:
+
+[source,shell]
+----
+$ gradle spotlessApply build clean
+----
+
+if nothing changed (use `git status`) then run:
+
+[source,shell]
+----
+$ gradle printVersion
+----
+
+to see if the right version are printed.
+If should have only 3 digits, i.e. `v0.45.1`, not `v0.45.1.23`.
+
+If 4 digits then make sure last commit as a `[minor]` or `[patch]` as part of its text.
+
+Once ready run:
+
+`$ gradle changelog`
+
+This will generate `CHANGELOG.md` using commitizen conventions.
+
+Edit the channgelog with some header on what changed in an overview form.
+
+Then run:
+
+`$ gradle tag`
+
+This will create an annotated tag using the `CHANGELOG.md` message.
+
+If all is good, run `$ gradle push --tags`.
+
+This will trigger github action flow which will prepare a github release.
+
+When all is good - go to https://github.com/manikmagar/mulefd/releases and check all is good;
+do final (cosmetic) edits on the release message and save.
+
+When saved, a github action workflow will get triggered. That workflow will push update the distribution mechanism for brew, container, scoop, sdkman etc.
