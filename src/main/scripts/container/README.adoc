@@ -1,0 +1,5 @@
+= Mule Flow Diagrams - Docker
+
+See https://github.com/manikmagar/mulefd[mulefd].
+
+NOTE: `mulefd` previously was known as `muleflowdiagrams`.
