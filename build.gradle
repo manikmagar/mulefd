@@ -56,7 +56,6 @@ dependencies {
 }
 
 spotless {
-	lineEndings 'UNIX'
 	format 'misc', {
 		target '**/*.gradle', '**/*.adoc', '**/.gitignore'
 		targetExclude 'src/main/scripts/container/README.md', 'build/container/README.md'
