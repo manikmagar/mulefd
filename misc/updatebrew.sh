@@ -8,6 +8,8 @@ mulefd_version=`ls build/distributions/mulefd-*.*.zip | sed -e 's/.*mulefd-\(.*\
 echo "Updating mulefd brew with version $mulefd_version from `pwd`"
 DIST=`ls build/distributions/mulefd-${mulefd_version}.zip | cut -f1 -d ' '`
 sha256=`cat $DIST.sha256`
+echo "DIST: ${DIST}"
+echo "SHA256: ${sha256}"
 
 rm -rf homebrew-tap
 git clone https://github.com/manikmagar/homebrew-tap.git
@@ -16,7 +18,7 @@ cp build/brew/formula/mulefd.rb homebrew-tap/Formula/mulefd.rb
 
 cd homebrew-tap
 
-git config user.name "Manik Magar"
+git config user.name "manikmagar"
 git config user.email "${GIT_USER_EMAIL}"
 
 
