@@ -24,6 +24,13 @@ repositories {
 	mavenCentral()
 }
 
+// Reproducible build to preserve checksum value with rebuilds
+tasks.withType(AbstractArchiveTask) {
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
+}
+
+
 test {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
