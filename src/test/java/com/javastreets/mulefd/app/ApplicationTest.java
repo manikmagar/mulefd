@@ -90,6 +90,28 @@ class ApplicationTest {
   }
 
   @Test
+  @DisplayName("When parsing source file without parent folder, sets parent as target")
+  void commandLineWithBareSourceFile() throws Exception {
+    tempDir.createNewFile();
+    Path sourceFile = Paths.get("db-config.xml");
+    sourceFile.toFile().delete();
+    Files.copy(Paths.get("src/test/resources/renderer/component-configs/db-config.xml"),
+        sourceFile);
+    String[] args = new String[] {sourceFile.toString()};
+    Application application = new Application();
+    new CommandLine(application).parseArgs(args);
+    CommandModel model = application.getCommandModel();
+
+    CommandModel expectedModel = new CommandModel();
+    expectedModel.setSourcePath(sourceFile);
+    expectedModel.setTargetPath(sourceFile.toAbsolutePath().getParent());
+    expectedModel.setDiagramType(DiagramType.GRAPH);
+    expectedModel.setOutputFilename("mule-diagram.png");
+    expectedModel.setGenerateSingles(false);
+    assertThat(model).isEqualToComparingFieldByField(expectedModel);
+  }
+
+  @Test
   @DisplayName("When parsing source file, sets parent as target")
   void commandLineWithSourceFile() throws Exception {
     tempDir.createNewFile();
