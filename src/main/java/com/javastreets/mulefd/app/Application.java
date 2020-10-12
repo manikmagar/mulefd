@@ -70,7 +70,7 @@ public class Application implements Callable<Boolean> {
       if (Files.isDirectory(sourcePath))
         resolvedTarget = sourcePath;
       if (Files.isRegularFile(sourcePath))
-        resolvedTarget = sourcePath.toFile().getParentFile().toPath();
+        resolvedTarget = sourcePath.toAbsolutePath().getParent();
     }
     cm.setTargetPath(resolvedTarget);
     cm.setDiagramType(diagramType);
