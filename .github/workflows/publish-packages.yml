@@ -14,6 +14,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 1.8
+          distribution: 'adopt'
       - name: build-gradle
         run: ./gradlew clean build -x test --build-cache --scan -s
       - name: docker
