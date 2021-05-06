@@ -1,0 +1,10 @@
+
+{
+  "catalogs": {},
+  "aliases": {
+    "mulefd": {
+      "script-ref": "jbang/mulefd.java",
+      "description": "Runs Mule Flow Diagrams"
+    }
+  }
+}
