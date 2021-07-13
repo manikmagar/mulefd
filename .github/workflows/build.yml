@@ -61,7 +61,7 @@ jobs:
       - name: build-gradle
         run: ./gradlew build test install --build-cache --scan -s
       - name: Archive build results
-        uses: actions/upload-artifact@v2.2.3
+        uses: actions/upload-artifact@v2.2.4
         if: always()
         with:
           name: ${{ runner.os }}-build-${{ github.sha }}
