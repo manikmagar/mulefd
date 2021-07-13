@@ -85,7 +85,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'adopt'
           check-latest: true
-      - uses: actions/download-artifact@v2.0.9
+      - uses: actions/download-artifact@v2.0.10
         with:
           name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
