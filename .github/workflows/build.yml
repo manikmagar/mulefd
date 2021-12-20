@@ -77,7 +77,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: [8,11,14]
+        java: [8,11,17]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-java@v2
