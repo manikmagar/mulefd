@@ -16,8 +16,9 @@ jobs:
           java-version: 8
           distribution: 'adopt'
           check-latest: true
+          cache: 'gradle'
       - name: build-gradle
-        run: ./gradlew clean build -x test --build-cache --scan -s
+        run: ./gradlew clean build -x test --build-cache --scan -s --no-daemon
       - name: docker
         continue-on-error: true
         env:
