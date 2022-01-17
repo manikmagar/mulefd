@@ -87,7 +87,7 @@ jobs:
         run: |
           java -version
           tree .
-          chmod +x ./install/mulefd/bin/mulefd
+          chmod +x ./build/install/mulefd/bin/mulefd
           ./build/install/mulefd/bin/mulefd --version
           ./build/install/mulefd/bin/mulefd ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
       - name: Test Windows build
