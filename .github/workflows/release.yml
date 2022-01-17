@@ -14,16 +14,11 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 8
-          distribution: 'adopt'
+          distribution: 'temurin'
           check-latest: true
-      - uses: actions/cache@v2.1.7
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
+          cache: 'gradle'
       - name: build-gradle
-        run: ./gradlew clean build install --build-cache --scan -s
+        run: ./gradlew clean build install --build-cache --scan -s --no-daemon
       - name: integration-test
         run: |
           export PATH=`pwd`/build/install/mulefd/bin:$PATH
