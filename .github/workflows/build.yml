@@ -80,7 +80,7 @@ jobs:
           check-latest: true
       - uses: actions/download-artifact@v2.1.0
         with:
-          name: ${{ runner.os }}-build-install-${{ github.sha }}
+          name: ${{ runner.os }}-build-${{ github.sha }}
           path: build
       - name: Test Linux build
         if: runner.os == 'Linux'
