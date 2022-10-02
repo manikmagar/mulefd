@@ -27,7 +27,6 @@ import com.javastreets.mulefd.util.DateUtil;
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.GraphvizV8Engine;
 import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
@@ -140,7 +139,11 @@ public class GraphDiagram implements Diagram {
   boolean writGraphToFile(File outputFilename, MutableGraph graph) {
     try {
       log.debug("Writing graph at path {}", outputFilename);
-      Graphviz.useEngine(new GraphvizV8Engine());
+      // See https://github.com/nidi3/graphviz-java#how-it-works for which engines are used.
+      // Known Limitations:
+      // 1. J2V8 engines isn't available for Apple M1
+      // 2. Java Nashorn engine is deprecated by JDK and removed in JDK 15.
+      Graphviz.useDefaultEngines();
       boolean generated =
           Graphviz.fromGraph(graph).render(Format.PNG).toFile(outputFilename).exists();
       Graphviz.releaseEngine();

@@ -36,7 +36,6 @@ import guru.nidi.graphviz.attribute.Label;
 import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.GraphvizV8Engine;
 import guru.nidi.graphviz.model.MutableGraph;
 import io.github.netmikey.logunit.api.LogCapturer;
 
@@ -126,7 +125,7 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useEngine(new GraphvizV8Engine());
+    Graphviz.useDefaultEngines();
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(Files.readAllBytes(Paths
         .get("src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_Expected.json")));
@@ -161,7 +160,7 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useEngine(new GraphvizV8Engine());
+    Graphviz.useDefaultEngines();
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.json")));
@@ -190,7 +189,7 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useEngine(new GraphvizV8Engine());
+    Graphviz.useDefaultEngines();
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(
         Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
@@ -214,7 +213,7 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useEngine(new GraphvizV8Engine());
+    Graphviz.useDefaultEngines();
     String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
     String ref = new String(Files
         .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.json")));

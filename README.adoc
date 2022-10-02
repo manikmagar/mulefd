@@ -306,6 +306,22 @@ If `mulefd-components.csv` named CSV file exists in `sourcePath`, then all modul
 
 See example file at link:src/test/resources/mulefd-components.csv[].
 
+== Troubleshooting
+
+=== Getting None of the provided engines could be initialized
+This tool uses Graphviz-Java library to generate diagrams. Graphviz-Java https://github.com/nidi3/graphviz-java#how-it-works[describes] how the engines are leveraged. To execute the graphviz layout engine, one of these options is used:
+
+. If the machine has graphviz installed and a `dot` command is available, spawn a new process running dot.
+. Use this https://github.com/mdaines/viz.js[javascript version] of graphviz and execute it on the V8 javascript engine. This is done with the bundled https://github.com/eclipsesource/J2V8[J2V8] library.
+. Alternatively, the javascript can be executed on Java's own Nashorn or GraalVM engine (preferring Graal if both are available).
+
+This tool bundles the J2V8 library but it https://github.com/manikmagar/mulefd/issues/244[does not support] Apple M1. The Java's Nashorn engine was deprecated starting JDK 9 and removed in JDK 15.
+
+So, if your diagram generation is failing with that error then check one of the following -
+
+1. Which JDK is used? Using JDK's prior to 15 will at-least make the Nashorn engine available. It may be slower to run when compared to others.
+2. If JDK 15+ is being used on Apple M1, make sure the `dot` is installed. It is a part of Graphviz, so check https://graphviz.org/download/#mac[here] for installing graphviz with `brew install graphviz`.
+
 == Copyright & License
 
 Licensed under the MIT License, see the link:LICENSE[LICENSE] file for details.
