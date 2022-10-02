@@ -8,7 +8,7 @@ plugins {
 	id "application"
 	id "com.diffplug.gradle.spotless" version "4.3.0"
 	id "io.toolebox.git-versioner" version "1.6.5"
-	id "org.gradle.crypto.checksum" version "1.2.0"
+	id "org.gradle.crypto.checksum" version "1.4.0"
 	id "com.github.breadmoirai.github-release" version "2.2.12"
 	id "de.fuerstenau.buildconfig" version "1.1.8"
 	id "com.adarshr.test-logger" version "2.1.1"
