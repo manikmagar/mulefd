@@ -50,7 +50,7 @@ jacocoTestReport {
 
 dependencies {
 	implementation 'guru.nidi:graphviz-java-all-j2v8:0.17.0'
-	implementation 'ch.qos.logback:logback-classic:1.2.9'
+	implementation 'ch.qos.logback:logback-classic:1.4.1'
 	implementation 'info.picocli:picocli:4.6.3'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
