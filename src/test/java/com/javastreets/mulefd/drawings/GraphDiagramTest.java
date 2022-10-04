@@ -28,6 +28,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.event.Level;
 
 import com.javastreets.mulefd.DiagramRendererTestUtil;
+import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.*;
 
 import guru.nidi.graphviz.attribute.Arrow;
@@ -35,7 +36,6 @@ import guru.nidi.graphviz.attribute.GraphAttr;
 import guru.nidi.graphviz.attribute.Label;
 import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import io.github.netmikey.logunit.api.LogCapturer;
 
@@ -125,12 +125,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useDefaultEngines();
-    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
     String ref = new String(Files.readAllBytes(Paths
         .get("src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_Expected.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
-    Graphviz.releaseEngine();
 
   }
 
@@ -160,13 +158,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useDefaultEngines();
-    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
-    Graphviz.releaseEngine();
-
   }
 
   @Test
@@ -189,12 +184,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useDefaultEngines();
-    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
     String ref = new String(
         Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
-    Graphviz.releaseEngine();
 
   }
 
@@ -213,12 +206,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    Graphviz.useDefaultEngines();
-    String jsonGraph = Graphviz.fromGraph(generatedGraph).render(Format.JSON).toString();
+    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
     String ref = new String(Files
         .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.json")));
     JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
-    Graphviz.releaseEngine();
 
   }
 
