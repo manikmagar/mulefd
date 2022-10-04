@@ -26,7 +26,7 @@ Intent is that on merge we squash to get as clean as changelog as possible.
 == Source formatting
 
 The build uses the https://github.com/diffplug/spotless[spotless] plugin to ensure Java and other files are formatted uniformly.
-If your build fails due to formatting errors then run `gradle spotlessApply` and it will reformat to be compatible.
+If your build fails due to formatting errors then run `./gradlew spotlessApply` and it will reformat to be compatible.
 
 == Versioning
 
@@ -47,14 +47,14 @@ Run a build check to see if things are clean:
 
 [source,shell]
 ----
-$ gradle spotlessApply build clean
+$ ./gradlew spotlessApply build clean
 ----
 
 if nothing changed (use `git status`) then run:
 
 [source,shell]
 ----
-$ gradle printVersion
+$ ./gradlew printVersion
 ----
 
 to see if the right version are printed.
@@ -64,15 +64,15 @@ If 4 digits then make sure last commit as a `[minor]` or `[patch]` as part of it
 
 Once ready run:
 
-`$ gradle changelog`
+`$ ./gradlew changelog`
 
 This will generate `CHANGELOG.md` using commitizen conventions.
 
-Edit the channgelog with some header on what changed in an overview form.
+Edit the changelog with some header on what changed in an overview form.
 
 Then run:
 
-`$ gradle tag`
+`$ ./gradlew tag`
 
 This will create an annotated tag using the `CHANGELOG.md` message.
 

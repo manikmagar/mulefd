@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.app.DrawingException;
+import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
 import com.javastreets.mulefd.model.MuleComponent;
@@ -26,8 +27,6 @@ import com.javastreets.mulefd.util.DateUtil;
 
 import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.GraphvizV8Engine;
 import guru.nidi.graphviz.model.Link;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
@@ -140,11 +139,7 @@ public class GraphDiagram implements Diagram {
   boolean writGraphToFile(File outputFilename, MutableGraph graph) {
     try {
       log.debug("Writing graph at path {}", outputFilename);
-      Graphviz.useEngine(new GraphvizV8Engine());
-      boolean generated =
-          Graphviz.fromGraph(graph).render(Format.PNG).toFile(outputFilename).exists();
-      Graphviz.releaseEngine();
-      return generated;
+      return GraphvizEngineHelper.generate(graph, Format.PNG, outputFilename);
     } catch (IOException e) {
       log.error("Error while writing graph at {}", outputFilename, e);
       return false;
