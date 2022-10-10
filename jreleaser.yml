@@ -1,0 +1,114 @@
+project:
+  name: mulefd
+  description: Generate flow diagrams for Mule applications
+  longDescription: |
+    Generate flow diagrams for Mule applications
+
+  links:
+    homepage: https://javastreets.com
+    documentation: https://github.com/manikmagar/mulefd
+    license: https://github.com/manikmagar/mulefd/blob/main/LICENSE
+    contribute: https://github.com/manikmagar/mulefd/blob/main/CONTRIBUTING.adoc
+  authors:
+    - Manik Magar
+  license: MIT
+  stereotype: cli
+  inceptionYear: 2020
+  tags:
+    - mulefd
+    - mule
+    - java
+  java:
+    groupId: com.javastreets.mulefd
+    version: 8
+
+release:
+  github:
+    overwrite: true
+    draft: true
+    sign: true
+    releaseName: '{{tagName}}'
+    skipTag: true
+    milestone:
+      close: false
+    changelog:
+      formatted: always
+      preset: conventional-commits
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      labelers:
+        - label: 'dependencies'
+          title: 'chore(deps):'
+          order: 130
+      categories:
+        - title: '⚙️  Dependencies'
+          key: 'dependencies'
+          order: 80
+          labels:
+            - 'dependencies'
+      hide:
+        categories:
+          - 'merge'
+        contributors:
+          - 'GitHub'
+
+checksum:
+  individual: true
+
+signing:
+  active: always
+  armored: true
+
+announce:
+  twitter:
+    active: release
+    status: 'MuleFD {{projectVersion}} has been released! {{releaseNotesUrl}}'
+  sdkman:
+    active: release
+
+files:
+  artifacts:
+    - path: build/tmp/version.txt
+
+distributions:
+  mulefd:
+    java:
+      mainClass: com.javastreets.mulefd.app.Application
+    sdkman:
+      active: release
+    brew:
+      active: release
+      extraProperties:
+        skipJava: true
+    scoop:
+      active: release
+      continueOnError: true
+      bucket:
+        name: 'scoop-bucket'
+    chocolatey:
+      active: release
+      continueOnError: true
+      remoteBuild: true
+      title: Mule Flow Diagrams (mulefd)
+    jbang:
+      active: release
+    docker:
+      active: release
+      baseImage: adoptopenjdk/openjdk8:jdk8u242-b08-ubuntu
+      imageNames:
+        - "{{repoOwner}}/{{distributionName}}:latest"
+        - "{{repoOwner}}/{{distributionName}}:{{projectVersionMajor}}"
+        - "{{repoOwner}}/{{distributionName}}:{{projectVersionMajor}}.{{projectVersionMinor}}"
+        - "{{repoOwner}}/{{distributionName}}:{{projectVersion}}"
+        - "{{repoOwner}}/{{distributionName}}:{{tagName}}"
+        - "{{repoOwner}}/{{distributionName}}:latest"
+      preCommands:
+        - "RUN apt-get update -y"
+        - "RUN apt-get install unzip"
+      postCommands:
+        - "VOLUME /app"
+
+    artifacts:
+      - path: build/distributions/mulefd-{{projectVersion}}.zip
+      - path: build/distributions/mulefd-{{projectVersion}}.tar

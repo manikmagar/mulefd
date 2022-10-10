@@ -6,3 +6,8 @@ target
 .gradle
 build
 examples
+.classpath
+.project
+**/*.png
+.settings
+out/
