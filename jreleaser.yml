@@ -25,7 +25,7 @@ project:
 release:
   github:
     overwrite: true
-    draft: true
+    draft: false
     sign: true
     releaseName: '{{tagName}}'
     skipTag: true
@@ -35,6 +35,7 @@ release:
       formatted: always
       preset: conventional-commits
       format: '- {{commitShortHash}} {{commitTitle}}'
+      skipMergeCommits: true
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       labelers:
@@ -77,8 +78,10 @@ distributions:
       mainClass: com.javastreets.mulefd.app.Application
     sdkman:
       active: release
+      continueOnError: true
     brew:
       active: release
+      continueOnError: true
       extraProperties:
         skipJava: true
     scoop:
@@ -96,6 +99,9 @@ distributions:
     docker:
       active: release
       baseImage: adoptopenjdk/openjdk8:jdk8u242-b08-ubuntu
+      registries:
+        - serverName: DEFAULT
+          username: manikmagar
       imageNames:
         - "{{repoOwner}}/{{distributionName}}:latest"
         - "{{repoOwner}}/{{distributionName}}:{{projectVersionMajor}}"
