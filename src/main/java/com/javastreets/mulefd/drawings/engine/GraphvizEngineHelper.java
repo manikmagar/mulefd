@@ -2,20 +2,23 @@ package com.javastreets.mulefd.drawings.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import guru.nidi.graphviz.engine.*;
 import guru.nidi.graphviz.model.MutableGraph;
 
 public class GraphvizEngineHelper {
 
-  private static void initEngines() {
-    // See https://github.com/nidi3/graphviz-java#how-it-works for which engines are used.
-    // Known Limitations:
-    // 1. J2V8 engines isn't available for Apple M1
-    // 2. Java Nashorn engine is deprecated by JDK and removed in JDK 15.
-    // Changing the engine order here to retain previous behaviors.
-    Graphviz.useEngine(new GraphvizV8Engine(), new GraphvizJdkEngine(),
-        new GraphvizCmdLineEngine());
+  private GraphvizEngineHelper() {
+
+  }
+
+  private static void initEngines(GraphvizEngine... moreEngines) {
+    if (moreEngines == null) {
+      Graphviz.useDefaultEngines();
+    } else {
+      Graphviz.useEngine(Arrays.asList(moreEngines));
+    }
   }
 
   public static boolean generate(MutableGraph graph, Format format, File outputFilename)
@@ -27,7 +30,8 @@ public class GraphvizEngineHelper {
   }
 
   public static String generate(MutableGraph graph, Format format) {
-    initEngines();
+    // Skips using DOT engine. Used for tests to compare generated diagrams.
+    initEngines(new GraphvizV8Engine(), new GraphvizJdkEngine());
     String graphGen = Graphviz.fromGraph(graph).render(format).toString();
     Graphviz.releaseEngine();
     return graphGen;
