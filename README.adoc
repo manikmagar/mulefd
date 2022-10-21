@@ -79,6 +79,15 @@ At the minimum, Java 8 is required. The build pipeline also tests it against JDK
 
 Tested and verified to use on OSX, Linux and Windows.
 
+=== Graphviz Engine
+This tool uses Graphviz Engine to generate Graph diagrams. It will use the first available engine, in following order -
+
+* Native DOT engine if https://graphviz.org/download/[installed]. This is preferred and much more performant engine compared to other engines (see https://github.com/manikmagar/mulefd/issues/286[issue#286]).
+* EclipseSource J2V8 Engine, bundled with this utility.
+** J2V8 engine is _NOT available_ for Apple Silicon (M1). Consider install DOT engine or use JDK 8 or 11 for Nashorn.
+* JDK JavaScript Nashorn engine. Slowest compared to the other two.
+** Nashorn engine has been deprecated in JDK 11 and remove in JDK 15.
+
 == Installation
 
 === SDKMan icon:linux[] icon:apple[]
