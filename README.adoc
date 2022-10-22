@@ -308,6 +308,10 @@ prefix,operation,sourceFlag,path,configName,async
 * **configName**: Name of the module configuration. Eg. `config-ref` attribute name for `vm:listener`. For sources, this is visible on source nodes in diagram. This can help identify source uniquely when multiple configuration exists.
 * **async**: `true` if this is an asynchronous operation. Defaults to `false`.
 
+The generated diagram will represent these known components using the Component share.
+
+image::./docs/images/known-component-shape-example.png[title="Known Component rendering for s3:create-object to test2 bucket"]
+
 === Registering custom modules
 If any module is missing in the default list - either being a new module or a custom module, then it is possible for users to register their modules.
 

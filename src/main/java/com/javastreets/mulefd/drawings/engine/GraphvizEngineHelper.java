@@ -14,7 +14,7 @@ public class GraphvizEngineHelper {
   }
 
   private static void initEngines(GraphvizEngine... moreEngines) {
-    if (moreEngines == null) {
+    if (moreEngines == null || moreEngines.length <= 0) {
       Graphviz.useDefaultEngines();
     } else {
       Graphviz.useEngine(Arrays.asList(moreEngines));

@@ -8,6 +8,5 @@ build
 examples
 .classpath
 .project
-**/*.png
 .settings
 out/
