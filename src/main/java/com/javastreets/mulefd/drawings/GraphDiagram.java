@@ -22,6 +22,7 @@ import com.javastreets.mulefd.app.DrawingException;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
+import com.javastreets.mulefd.model.KnownMuleComponent;
 import com.javastreets.mulefd.model.MuleComponent;
 import com.javastreets.mulefd.util.DateUtil;
 
@@ -99,6 +100,7 @@ public class GraphDiagram implements Diagram {
         .with(
             asFlow(sizedNode("flow", 1))
                 .addLink(to(asSubFlow(sizedNode("sub-flow", 1))).with(Style.INVIS)),
+            possibleKnownComponent(new KnownMuleComponent("db", "insert"), "connector:operation"),
             asSubFlow(sizedNode("sub-flow", 1))
                 .addLink(to(asUnusedFlow(sizedNode("Unused sub/-flow", 2))).with(Style.INVIS)),
             sizedNode("Flow A", 1).addLink(callSequenceLink(1, sizedNode("sub-flow-1", 1.25))
@@ -266,11 +268,33 @@ public class GraphDiagram implements Diagram {
 
   private void addSubNodes(MutableNode flowNode, int callSequence, MuleComponent muleComponent,
       String name) {
+    MutableNode node = possibleKnownComponent(muleComponent, name);
     if (muleComponent.isAsync()) {
-      flowNode.addLink(asAsyncLink(callSequence, mutNode(name)));
+      flowNode.addLink(asAsyncLink(callSequence, node));
     } else {
-      flowNode.addLink(callSequenceLink(callSequence, mutNode(name)));
+      flowNode.addLink(callSequenceLink(callSequence, node));
     }
+  }
+
+  /**
+   * Get a default {@link MutableNode} with given name. If {@link MuleComponent} is a
+   * {@link KnownMuleComponent} then adapts the visualization accordingly.
+   * 
+   * @param muleComponent {@link MuleComponent} to create node for
+   * @param name {@link String} name of the node
+   * @return MutableNode
+   */
+  private MutableNode possibleKnownComponent(MuleComponent muleComponent, String name) {
+    MutableNode node = mutNode(name);
+    if (muleComponent instanceof KnownMuleComponent) {
+      node = node.add(Shape.COMPONENT);
+      if (muleComponent.getPath() != null) {
+        String label =
+            getNodeLabel(muleComponent) + "  \n<i>" + muleComponent.getPath().getValue() + "</i>";
+        node = node.add(Label.markdown(label));
+      }
+    }
+    return node;
   }
 
   Link callSequenceLink(int callSequence, MutableNode node) {

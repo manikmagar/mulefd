@@ -8,6 +8,7 @@ import org.w3c.dom.NodeList;
 
 import com.javastreets.mulefd.model.Attribute;
 import com.javastreets.mulefd.model.ComponentItem;
+import com.javastreets.mulefd.model.KnownMuleComponent;
 import com.javastreets.mulefd.model.MuleComponent;
 
 public class MuleXmlElement {
@@ -98,6 +99,15 @@ public class MuleXmlElement {
     return muleComponentList;
   }
 
+  /**
+   * Checks if component represented by the given {@link Element} is known i.e. configured in the
+   * external CSV file.
+   * 
+   * @param knownComponents {@link Map} of element name {@link String} and {@link ComponentItem}
+   *        definition
+   * @param muleComponentList Modifiable list of {@link MuleComponent}s to add known instances
+   * @param element {@link Element} representing the target component
+   */
   static void processKnownComponents(Map<String, ComponentItem> knownComponents,
       List<MuleComponent> muleComponentList, Element element) {
     ComponentItem item = null;
@@ -121,7 +131,7 @@ public class MuleXmlElement {
       if (wildcards != null && wildcards.length > 1) {
         name = wildcards[1];
       }
-      MuleComponent mc = new MuleComponent(item.getPrefix(), name);
+      KnownMuleComponent mc = new KnownMuleComponent(item.getPrefix(), name);
       mc.setSource(item.isSource());
       if (!item.getConfigAttributeName().trim().isEmpty()) {
         mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
