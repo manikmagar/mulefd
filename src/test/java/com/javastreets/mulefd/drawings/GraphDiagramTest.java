@@ -31,10 +31,7 @@ import com.javastreets.mulefd.DiagramRendererTestUtil;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.*;
 
-import guru.nidi.graphviz.attribute.Arrow;
-import guru.nidi.graphviz.attribute.GraphAttr;
-import guru.nidi.graphviz.attribute.Label;
-import guru.nidi.graphviz.attribute.Rank;
+import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.model.MutableGraph;
 import io.github.netmikey.logunit.api.LogCapturer;
@@ -326,9 +323,11 @@ class GraphDiagramTest {
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     Mockito.when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test"});
     MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
-        .add(VEE.dir(Arrow.DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+        .add(VEE.dir(Arrow.DirType.FORWARD), Font.name("Arial")).nodeAttrs().add(Font.name("Arial"))
+        .graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
             GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(1, 0.5),
-            GraphAttr.dpi(150), Label.htmlLines("Test").locate(Label.Location.TOP));
+            GraphAttr.dpi(150), Label.htmlLines("Test").locate(Label.Location.TOP),
+            Font.name("Arial"));
     MutableGraph returnedGraph = graphDiagram.initNewGraph("Test");
     assertThat(returnedGraph).isEqualTo(graph);
   }

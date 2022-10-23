@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javastreets.mulefd.app.DrawingException;
+import com.javastreets.mulefd.cli.Configuration;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
@@ -160,10 +160,14 @@ public class GraphDiagram implements Diagram {
   }
 
   MutableGraph initNewGraph(String[] label) {
-    return mutGraph("mule").setDirected(true).linkAttrs().add(VEE.dir(DirType.FORWARD)).graphAttrs()
-        .add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT), GraphAttr.splines(GraphAttr.SplineMode.SPLINE),
-            GraphAttr.pad(1, 0.5), GraphAttr.dpi(150),
-            Label.htmlLines(label).locate(Label.Location.TOP));
+    Configuration configuration = Configuration.readUserHomeConfig();
+    String fontName = configuration.getValue("diagram.font.name", "Arial");
+    return mutGraph("mule").setDirected(true).linkAttrs()
+        .add(VEE.dir(DirType.FORWARD), Font.name(fontName)).nodeAttrs().add(Font.name(fontName))
+        .graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(1, 0.5),
+            GraphAttr.dpi(150), Label.htmlLines(label).locate(Label.Location.TOP),
+            Font.name(fontName));
   }
 
   private void checkUnusedNodes(MutableGraph graph) {

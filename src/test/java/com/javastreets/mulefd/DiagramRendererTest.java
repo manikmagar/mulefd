@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
 
-import com.javastreets.mulefd.app.CommandModel;
+import com.javastreets.mulefd.cli.CommandModel;
 import com.javastreets.mulefd.drawings.DiagramType;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.model.Component;

@@ -88,11 +88,11 @@ jobs:
           java -version
           tree .
           chmod +x ./build/install/mulefd/bin/mulefd
-          ./build/install/mulefd/bin/mulefd --version
-          ./build/install/mulefd/bin/mulefd ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+          ./build/install/mulefd/bin/mulefd version
+          ./build/install/mulefd/bin/mulefd graph -o test.png -t ./build/resources/test ./build/resources/test/example-config.xml
       - name: Test Windows build
         if: runner.os == 'Windows'
         run: |
           java -version
           ./build/install/mulefd/bin/mulefd.bat --version
-          ./build/install/mulefd/bin/mulefd.bat ./build/resources/test/example-config.xml -d GRAPH -o test.png -t ./build/resources/test
+          ./build/install/mulefd/bin/mulefd.bat -o test.png -t ./build/resources/test ./build/resources/test/example-config.xml

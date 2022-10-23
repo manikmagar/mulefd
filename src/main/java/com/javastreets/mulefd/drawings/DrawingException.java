@@ -1,4 +1,4 @@
-package com.javastreets.mulefd.app;
+package com.javastreets.mulefd.drawings;
 
 public class DrawingException extends RuntimeException {
 
