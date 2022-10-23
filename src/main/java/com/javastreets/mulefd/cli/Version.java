@@ -2,7 +2,7 @@ package com.javastreets.mulefd.cli;
 
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "version", description = "Display version info.")
+@CommandLine.Command(name = "version", description = "Display version info")
 public class Version extends BaseCommand {
 
   @Override

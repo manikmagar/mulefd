@@ -69,7 +69,6 @@ public abstract class DiagramBaseCommand extends BaseCommand {
     }
     cm.setOutputFilename(FileUtil.sanitizeFilename(filename));
     cm.setFlowName(flowName);
-    cm.setConfiguration(Configuration.readUserHomeConfig());
     return cm;
   }
 }

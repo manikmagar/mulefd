@@ -1,7 +1,6 @@
 package com.javastreets.mulefd.cli;
 
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +18,42 @@ public class Configuration {
   public static final String MULEFD_CONFIG_PROPERTIES = "mulefd.properties";
 
   private static final Logger log = LoggerFactory.getLogger(Configuration.class);
+
+  private static final Configuration globalConfig = readUserHomeConfig();
+  private static final Configuration defaultConfig = readDefaultConfig();
+
+  private static final Configuration mergedConfig = mergedConfig();
+
+  /**
+   * Configuration properties loaded from ${user.home}/.mulefd/mulefd.properties
+   * 
+   * @return Configuration
+   */
+  public static Configuration getGlobalConfig() {
+    return globalConfig;
+  }
+
+  /**
+   * Configuration properties loaded from inbuilt properties file.
+   * 
+   * @return Configuration
+   */
+  public static Configuration getDefaultConfig() {
+    return defaultConfig;
+  }
+
+  /**
+   * <pre>
+   * Merge available properties files to consolidate into one. Order of precedence is -
+   *  - Default properties
+   *  - Global properties
+   * </pre>
+   * 
+   * @return Configuration
+   */
+  public static Configuration getMergedConfig() {
+    return mergedConfig;
+  }
 
   public boolean containsKey(String key) {
     return properties.containsKey(key);
@@ -38,14 +73,63 @@ public class Configuration {
     return Objects.toString(properties.get(key), defaultValue);
   }
 
-  public static Configuration readUserHomeConfig() {
+  public void printConfiguration(PrintStream out) {
+    properties.list(out);
+  }
+
+  /**
+   * Merges the default configuration properties file with global configuration from user's home
+   * directory.
+   * 
+   * @return Configuration
+   */
+  private static Configuration mergedConfig() {
+    Configuration configuration = new Configuration();
+    defaultConfig.properties.stringPropertyNames()
+        .forEach(p -> configuration.properties.setProperty(p, defaultConfig.getValue(p)));
+    globalConfig.properties.stringPropertyNames()
+        .forEach(p -> configuration.properties.setProperty(p, globalConfig.getValue(p)));
+    return configuration;
+  }
+
+  /**
+   * Reads a default, inbuilt configuration file.
+   * 
+   * @return Configuration
+   */
+  private static Configuration readDefaultConfig() {
+    InputStream defaultConfigStream = Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream("default-" + MULEFD_CONFIG_PROPERTIES);
+    Configuration configuration = new Configuration();
+    try {
+      configuration.properties.load(defaultConfigStream);
+    } catch (IOException e) {
+      throw new RuntimeException("Cannot load default config properties");
+    }
+    return configuration;
+  }
+
+  /**
+   * Reads configuration file from ${user.home}/.mulefd/mulefd.properties
+   * 
+   * @return Configuration
+   */
+  private static Configuration readUserHomeConfig() {
     String userHome = System.getProperty("user.home");
     Path configProperties =
         Paths.get(userHome).resolve(MULEFD_DOT_DIRECTORY).resolve(MULEFD_CONFIG_PROPERTIES);
-    log.info("Loading default properties file from: {}", configProperties);
+    if (!configProperties.toFile().exists())
+      return new Configuration();
+    log.debug("Loading default properties file from: {}", configProperties);
     return read(configProperties);
   }
 
+  /**
+   * Read a configuration file at give path.
+   * 
+   * @param configFile {@link Path} to config .properties file
+   * @return Configuration
+   */
   public static Configuration read(Path configFile) {
     Configuration configuration = new Configuration();
     if (Files.isRegularFile(configFile)) {

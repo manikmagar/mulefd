@@ -323,11 +323,9 @@ class GraphDiagramTest {
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     Mockito.when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test"});
     MutableGraph graph = mutGraph("mule").setDirected(true).linkAttrs()
-        .add(VEE.dir(Arrow.DirType.FORWARD), Font.name("Arial")).nodeAttrs().add(Font.name("Arial"))
-        .graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+        .add(VEE.dir(Arrow.DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
             GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(1, 0.5),
-            GraphAttr.dpi(150), Label.htmlLines("Test").locate(Label.Location.TOP),
-            Font.name("Arial"));
+            GraphAttr.dpi(150), Label.htmlLines("Test").locate(Label.Location.TOP));
     MutableGraph returnedGraph = graphDiagram.initNewGraph("Test");
     assertThat(returnedGraph).isEqualTo(graph);
   }

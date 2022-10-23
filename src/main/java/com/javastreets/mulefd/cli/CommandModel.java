@@ -24,8 +24,6 @@ public class CommandModel {
 
   private Integer muleVersion = 4;
 
-  private Configuration configuration;
-
   public String getFlowName() {
     return flowName;
   }
@@ -81,13 +79,5 @@ public class CommandModel {
 
   public void setGenerateSingles(boolean generateSingles) {
     this.generateSingles = generateSingles;
-  }
-
-  public Configuration getConfiguration() {
-    return configuration;
-  }
-
-  public void setConfiguration(Configuration configuration) {
-    this.configuration = configuration;
   }
 }

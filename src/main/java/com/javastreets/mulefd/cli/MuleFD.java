@@ -6,7 +6,7 @@ import picocli.CommandLine.Command;
 @Command(name = "mulefd",
     footer = "\nCopyright: 2020-2022 Manik Magar, License: MIT\nWebsite: https://github.com/manikmagar/mulefd",
     showDefaultValues = true, versionProvider = Version.VersionProvider.class,
-    subcommands = {CommandLine.HelpCommand.class, Version.class, Graph.class},
+    subcommands = {CommandLine.HelpCommand.class, Version.class, Graph.class, Config.class},
     header = "${COMMAND-NAME} is a tool to generate beautiful diagrams for your mule application flows.",
     description = {"", " Some command examples:", " - ${COMMAND-NAME} graph <MULE_APP_PATH>",
         "       Generate a Graph diagram for mule configuration in mule app",
