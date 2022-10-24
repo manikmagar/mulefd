@@ -94,5 +94,5 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           java -version
-          ./build/install/mulefd/bin/mulefd.bat --version
-          ./build/install/mulefd/bin/mulefd.bat -o test.png -t ./build/resources/test ./build/resources/test/example-config.xml
+          ./build/install/mulefd/bin/mulefd.bat version
+          ./build/install/mulefd/bin/mulefd.bat graph -o test.png -t ./build/resources/test ./build/resources/test/example-config.xml
