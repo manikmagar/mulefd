@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javastreets.mulefd.app.CommandModel;
-import com.javastreets.mulefd.app.DrawingException;
+import com.javastreets.mulefd.cli.CommandModel;
 import com.javastreets.mulefd.drawings.Diagram;
 import com.javastreets.mulefd.drawings.DrawingContext;
+import com.javastreets.mulefd.drawings.DrawingException;
 import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.FlowContainer;
 

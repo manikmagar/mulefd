@@ -26,33 +26,28 @@ Have you ever wished to visualize your flow dependencies? How does message flows
 
 If so, then try this `mulefd` application. It can read your configuration files and generate a diagrams that can easily tell you how your flows are connected.
 
+.mulefd CLI commands
 [source, bash]
 ----
 $ mulefd
-Missing required parameter: '<sourcePath>'
-Usage: mulefd [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
-						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
-Create Flow diagrams from mule configuration files.
-	<sourcePath>        Source directory path containing mule configuration
-							files
--d, --diagram=<diagramType>
-						Type of diagram to generate. Valid values: GRAPH,
-							SEQUENCE
-							Default: GRAPH
--fl, --flowname=<flowName>
-						Target flow name to generate diagram for. All
-							flows/subflows not related to this flow will be
-							excluded from the diagram.
--gs, --genSingles   Generate individual diagrams for each flow.
--h, --help              Show this help message and exit.
--o, --out=<outputFilename>
-						Name of the output file
-							Default: mule-diagram
--t, --target=<targetPath>
-						Output directory path to generate diagram
--V, --version           Print version information and exit.
+mulefd is a tool to generate beautiful diagrams for your mule application flows.
+Usage: mulefd [-hV] [COMMAND]
 
-Copyright: 2020 Manik Magar, License: MIT
+Some command examples:
+- mulefd graph <MULE_APP_PATH>
+	Generate a Graph diagram for mule configuration in mule app
+- mulefd help graph
+	See help for Graph generation
+
+-h, --help      display this help message
+-V, --version   display version info
+Commands:
+help     Displays help information about the specified command
+version  Display version info
+graph    Create beautiful graph diagrams for mule flows
+config   Manage MuleFD Global configuration
+
+Copyright: 2020-2022 Manik Magar, License: MIT
 Website: https://github.com/manikmagar/mulefd
 ----
 
@@ -60,7 +55,7 @@ For an example mule configuration link:./itests/test-hello-app.xml[./itests/test
 
 [source, bash]
 ----
-$ mulefd ./itests/test-hello-app.xml -t ./itests/output
+$ mulefd graph -t ./itests/output ./itests/test-hello-app.xml
 ----
 
 image::./itests/output/mule-diagram.png[Mule flow diagrams]
@@ -114,7 +109,7 @@ To test your installation run:
 
 [source, bash]
 ----
-mulefd --help
+mulefd help
 ----
 
 This should print out usage information.
@@ -146,7 +141,7 @@ To upgrade to the latest version:
 
 `brew upgrade manikmagar/tap/mulefd`
 
-Test running `mulefd --help` in CLI.
+Test running `mulefd help` in CLI.
 
 === Docker icon:docker[]
 If you don't want to install `mulefd`, you can run it via docker.
@@ -181,7 +176,7 @@ scoop update mulefd
 === Manual install icon:apple[] icon:windows[] icon:linux[]
 . Unzip the https://github.com/manikmagar/mulefd/releases/latest[latest binary release].
 . Add `mulefd-<version>/bin` folder in to your $PATH
-. Test running `mulefd --help` in CLI.
+. Test running `mulefd help` in CLI.
 
 === Running with JBang
 You can run MuleFD using https://jbang.dev[JBang]. If you have jbang installed, you can run `jbang mulefd@manikmagar/mulefd` to run latest release of MuleFD.
@@ -198,45 +193,58 @@ To install the distribution -
 . Clone the project
 . Run `./gradlew installDist`. This will explode the generated zip file to `./build/install` directory.
 . You can verify binaries by executing -
-.. icon:apple[] icon:linux[] : `sh build/install/mulefd/bin/mulefd --help`
-.. icon:windows[] : `./build/install/mulefd/bin/mulefd.bat --help`
+.. icon:apple[] icon:linux[] : `sh build/install/mulefd/bin/mulefd help`
+.. icon:windows[] : `./build/install/mulefd/bin/mulefd.bat help`
+
+== Configuration
+`mulefd` supports external properties configuration to change the behavior of the tool. You can create a file `${user.home}/.mulefd/mulefd.properties` and provide configuration properties.
+
+To see the current properties, including the defaults of the tool, run following command -
+
+.List config properties
+[source, bash]
+----
+$ mulefd config list
+----
+
+=== Supported Properties
+
+Following properties are supported in the config properties:
+
+- `diagram.font.name`: To change the font used for graph text, set this to the name of the font available on target system. Eg. Arial or Courier.
+
+NOTE: If generated diagram has node label's going out of the shape, try changing the font to the one available on the systm.
 
 == Usage
 
 `mulefd` support various arguments for generating diagrams.
 
-Example:
-`mulefd ~/AnypointStudio/studio-workspace/mulefd-demo`
+*Example:*
+`mulefd graph ~/AnypointStudio/studio-workspace/mulefd-demo`
 
+.Generating Graph diagram
 [source, bash]
 ----
-$ mulefd
+$ mulefd graph
 Missing required parameter: '<sourcePath>'
-Usage: mulefd [-hV] [-gs] [-d=<diagramType>] [-fl=<flowName>]
-						[-o=<outputFilename>] [-t=<targetPath>] <sourcePath>
-Create Flow diagrams from mule configuration files.
+Create beautiful graph diagrams for mule flows.
+Usage: mulefd graph [-hV] [-gs] [-fl=<flowName>] [-o=<outputFilename>]
+					[-t=<targetPath>] <sourcePath>
 	<sourcePath>        Source directory path containing mule configuration
 							files
--d, --diagram=<diagramType>
-						Type of diagram to generate. Valid values: GRAPH,
-							SEQUENCE
-							Default: GRAPH
--fl, --flowname=<flowName>
+	-fl, --flowname=<flowName>
 						Target flow name to generate diagram for. All
 							flows/subflows not related to this flow will be
 							excluded from the diagram.
--gs, --genSingles   Generate individual diagrams for each flow.
--h, --help              Show this help message and exit.
+	-gs, --genSingles   Generate individual diagrams for each flow.
+-h, --help              display this help message
 -o, --out=<outputFilename>
 						Name of the output file
-							Default: mule-diagram
 -t, --target=<targetPath>
 						Output directory path to generate diagram
--V, --version           Print version information and exit.
-
-Copyright: 2020 Manik Magar, License: MIT
-Website: https://github.com/manikmagar/mulefd
+-V, --version           display version info
 ----
+
 
 *_Out of memory errors?_*
 
@@ -246,7 +254,7 @@ Try increasing the JVM allocated memory using `-Xmx` flag.
 
 [source,bash]
 ----
-$ JAVA_OPTS='-Xmx1024m' mulefd ~/AnypointStudio/studio-workspace/mulefd-demo
+$ JAVA_OPTS='-Xmx1024m' mulefd graph ~/AnypointStudio/studio-workspace/mulefd-demo
 ----
 
 For windows, you may need to set it at environment level -
@@ -254,7 +262,7 @@ For windows, you may need to set it at environment level -
 [source,bash]
 ----
 set JAVA_OPTS=%JAVA_OPTS% -Xmx1024m
-mulefd.bat ~/AnypointStudio/studio-workspace/mulefd-demo
+mulefd.bat graph ~/AnypointStudio/studio-workspace/mulefd-demo
 ----
 
 

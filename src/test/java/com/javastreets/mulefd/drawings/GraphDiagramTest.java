@@ -31,10 +31,7 @@ import com.javastreets.mulefd.DiagramRendererTestUtil;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.*;
 
-import guru.nidi.graphviz.attribute.Arrow;
-import guru.nidi.graphviz.attribute.GraphAttr;
-import guru.nidi.graphviz.attribute.Label;
-import guru.nidi.graphviz.attribute.Rank;
+import guru.nidi.graphviz.attribute.*;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.model.MutableGraph;
 import io.github.netmikey.logunit.api.LogCapturer;

@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.javastreets.mulefd.app.DrawingException;
+import com.javastreets.mulefd.cli.Configuration;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.FlowContainer;
@@ -160,10 +160,17 @@ public class GraphDiagram implements Diagram {
   }
 
   MutableGraph initNewGraph(String[] label) {
-    return mutGraph("mule").setDirected(true).linkAttrs().add(VEE.dir(DirType.FORWARD)).graphAttrs()
-        .add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT), GraphAttr.splines(GraphAttr.SplineMode.SPLINE),
-            GraphAttr.pad(1, 0.5), GraphAttr.dpi(150),
-            Label.htmlLines(label).locate(Label.Location.TOP));
+    MutableGraph muleGraph = mutGraph("mule").setDirected(true).linkAttrs()
+        .add(VEE.dir(DirType.FORWARD)).graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT),
+            GraphAttr.splines(GraphAttr.SplineMode.SPLINE), GraphAttr.pad(1, 0.5),
+            GraphAttr.dpi(150), Label.htmlLines(label).locate(Label.Location.TOP));
+
+    String fontName = Configuration.getGlobalConfig().getValue("diagram.font.name", "");
+    if (!fontName.trim().isEmpty()) {
+      muleGraph = muleGraph.linkAttrs().add(Font.name(fontName)).nodeAttrs()
+          .add(Font.name(fontName)).graphAttrs().add(Font.name(fontName));
+    }
+    return muleGraph;
   }
 
   private void checkUnusedNodes(MutableGraph graph) {
@@ -288,7 +295,8 @@ public class GraphDiagram implements Diagram {
     MutableNode node = mutNode(name);
     if (muleComponent instanceof KnownMuleComponent) {
       node = node.add(Shape.COMPONENT);
-      if (muleComponent.getPath() != null) {
+      if (muleComponent.getPath() != null && muleComponent.getPath().getValue() != null
+          && !muleComponent.getPath().getValue().isEmpty()) {
         String label =
             getNodeLabel(muleComponent) + "  \n<i>" + muleComponent.getPath().getValue() + "</i>";
         node = node.add(Label.markdown(label));

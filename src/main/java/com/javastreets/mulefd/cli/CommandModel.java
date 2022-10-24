@@ -1,4 +1,4 @@
-package com.javastreets.mulefd.app;
+package com.javastreets.mulefd.cli;
 
 
 import java.nio.file.Files;
