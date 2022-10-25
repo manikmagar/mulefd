@@ -124,10 +124,7 @@ public class MuleXmlElement {
     }
 
     if (item != null) {
-      String name = item.qualifiedName();
-      if (!item.getPathAttributeName().trim().isEmpty()) {
-        name = element.getAttribute(item.getPathAttributeName());
-      }
+      String name = item.getOperation();
       if (wildcards != null && wildcards.length > 1) {
         name = wildcards[1];
       }

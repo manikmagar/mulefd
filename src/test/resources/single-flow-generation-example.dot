@@ -1,0 +1,47 @@
+digraph "mule" {
+edge ["dir"="forward"]
+graph ["rankdir"="LR","splines"="spline","pad"="1.0,0.5","dpi"="150","label"=<Test Diagram<br/>>,"labelloc"="t"]
+edge ["arrowhead"="vee","dir"="forward"]
+subgraph "cluster_legend" {
+edge ["dir"="forward"]
+graph ["label"=<<b>Legend</b>>,"style"="dashed"]
+"flow" ["fixedsize"="true","width"="1.0","height"="0.25","shape"="rectangle","color"="blue"]
+"sub-flow" ["fixedsize"="true","width"="1.0","height"="0.25","color"="black","shape"="ellipse"]
+"connector:operation" ["shape"="component"]
+"Unused sub/-flow" ["fixedsize"="true","width"="2.0","height"="0.25","color"="gray","style"="filled"]
+"Flow A" ["fixedsize"="true","width"="1.0","height"="0.25"]
+"sub-flow-1" ["fixedsize"="true","width"="1.25","height"="0.25"]
+"Flow C" ["fixedsize"="true","width"="1.0","height"="0.25"]
+"sub-flow-C1" ["fixedsize"="true","width"="1.25","height"="0.25"]
+"flow source" ["fixedsize"="true","width"="1.5","height"="0.25","shape"="hexagon","style"="filled","color"="cyan","sourceNode"="true"]
+"flow self-call" ["fixedsize"="true","width"="1.25","height"="0.25","shape"="rectangle","color"="blue"]
+"sub-flow self-call" ["fixedsize"="true","width"="2.0","height"="0.25","color"="black","shape"="ellipse"]
+"flow" -> "sub-flow" ["style"="invis"]
+"sub-flow" -> "Unused sub/-flow" ["style"="invis"]
+"Flow A" -> "sub-flow-1" ["style"="solid","label"="(1)","taillabel"="Call Sequence\n","labelangle"="-5.0","labeldistance"="8.0"]
+"Flow C" -> "sub-flow-C1" ["style"="dashed,bold","xlabel"="(1) Async","color"="lightblue3","taillabel"="Asynchronous call\n","labelangle"="-5.0","labeldistance"="8.0"]
+"flow source" -> "flow self-call" ["style"="invis"]
+"flow self-call" -> "flow self-call"
+"flow self-call" -> "sub-flow self-call" ["style"="invis"]
+"sub-flow self-call" -> "sub-flow self-call"
+}
+subgraph "cluster_legend-space" {
+edge ["dir"="none"]
+graph ["label"="","style"="invis"]
+"" ["shape"="none","width"="2.0","height"="1.0"]
+}
+subgraph "cluster_mule" {
+edge ["dir"="forward"]
+graph ["rankdir"="LR","splines"="spline","pad"="1.0,0.5","dpi"="150","label"=<Application graph<br/>>,"labelloc"="t","style"="invis"]
+edge ["arrowhead"="vee","dir"="forward"]
+"sub-flow:sub-flow-level-1-2" ["label"=<<b>sub-flow</b>: sub-flow-level-1-2>,"color"="black","shape"="ellipse"]
+"sub-flow:sub-flow-level-2-2-0" ["label"=<<b>sub-flow</b>: sub-flow-level-2-2-0>,"color"="black","shape"="ellipse"]
+"sub-flow:sub-flow-level-2-1-1" ["label"=<<b>sub-flow</b>: sub-flow-level-2-1-1>,"color"="black","shape"="ellipse"]
+"sub-flow:sub-flow-level-2-2-1" ["label"=<<b>sub-flow</b>: sub-flow-level-2-2-1>,"color"="black","shape"="ellipse"]
+"sub-flow:sub-flow-level-2-2-2" ["label"=<<b>sub-flow</b>: sub-flow-level-2-2-2>,"color"="black","shape"="ellipse"]
+"sub-flow:sub-flow-level-1-2" -> "sub-flow:sub-flow-level-2-2-0" ["style"="solid","label"="(1)"]
+"sub-flow:sub-flow-level-1-2" -> "sub-flow:sub-flow-level-2-1-1" ["style"="dashed,bold","xlabel"="(2) Async","color"="lightblue3"]
+"sub-flow:sub-flow-level-1-2" -> "sub-flow:sub-flow-level-2-2-1" ["style"="solid","label"="(3)"]
+"sub-flow:sub-flow-level-2-2-1" -> "sub-flow:sub-flow-level-2-2-2" ["style"="solid","label"="(1)"]
+}
+}

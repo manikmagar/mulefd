@@ -236,8 +236,10 @@ public class GraphDiagram implements Diagram {
       }
       if (muleComponent.isSource()) {
         hasSource = true;
-        sourceNode = asSourceNode(mutNode(name)).add(
-            Label.htmlLines("<b>" + muleComponent.getType() + "</b>", muleComponent.getName()));
+        String pathValue =
+            (muleComponent.getPath() != null) ? muleComponent.getPath().getValue() : "";
+        sourceNode = asSourceNode(mutNode(name)).add(Label.htmlLines(
+            "<b>" + muleComponent.getType() + ": " + muleComponent.getName() + "</b>", pathValue));
       } else if (muleComponent.getType().equals("apikit")) {
         // APIKit auto generated flows follow a naming pattern
         // "{httpMethod}:\{resource-name}:{apikitConfigName}"

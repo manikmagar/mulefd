@@ -225,14 +225,14 @@ class MuleXmlElementTest {
     List<MuleComponent> components = MuleXmlElement.fillComponents(element,
         Collections.singletonMap(item.qualifiedName(), item));
 
-    MuleComponent expectedComponent = new MuleComponent("http", "/test");
+    MuleComponent expectedComponent = new MuleComponent("http", "listener");
     expectedComponent.setAsync(false);
     expectedComponent.setSource(true);
     expectedComponent.setPath(Attribute.with("path", "/test"));
     expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
 
     assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1)
-        .allSatisfy(c -> assertThat(c).isEqualToComparingFieldByField(expectedComponent));
+        .allSatisfy(c -> assertThat(c).usingRecursiveComparison().isEqualTo(expectedComponent));
 
   }
 
