@@ -123,7 +123,7 @@ class GraphDiagramTest {
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths
         .get("src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_Expected.dot")));
-    assertThat(generated).as("DOT Graph").isEqualTo(ref);
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
 
   }
 
@@ -156,7 +156,7 @@ class GraphDiagramTest {
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.dot")));
-    assertThat(generated).as("DOT Graph").isEqualTo(ref);
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
   }
 
   @Test
@@ -182,7 +182,7 @@ class GraphDiagramTest {
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(
         Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.dot")));
-    assertThat(generated).as("DOT Graph").isEqualTo(ref);
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
 
   }
 
@@ -204,7 +204,7 @@ class GraphDiagramTest {
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files
         .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.dot")));
-    assertThat(generated).isEqualTo(ref);
+    assertThat(generated).isEqualToNormalizingNewlines(ref);
   }
 
   @Test
