@@ -23,8 +23,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.slf4j.event.Level;
 
 import com.javastreets.mulefd.DiagramRendererTestUtil;
@@ -122,10 +120,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths
-        .get("src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_Expected.json")));
-    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+        .get("src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_Expected.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
 
   }
 
@@ -155,10 +153,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths.get(
-        "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.json")));
-    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+        "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
   }
 
   @Test
@@ -181,10 +179,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(
-        Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.json")));
-    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
+        Files.readAllBytes(Paths.get("src/test/resources/single-flow-generation-example.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
 
   }
 
@@ -203,11 +201,10 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    String jsonGraph = GraphvizEngineHelper.generate(generatedGraph, Format.JSON);
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files
-        .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.json")));
-    JSONAssert.assertEquals(ref, jsonGraph, JSONCompareMode.STRICT);
-
+        .readAllBytes(Paths.get("src/test/resources/kafka-flows-mulefd-components-example.dot")));
+    assertThat(generated).isEqualToNormalizingNewlines(ref);
   }
 
   @Test
