@@ -11,12 +11,18 @@ import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.KnownMuleComponent;
 import com.javastreets.mulefd.model.MuleComponent;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 public class MuleXmlElement {
   public static final String ELEMENT_FLOW = "flow";
   public static final String ELEMENT_SUB_FLOW = "sub-flow";
   public static final String ELEMENT_FLOW_REF = "flow-ref";
   public static final String ELEMENT_SCOPE_ASYNC = "async";
   public static final String ELEMENT_ERROR_HANDLER = "error-handler";
+  public static final String XPATH_INDICATOR = "xpath:";
 
   private MuleXmlElement() {}
 
@@ -65,7 +71,7 @@ public class MuleXmlElement {
   }
 
   public static List<MuleComponent> fillComponents(Element flowElement,
-      Map<String, ComponentItem> knownComponents) {
+      Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
     Objects.requireNonNull(flowElement, "Flow element must not be null");
     List<MuleComponent> muleComponentList = new ArrayList<>();
     NodeList children = flowElement.getChildNodes();
@@ -109,7 +115,7 @@ public class MuleXmlElement {
    * @param element {@link Element} representing the target component
    */
   static void processKnownComponents(Map<String, ComponentItem> knownComponents,
-      List<MuleComponent> muleComponentList, Element element) {
+      List<MuleComponent> muleComponentList, Element element) throws XPathExpressionException {
     ComponentItem item = null;
     String keyName = element.getTagName();
     String[] wildcards = null;
@@ -134,15 +140,25 @@ public class MuleXmlElement {
         mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
             element.getAttribute(item.getConfigAttributeName())));
       }
-      if (!item.getPathAttributeName().trim().isEmpty()) {
-        mc.setPath(Attribute.with(item.getPathAttributeName(),
-            element.getAttribute(item.getPathAttributeName())));
+
+      final String pathExpression = item.getPathAttributeName().trim();
+      if (!pathExpression.isEmpty()) {
+        final String evaluatedPath = isXpath(pathExpression) ? evaluateXpathOnElement(element, pathExpression)
+                : element.getAttribute(item.getPathAttributeName());
+        mc.setPath(Attribute.with(item.getPathAttributeName(), evaluatedPath));
       }
       mc.setAsync(item.isAsync());
       muleComponentList.add(mc);
     }
+  }
 
+  private static boolean isXpath(final String expression) {
+    return expression.startsWith(XPATH_INDICATOR);
+  }
 
+  private static String evaluateXpathOnElement(final Element element, final String expression) throws XPathExpressionException {
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    return (String)xPath.compile(expression.substring(XPATH_INDICATOR.length())).evaluate(element, XPathConstants.STRING);
   }
 
   /**
@@ -153,7 +169,7 @@ public class MuleXmlElement {
    * @return
    */
   private static List<MuleComponent> parseContainerElement(Element element,
-      Map<String, ComponentItem> knownComponents) {
+      Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
     List<MuleComponent> muleComponentList = new ArrayList<>();
     NodeList routes = element.getChildNodes();
     for (int i = 0; i < routes.getLength(); i++) {

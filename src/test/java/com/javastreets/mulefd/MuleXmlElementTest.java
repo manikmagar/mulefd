@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -176,7 +177,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element without children returns empty component list")
-  void fillComponents_with_childs() {
+  void fillComponents_with_childs() throws XPathExpressionException {
     Element element =
         getElementWithAttributes("flow-ref", Attribute.with("name", "test-flow-name"));
     List<MuleComponent> components = MuleXmlElement.fillComponents(element, Collections.emptyMap());
@@ -185,7 +186,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with none element child returns empty component list")
-  void fillComponents_with_non_element_node_childs() {
+  void fillComponents_with_non_element_node_childs() throws XPathExpressionException {
     Element element =
         getElementWithAttributes("flow-ref", Attribute.with("name", "test-flow-name"));
     element.appendChild(document.createTextNode("test"));
@@ -195,7 +196,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with flow-ref element child")
-  void fillComponents_with_flow_ref_child() {
+  void fillComponents_with_flow_ref_child() throws XPathExpressionException {
     Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
     element.appendChild(
         getElementWithAttributes("flow-ref", Attribute.with("name", "test-sub-flow-name")));
@@ -210,7 +211,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with flow-ref element child")
-  void fillComponents_with_known_components() {
+  void fillComponents_with_known_components() throws XPathExpressionException {
     Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
     element.appendChild(getElementWithAttributes("http:listener", Attribute.with("path", "/test"),
         Attribute.with("configRef", "http-config")));
@@ -238,7 +239,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with wildcard component entry")
-  void fillComponents_with_wildcard_known_components() {
+  void fillComponents_with_wildcard_known_components() throws XPathExpressionException {
     Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
     element.appendChild(
         getElementWithAttributes("db:select", Attribute.with("configRef", "db-config")));
@@ -278,6 +279,71 @@ class MuleXmlElementTest {
   }
 
   @Test
+  @DisplayName("Element with simple path")
+  void fillComponents_with_simple_path() throws XPathExpressionException {
+    Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    element.appendChild(
+            getElementWithAttributes("http:listener",
+                    Attribute.with("configRef", "http-config"),
+                    Attribute.with("path", "/api")
+            ));
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("http");
+    item.setOperation("listener");
+    item.setSource(true);
+    item.setPathAttributeName("path");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(element,
+            Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("http", "listener");
+    expectedComponent.setAsync(false);
+    expectedComponent.setSource(true);
+    expectedComponent.setPath(Attribute.with("path", "/api"));
+    expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1);
+    assertThat(components.stream()
+            .filter(component -> component.qualifiedName().equals("http:listener")).findFirst().get())
+            .usingRecursiveComparison().isEqualTo(expectedComponent);
+  }
+
+  @Test
+  @DisplayName("Element with xpath-expression in path")
+  void fillComponents_with_xpath_expression_in_path() throws XPathExpressionException {
+    Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    element.appendChild(
+            getElementWithAttributes("http:listener",
+                    Attribute.with("configRef", "http-config"),
+                    Attribute.with("path", "/api"),
+                    Attribute.with("allowedMethod", "GET")
+           ));
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("http");
+    item.setOperation("listener");
+    item.setSource(true);
+    item.setPathAttributeName("xpath:@path");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(element,
+            Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("http", "listener");
+    expectedComponent.setAsync(false);
+    expectedComponent.setSource(true);
+    expectedComponent.setPath(Attribute.with("xpath:@path", "/api"));
+    expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1);
+    assertThat(components.stream()
+            .filter(component -> component.qualifiedName().equals("http:listener")).findFirst().get())
+            .usingRecursiveComparison().isEqualTo(expectedComponent);
+  }
+
+  @Test
   @DisplayName("Element with router element child")
   void fillComponents_with_router_child() {
     Document document = loadXml("mule-xmls/router-config.xml");
@@ -286,7 +352,12 @@ class MuleXmlElementTest {
       Element mainFlow = findElementByAttribute(document.getDocumentElement(),
           Attribute.with("name", "router-config-" + router));
       List<MuleComponent> components =
-          MuleXmlElement.fillComponents(mainFlow, Collections.emptyMap());
+              null;
+      try {
+        components = MuleXmlElement.fillComponents(mainFlow, Collections.emptyMap());
+      } catch (XPathExpressionException e) {
+        e.printStackTrace();
+      }
       softly.assertThat(components).as("List of Mule components processed for router - " + router)
           .isNotEmpty().hasSize(2).containsExactly(getFlowRefComponent(router + "-route-1"),
               getFlowRefComponent(router + "-route-2"));
@@ -298,7 +369,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with scopes element child")
-  void fillComponents_with_scopes_child() {
+  void fillComponents_with_scopes_child() throws XPathExpressionException {
     Document document = loadXml("mule-xmls/scopes-config.xml");
     SoftAssertions softly = new SoftAssertions();
     Consumer<String> test = (scope) -> {
@@ -306,8 +377,12 @@ class MuleXmlElementTest {
           Attribute.with("name", "scope-config-" + scope));
       assertThat(mainFlow).as("Main flow scope-config-" + scope + " for scope " + scope)
           .isNotNull();
-      List<MuleComponent> components =
-          MuleXmlElement.fillComponents(mainFlow, Collections.emptyMap());
+      List<MuleComponent> components = null;
+      try {
+        components = MuleXmlElement.fillComponents(mainFlow, Collections.emptyMap());
+      } catch (XPathExpressionException e) {
+        e.printStackTrace();
+      }
       MuleComponent expected = getFlowRefComponent(scope + "-sub-flow");
       expected.setAsync(scope.equalsIgnoreCase("async"));
       softly.assertThat(components).as("List of Mule components processed for router - " + scope)
@@ -320,7 +395,7 @@ class MuleXmlElementTest {
 
   @Test
   @DisplayName("Element with error handler element child")
-  void fillComponents_with_error_handler_child() {
+  void fillComponents_with_error_handler_child() throws XPathExpressionException {
     Document document = loadXml("mule-xmls/error-config.xml");
     Element mainFlow = findElementByAttribute(document.getDocumentElement(),
         Attribute.with("name", "error-configFlow"));

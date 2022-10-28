@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.javastreets.mulefd.model.FlowContainer;
 
+import javax.xml.xpath.XPathExpressionException;
+
 class MuleXmlParserTest {
 
   @Test
@@ -33,7 +35,7 @@ class MuleXmlParserTest {
   }
 
   @Test
-  void getMuleFlows() {
+  void getMuleFlows() throws XPathExpressionException {
     MuleXmlParser xmlParser = new MuleXmlParser("src/test/resources/example-config.xml");
     xmlParser.parse();
     List<FlowContainer> flowContainers = xmlParser.getMuleFlows(Collections.emptyMap());

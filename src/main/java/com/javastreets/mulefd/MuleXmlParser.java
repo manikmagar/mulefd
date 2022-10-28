@@ -12,6 +12,8 @@ import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.FlowContainer;
 import com.javastreets.mulefd.xml.XmlParser;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public class MuleXmlParser extends XmlParser {
 
   public MuleXmlParser(String filePath) {
@@ -22,11 +24,11 @@ public class MuleXmlParser extends XmlParser {
     return getDocument().getDocumentElement().getNodeName().equalsIgnoreCase("mule");
   }
 
-  public List<FlowContainer> getMuleFlows(Map<String, ComponentItem> knownComponents) {
+  public List<FlowContainer> getMuleFlows(Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
     return findChildrenForElement(knownComponents);
   }
 
-  private List<FlowContainer> findChildrenForElement(Map<String, ComponentItem> knownComponents) {
+  private List<FlowContainer> findChildrenForElement(Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
     List<FlowContainer> flowContainers = new ArrayList<>();
     NodeList nodeList = getDocument().getDocumentElement().getChildNodes();
     for (int i = 0; i < nodeList.getLength(); i++) {

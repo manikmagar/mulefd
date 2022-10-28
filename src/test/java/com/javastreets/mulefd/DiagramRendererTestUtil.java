@@ -11,6 +11,8 @@ import com.javastreets.mulefd.drawings.DiagramType;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.model.FlowContainer;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public class DiagramRendererTestUtil {
 
 
@@ -25,13 +27,13 @@ public class DiagramRendererTestUtil {
   }
 
 
-  public static List<FlowContainer> getFlows(Path sourcePath) throws IOException {
+  public static List<FlowContainer> getFlows(Path sourcePath) throws IOException, XPathExpressionException {
     CommandModel commandModel = getCommandModel(sourcePath);
     DiagramRenderer diagramRenderer = new DiagramRenderer(commandModel);
     return diagramRenderer.findFlows(diagramRenderer.drawingContext(commandModel));
   }
 
-  public static DrawingContext getDrawingContext(Path sourcePath) throws IOException {
+  public static DrawingContext getDrawingContext(Path sourcePath) throws IOException, XPathExpressionException {
     CommandModel commandModel = getCommandModel(sourcePath);
     DiagramRenderer diagramRenderer = new DiagramRenderer(commandModel);
     DrawingContext context = diagramRenderer.drawingContext(commandModel);

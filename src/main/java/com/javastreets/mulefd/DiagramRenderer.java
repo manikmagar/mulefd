@@ -21,6 +21,8 @@ import com.javastreets.mulefd.drawings.DrawingException;
 import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.FlowContainer;
 
+import javax.xml.xpath.XPathExpressionException;
+
 public class DiagramRenderer {
   public static final int MULE_VERSION_4 = 4;
   public static final int MULE_VERSION_3 = 3;
@@ -103,6 +105,9 @@ public class DiagramRenderer {
     } catch (IOException e) {
       log.error("Error while parsing xml file", e);
       return false;
+    } catch (XPathExpressionException e) {
+      log.error("Error while interpreting path", e);
+      return false;
     }
   }
 
@@ -110,7 +115,7 @@ public class DiagramRenderer {
     return Files.exists(Paths.get(commandModel.getSourcePath().toString(), path));
   }
 
-  List<FlowContainer> findFlows(DrawingContext context) throws IOException {
+  List<FlowContainer> findFlows(DrawingContext context) throws IOException, XPathExpressionException {
     Path newSourcePath = getMuleSourcePath();
     List<FlowContainer> flows = new ArrayList<>();
     try (Stream<Path> paths = Files.walk(newSourcePath)) {
@@ -153,7 +158,7 @@ public class DiagramRenderer {
     return newSourcePath;
   }
 
-  void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) {
+  void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) throws XPathExpressionException {
     log.debug("Reading file {}", path);
     MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
     muleXmlParser.parse();
@@ -191,7 +196,7 @@ public class DiagramRenderer {
     return drawn;
   }
 
-  public DrawingContext drawingContext(CommandModel model) {
+public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
     context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));
