@@ -86,7 +86,7 @@ class GraphDiagramTest {
   }
 
   @Test
-  @DisplayName("Validate generated graph when generated as JSON.")
+  @DisplayName("Validate generated graph when generated as DOT.")
   void drawToValidateGraph() throws Exception {
 
     File output = new File(".", "output.png");
@@ -129,7 +129,39 @@ class GraphDiagramTest {
 
 
   @Test
-  @DisplayName("Validate generated graph for APIKIT flows when generated as JSON.")
+  @DisplayName("When APIKIT generated flow excludes flow-refs")
+  void github_issue_256() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-256.xml"));
+    File output = new File(".", "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("apikit");
+    item.setOperation("*");
+    item.setSource(false);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("config-ref");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref =
+        new String(Files.readAllBytes(Paths.get("src/test/resources/gh-issues/iss-256.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
+  }
+
+  @Test
+  @DisplayName("Validate generated graph for APIKIT flows when generated as DOT.")
   void drawToValidateGraph_APIKIT() throws Exception {
 
     List flows = DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/test-api.xml"));
@@ -160,7 +192,7 @@ class GraphDiagramTest {
   }
 
   @Test
-  @DisplayName("Validate generated graph for Single flow when generated as JSON.")
+  @DisplayName("Validate generated graph for Single flow when generated as DOT.")
   void drawToValidateGraph_SingleFlow() throws Exception {
 
     List flows = DiagramRendererTestUtil
@@ -274,7 +306,7 @@ class GraphDiagramTest {
     assertThat(output).exists();
     ArgumentCaptor<Component> compArg = ArgumentCaptor.forClass(Component.class);
     verify(graphDiagram, Mockito.times(3)).processComponent(compArg.capture(), eq(context),
-        anyMap(), anyList());
+        anyMap(), anyList(), anyList());
     assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow, subflow);
     logs.assertContains(
         "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
@@ -359,4 +391,6 @@ class GraphDiagramTest {
     boolean written = graphDiagram.writeFlowGraph(subflow, outputFilePath, graph);
     assertThat(written).isFalse();
   }
+
+
 }

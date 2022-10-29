@@ -46,12 +46,22 @@ public class GraphDiagram implements Diagram {
     List<Component> flows = drawingContext.getComponents();
     Path singleFlowDirPath = Paths.get(targetDirectory.getAbsolutePath(), "single-flow-diagrams",
         DateUtil.now("ddMMyyyy-HHmmss"));
+
+    // Some non-flow type components have a valid reference to other flows.
+    // Eg. APIKit router can call another flow. It is possible for that flow to not reference any
+    // other flow.
+    // In such cases, APIKit router should be treated as root Graph Node to find usable links.
+    // Accumulate all such components to be added as a root node.
+    // TODO: Find alternate way to traverse node links
+    List<MutableNode> additionalRootNodes = new ArrayList<>();
+
     if (drawingContext.getFlowName() != null) {
       Component component = flows.stream()
           .filter(component1 -> component1.getName().equalsIgnoreCase(drawingContext.getFlowName()))
           .findFirst().orElseThrow(() -> new DrawingException(
               "Target flow not found - " + drawingContext.getFlowName()));
-      MutableNode flowNode = processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
+      MutableNode flowNode = processComponent(component, drawingContext, flowRefs, mappedFlowKinds,
+          additionalRootNodes);
       flowNode.addTo(appGraph);
     }
 
@@ -59,16 +69,16 @@ public class GraphDiagram implements Diagram {
       if (drawingContext.getFlowName() == null
           || mappedFlowKinds.contains(component.qualifiedName())) {
 
-        MutableNode flowNode =
-            processComponent(component, drawingContext, flowRefs, mappedFlowKinds);
+        MutableNode flowNode = processComponent(component, drawingContext, flowRefs,
+            mappedFlowKinds, additionalRootNodes);
 
         if (drawingContext.isGenerateSingles() && component.isaFlow()) {
           MutableGraph flowRootGraph = initNewGraph(getDiagramHeaderLines());
           flowNode.addTo(flowRootGraph);
           for (Component component2 : flows) {
             if (mappedFlowKinds.contains(component2.qualifiedName())) {
-              MutableNode flowNode3 =
-                  processComponent(component2, drawingContext, flowRefs, mappedFlowKinds);
+              MutableNode flowNode3 = processComponent(component2, drawingContext, flowRefs,
+                  mappedFlowKinds, additionalRootNodes);
               flowNode3.addTo(flowRootGraph);
             }
           }
@@ -77,6 +87,9 @@ public class GraphDiagram implements Diagram {
         flowNode.addTo(appGraph);
       }
     }
+    // any flows that are referenced by just the non-flow like nodes e.g APIKIT
+    // this adds those component nodes to the root graph so links are visible via node lookup
+    additionalRootNodes.forEach(node -> node.addTo(appGraph));
     if (drawingContext.getFlowName() == null) {
       checkUnusedNodes(appGraph);
     }
@@ -201,7 +214,8 @@ public class GraphDiagram implements Diagram {
   }
 
   MutableNode processComponent(Component component, DrawingContext drawingContext,
-      Map<String, Component> flowRefs, List<String> mappedFlowKinds) {
+      Map<String, Component> flowRefs, List<String> mappedFlowKinds,
+      List<MutableNode> additionalRootNodes) {
     log.debug("Processing flow - {}", component.qualifiedName());
     FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
@@ -229,7 +243,8 @@ public class GraphDiagram implements Diagram {
           } else {
             name = refComponent.qualifiedName();
             if (!mappedFlowKinds.contains(name)) {
-              processComponent(refComponent, drawingContext, flowRefs, mappedFlowKinds);
+              processComponent(refComponent, drawingContext, flowRefs, mappedFlowKinds,
+                  additionalRootNodes);
             }
           }
         }
@@ -258,6 +273,7 @@ public class GraphDiagram implements Diagram {
           asFlow(node);
           apiKitNode.addLink(to(node).with(Style.SOLID));
         }
+        additionalRootNodes.add(apiKitNode);
         flowNode.addLink(callSequenceLink(componentIdx - 1, apiKitNode));
       } else {
         addSubNodes(flowNode, hasSource ? componentIdx - 1 : componentIdx, muleComponent, name);
