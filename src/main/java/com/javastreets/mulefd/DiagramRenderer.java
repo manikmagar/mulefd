@@ -26,6 +26,10 @@ public class DiagramRenderer {
   public static final int MULE_VERSION_3 = 3;
   public static final String DEFAULT_MULE_COMPONENTS_CSV = "default-mule-components.csv";
   public static final String MULE_CUSTOM_COMPONENTS_CSV = "mulefd-components.csv";
+  public static final int EXPECTED_NUMBER_OF_COLUMNS = 6;
+  public static final String ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS =
+      "Found an invalid configuration line in mule components file. Column count must be "
+          + EXPECTED_NUMBER_OF_COLUMNS + ". Line - {}";
   Logger log = LoggerFactory.getLogger(DiagramRenderer.class);
 
   private CommandModel commandModel;
@@ -64,10 +68,8 @@ public class DiagramRenderer {
         if (!line.startsWith("prefix")) {
           log.debug("Reading component line - {}", line);
           String[] part = line.split(",");
-          if (part.length != 6) {
-            log.error(
-                "Found an invalid configuration line in mule components file. Column count must be 5. Line - {}",
-                line);
+          if (part.length != EXPECTED_NUMBER_OF_COLUMNS) {
+            log.error(ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS, line);
             throw new DrawingException("Invalid mule components configuration file.");
           }
           ComponentItem item = new ComponentItem();
