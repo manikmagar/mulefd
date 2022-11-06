@@ -1,6 +1,7 @@
 package com.javastreets.mulefd.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,4 +30,16 @@ class MuleComponentTest {
 
   }
 
+  @Test
+  void toMuleCoreComponentName_withValidName() {
+    assertThat(MuleComponent.toMuleCoreComponentName("test")).isEqualTo("mule:test");
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  @Test
+  void toMuleCoreComponentName_withNullName() {
+    NullPointerException npe = catchThrowableOfType(
+        () -> MuleComponent.toMuleCoreComponentName(null), NullPointerException.class);
+    assertThat(npe).isNotNull().hasMessage("Component name cannot be null");
+  }
 }

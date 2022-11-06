@@ -185,8 +185,6 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
-    GraphvizEngineHelper.generate(generatedGraph, Format.DOT,
-        Paths.get("test-output2.dot").toFile());
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.dot")));
@@ -394,6 +392,36 @@ class GraphDiagramTest {
     assertThat(written).isFalse();
   }
 
+  @Test
+  @DisplayName("Mule Core component flows - Scheduler")
+  void github_issue_301() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-301.xml"));
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("mule");
+    item.setOperation("scheduler");
+    item.setSource(true);
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    Path path = Paths.get("src/test/resources/gh-issues/iss-301.dot");
+    GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref = new String(Files.readAllBytes(path));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
+  }
 
   @Test
   @DisplayName("Distinguish same connector with different path")
@@ -401,7 +429,7 @@ class GraphDiagramTest {
 
     List flows =
         DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-302.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -426,6 +454,4 @@ class GraphDiagramTest {
         new String(Files.readAllBytes(Paths.get("src/test/resources/gh-issues/iss-302.dot")));
     assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
   }
-
-
 }
