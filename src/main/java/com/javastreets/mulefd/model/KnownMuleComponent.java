@@ -8,4 +8,13 @@ public class KnownMuleComponent extends MuleComponent {
   public KnownMuleComponent(String type, String name) {
     super(type, name);
   }
+
+  @Override
+  public String qualifiedName() {
+    String name = super.qualifiedName();
+    if (getPath() != null && getPath().getValue() != null) {
+      name = name + ":" + getPath().getValue();
+    }
+    return name;
+  }
 }

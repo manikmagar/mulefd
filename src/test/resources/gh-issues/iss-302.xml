@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+    <vm:config name="VM_Config" doc:name="VM Config" doc:id="9768a4c1-08a2-4a54-aece-e48a59369459">
+        <vm:queues />
+    </vm:config>
+    <flow name="mulefdFlow" doc:id="07e45c06-9cad-4ddb-bc36-36c6c2b6affa" >
+        <vm:publish queueName="queue1" doc:name="Publish" doc:id="d531be43-d544-4f6c-8423-d674675dbbc2" config-ref="VM_Config"/>
+        <vm:publish doc:name="Publish" doc:id="3b96a3fd-7a95-427b-945c-4dcc9461ac53" config-ref="VM_Config" queueName="queue2"/>
+    </flow>
+</mule>
