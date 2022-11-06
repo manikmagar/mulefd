@@ -60,6 +60,10 @@ public class MuleXmlElement {
     return ELEMENT_ERROR_HANDLER.equalsIgnoreCase(element.getNodeName());
   }
 
+  public static boolean isMuleCoreElement(Element element) {
+    return "mule".equalsIgnoreCase(element.getNodeName());
+  }
+
   public static boolean isFlowRef(MuleComponent component) {
     return component.getType().equalsIgnoreCase(ELEMENT_FLOW_REF);
   }
@@ -91,7 +95,6 @@ public class MuleXmlElement {
         if (isanErrorHandler(element)) {
           muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
-
         processKnownComponents(knownComponents, muleComponentList, element);
 
       }
@@ -115,6 +118,8 @@ public class MuleXmlElement {
     String[] wildcards = null;
     if (knownComponents.containsKey(keyName)) {
       item = knownComponents.get(keyName);
+    } else if (!element.getNodeName().contains(":")) {
+      item = knownComponents.get(MuleComponent.toMuleCoreComponentName(element.getNodeName()));
     } else if (element.getTagName().contains(":")) {
       wildcards = element.getTagName().split(":");
       String wildcardEntry = wildcards[0] + ":*";
