@@ -89,7 +89,7 @@ class GraphDiagramTest {
   @DisplayName("Validate generated graph when generated as DOT.")
   void drawToValidateGraph() throws Exception {
 
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -134,7 +134,7 @@ class GraphDiagramTest {
 
     List flows =
         DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-256.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -165,7 +165,7 @@ class GraphDiagramTest {
   void drawToValidateGraph_APIKIT() throws Exception {
 
     List flows = DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/test-api.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -197,7 +197,7 @@ class GraphDiagramTest {
 
     List flows = DiagramRendererTestUtil
         .getFlows(Paths.get("src/test/resources/single-flow-generation-example.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -225,7 +225,7 @@ class GraphDiagramTest {
         Paths.get("./mulefd-components.csv"), StandardCopyOption.REPLACE_EXISTING);
 
     DrawingContext context = DiagramRendererTestUtil.getDrawingContext(
-        Paths.get("src/test/resources/kafka-flows-mulefd-components-example.xml"));
+        Paths.get("src/test/resources/kafka-flows-mulefd-components-example.xml"), tempDir);
 
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});

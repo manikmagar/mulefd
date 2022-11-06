@@ -36,7 +36,8 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Empty source directory rendering return false")
   void emptySourceDirRendering() {
-    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(tempDir.toPath())));
+    DiagramRenderer renderer =
+        Mockito.spy(new DiagramRenderer(getCommandModel(tempDir.toPath(), tempDir)));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
@@ -51,7 +52,8 @@ class DiagramRendererTest {
   @DisplayName("Skips rendering non-mule file")
   void skipsNonMuleFileRendering() {
     Path sourcePath = Paths.get("src/test/resources/renderer/non-mule");
-    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(getCommandModel(sourcePath)));
+    DiagramRenderer renderer =
+        Mockito.spy(new DiagramRenderer(getCommandModel(sourcePath, tempDir)));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
@@ -66,8 +68,8 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Source directory rendering with one config")
   void singleFileRendering() {
-    DiagramRenderer renderer = Mockito
-        .spy(new DiagramRenderer(getCommandModel(Paths.get("src/test/resources/renderer/single"))));
+    DiagramRenderer renderer = Mockito.spy(new DiagramRenderer(
+        getCommandModel(Paths.get("src/test/resources/renderer/single"), tempDir)));
     doReturn(Collections.emptyMap()).when(renderer).prepareKnownComponents();
     doReturn(false).when(renderer).diagram(any(DrawingContext.class));
     assertThat(renderer.render()).isFalse();
@@ -82,7 +84,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Create drawing context from command model")
   void toDrawingContext() {
-    CommandModel commandModel = getCommandModel(tempDir.toPath());
+    CommandModel commandModel = getCommandModel(tempDir.toPath(), tempDir);
     commandModel.setFlowName("test-flow");
     assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
         .extracting(DrawingContext::getDiagramType, DrawingContext::getOutputFile,
@@ -95,7 +97,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Create drawing context from command model with single generation as true")
   void toDrawingContextForSingles() {
-    CommandModel commandModel = getCommandModel(tempDir.toPath());
+    CommandModel commandModel = getCommandModel(tempDir.toPath(), tempDir);
     commandModel.setFlowName("test-flow");
     commandModel.setGenerateSingles(true);
     assertThat(new DiagramRenderer(commandModel).drawingContext(commandModel))
@@ -109,8 +111,9 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Prepare components from csv file")
   void prepareKnownComponents() {
-    assertThat(new DiagramRenderer(getCommandModel(tempDir.toPath())).prepareKnownComponents())
-        .isNotEmpty();
+    assertThat(
+        new DiagramRenderer(getCommandModel(tempDir.toPath(), tempDir)).prepareKnownComponents())
+            .isNotEmpty();
   }
 
   @Test
@@ -118,8 +121,9 @@ class DiagramRendererTest {
   void prepareKnownComponentsWithMulefdFile() throws IOException {
     Files.copy(Paths.get("src/test/resources/mulefd-components.csv"),
         tempDir.toPath().resolve("mulefd-components.csv"), StandardCopyOption.REPLACE_EXISTING);
-    assertThat(new DiagramRenderer(getCommandModel(tempDir.toPath())).prepareKnownComponents())
-        .isNotEmpty().containsKey("kafka:message-listener");
+    assertThat(
+        new DiagramRenderer(getCommandModel(tempDir.toPath(), tempDir)).prepareKnownComponents())
+            .isNotEmpty().containsKey("kafka:message-listener");
     Files.deleteIfExists(Paths.get("./mulefd-components.csv"));
   }
 
@@ -127,7 +131,7 @@ class DiagramRendererTest {
   @DisplayName("Single config file as source")
   void sourcePathXmlFile() {
     Path sourcePath = Paths.get("src/test/resources/renderer/single/example-config.xml");
-    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path").isEqualTo(sourcePath);
     logs.assertContains("Reading source file " + sourcePath.toString());
   }
@@ -136,7 +140,7 @@ class DiagramRendererTest {
   @DisplayName("Mule 4 source directory")
   void sourcePathMule4Directory() {
     Path sourcePath = Paths.get("src/test/resources/renderer/mule4-example");
-    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/mule"));
     logs.assertContains(
@@ -147,7 +151,7 @@ class DiagramRendererTest {
   @DisplayName("Mule 3 - non-maven source directory")
   void sourcePathMule3NonMavenDirectory() {
     Path sourcePath = Paths.get("src/test/resources/renderer/mule3-example");
-    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
     logs.assertContains(
@@ -158,7 +162,7 @@ class DiagramRendererTest {
   @DisplayName("Mule 3 - maven source directory")
   void sourcePathMule3MavenDirectory() {
     Path sourcePath = Paths.get("src/test/resources/renderer/mule3-maven-example");
-    assertThat(new DiagramRenderer(getCommandModel(sourcePath)).getMuleSourcePath())
+    assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
     logs.assertContains(
