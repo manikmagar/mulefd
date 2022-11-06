@@ -185,6 +185,8 @@ class GraphDiagramTest {
     ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
     verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
     MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    GraphvizEngineHelper.generate(generatedGraph, Format.DOT,
+        Paths.get("test-output2.dot").toFile());
     String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
     String ref = new String(Files.readAllBytes(Paths.get(
         "src/test/java/com/javastreets/mulefd/drawings/drawToValidateGraph_APIKIT_Expected.dot")));
@@ -390,6 +392,39 @@ class GraphDiagramTest {
     Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
     boolean written = graphDiagram.writeFlowGraph(subflow, outputFilePath, graph);
     assertThat(written).isFalse();
+  }
+
+
+  @Test
+  @DisplayName("Distinguish same connector with different path")
+  void github_issue_302() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-302.xml"));
+    File output = new File(".", "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("vm");
+    item.setOperation("publish");
+    item.setSource(false);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("queueName");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref =
+        new String(Files.readAllBytes(Paths.get("src/test/resources/gh-issues/iss-302.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
   }
 
 
