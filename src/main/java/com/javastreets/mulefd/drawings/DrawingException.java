@@ -1,6 +1,8 @@
 package com.javastreets.mulefd.drawings;
 
-public class DrawingException extends RuntimeException {
+import com.javastreets.mulefd.MuleFDException;
+
+public class DrawingException extends MuleFDException {
 
   public DrawingException(String message) {
     super(message);
