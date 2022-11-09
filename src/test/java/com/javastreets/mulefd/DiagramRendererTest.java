@@ -9,19 +9,23 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
 
 import com.javastreets.mulefd.cli.CommandModel;
+import com.javastreets.mulefd.cli.Configuration;
 import com.javastreets.mulefd.drawings.DiagramType;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.model.Component;
+import com.javastreets.mulefd.model.ComponentItem;
 
 import io.github.netmikey.logunit.api.LogCapturer;
 
@@ -114,6 +118,27 @@ class DiagramRendererTest {
     assertThat(
         new DiagramRenderer(getCommandModel(tempDir.toPath(), tempDir)).prepareKnownComponents())
             .isNotEmpty();
+  }
+
+  @Test
+  @DisplayName("Components file from merged config")
+  void prepareKnownComponent_mergedConfig() throws IOException {
+    try (MockedStatic<Configuration> configurationMock = Mockito.mockStatic(Configuration.class)) {
+      Configuration config = mock(Configuration.class);
+      Path componentPath = tempDir.toPath().resolve("home-mulefd-components.csv");
+      Files.copy(Paths.get("src/test/resources/home-mulefd-components.csv"), componentPath,
+          StandardCopyOption.REPLACE_EXISTING);
+      when(config.getValue("mule.known.components.path"))
+          .thenReturn(componentPath.toAbsolutePath().toString());
+      // noinspection ResultOfMethodCallIgnored
+      configurationMock.when(Configuration::getMergedConfig).thenReturn(config);
+
+      Map<String, ComponentItem> componentItemMap =
+          new DiagramRenderer(getCommandModel(tempDir.toPath(), tempDir)).prepareKnownComponents();
+      verify(config).getValue("mule.known.components.path");
+      assertThat(componentItemMap).isNotEmpty().containsKey("some:operation");
+
+    }
   }
 
   @Test

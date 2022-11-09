@@ -1,9 +1,6 @@
 package com.javastreets.mulefd;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,58 +12,89 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.cli.CommandModel;
+import com.javastreets.mulefd.cli.Configuration;
 import com.javastreets.mulefd.drawings.Diagram;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.drawings.DrawingException;
 import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.FlowContainer;
+import com.javastreets.mulefd.util.Validations;
 
 public class DiagramRenderer {
   public static final int MULE_VERSION_4 = 4;
   public static final int MULE_VERSION_3 = 3;
   public static final String DEFAULT_MULE_COMPONENTS_CSV = "default-mule-components.csv";
   public static final String MULE_CUSTOM_COMPONENTS_CSV = "mulefd-components.csv";
+
+  public static final String KNOWN_COMPONENTS_PATH_KEY = "mule.known.components.path";
   public static final int EXPECTED_NUMBER_OF_COLUMNS = 6;
   public static final String ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS =
       "Found an invalid configuration line in mule components file. Column count must be "
           + EXPECTED_NUMBER_OF_COLUMNS + ". Line - {}";
   Logger log = LoggerFactory.getLogger(DiagramRenderer.class);
 
-  private CommandModel commandModel;
+  private final CommandModel commandModel;
 
   public DiagramRenderer(CommandModel commandModel) {
     this.commandModel = commandModel;
   }
 
-  Map<String, ComponentItem> prepareKnownComponents() {
+  /**
+   * <pre>
+   * Load known components CSV file from following ordered locations -
+   *
+   * 1. Default components CSV shipped with the the tool
+   * 2. Components CSV from user properties. See {@link Configuration#getMergedConfig()}
+   * 3. Components CSV file in the source directory
+   *
+   * </pre>
+   * 
+   * @return Map of known components
+   * @throws MuleFDException when failed to load components file
+   */
+  Map<String, ComponentItem> prepareKnownComponents() throws MuleFDException {
     Map<String, ComponentItem> items = new HashMap<>();
-    try {
-      loadComponentsFile(items, new InputStreamReader(Objects.requireNonNull(Thread.currentThread()
-          .getContextClassLoader().getResourceAsStream(DEFAULT_MULE_COMPONENTS_CSV))));
-    } catch (IOException e) {
-      log.error("Error while loading default mule components file.", e);
+
+    loadComponentsFile(items, Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream(DEFAULT_MULE_COMPONENTS_CSV));
+
+    String configComponents = Configuration.getMergedConfig().getValue(KNOWN_COMPONENTS_PATH_KEY);
+    if (configComponents != null && !configComponents.trim().isEmpty()) {
+      Path configComponentsPath = Paths.get(configComponents).toAbsolutePath();
+      loadComponentsFile(items, configComponentsPath);
     }
+
     Path mulefdComponents = this.commandModel.getSourcePath().toFile().isDirectory()
         ? this.commandModel.getSourcePath().resolve(MULE_CUSTOM_COMPONENTS_CSV)
         : this.commandModel.getSourcePath().resolveSibling(MULE_CUSTOM_COMPONENTS_CSV);
     if (Files.exists(mulefdComponents)) {
-      try {
-        log.info("Found {}. This will be loaded to register any custom modules/connectors.",
-            mulefdComponents);
-        loadComponentsFile(items, new InputStreamReader(Files.newInputStream(mulefdComponents)));
-      } catch (IOException e) {
-        throw new DrawingException("Unable to load file - " + MULE_CUSTOM_COMPONENTS_CSV, e);
-      }
+      loadComponentsFile(items, mulefdComponents);
     }
     return items;
   }
 
-  private void loadComponentsFile(Map<String, ComponentItem> items, InputStreamReader reader)
-      throws IOException {
-    try (BufferedReader br = new BufferedReader(reader)) {
-      for (String line; (line = br.readLine()) != null;) {
+  /**
+   * Reads the components CSV from given {@link Path}
+   * 
+   * @param items Processed {@link ComponentItem} from the file
+   * @param filePath {@link Path} to read components from
+   */
+  private void loadComponentsFile(final Map<String, ComponentItem> items, final Path filePath) {
+    log.debug("Loading known components from {}", filePath);
+    Validations.requireTrue(Files.exists(filePath),
+        "Configuration components file '" + filePath + "' does not exist");
+    try {
+      loadComponentsFile(items, Files.newInputStream(filePath.toFile().toPath()));
+    } catch (IOException e) {
+      throw new MuleFDException("Could not load components file " + filePath, e);
+    }
+  }
+
+  private void loadComponentsFile(final Map<String, ComponentItem> items, InputStream stream) {
+    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
+      for (String line; (line = bufferedReader.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
-          log.debug("Reading component line - {}", line);
+          log.trace("Reading component line - {}", line);
           String[] part = line.split(",");
           if (part.length != EXPECTED_NUMBER_OF_COLUMNS) {
             log.error(ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS, line);
@@ -75,7 +103,7 @@ public class DiagramRenderer {
           ComponentItem item = new ComponentItem();
           item.setPrefix(part[0]);
           item.setOperation(part[1]);
-          item.setSource(Boolean.valueOf(part[2]));
+          item.setSource(Boolean.parseBoolean(part[2]));
           if (item.getOperation().equals("*") && item.isSource()) {
             log.error(
                 "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - {}",
@@ -84,11 +112,13 @@ public class DiagramRenderer {
           }
           item.setPathAttributeName(part[3]);
           item.setConfigAttributeName(part[4]);
-          item.setAsync(Boolean.valueOf(part[5]));
+          item.setAsync(Boolean.parseBoolean(part[5]));
           items.putIfAbsent(item.qualifiedName(), item);
         }
       }
       // line is not visible here.
+    } catch (IOException e) {
+      throw new MuleFDException("Could not load components file", e);
     }
   }
 
