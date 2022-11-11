@@ -341,4 +341,98 @@ class MuleXmlElementTest {
     }
     return element;
   }
+
+  @Test
+  @DisplayName("Element with simple path")
+  void fillComponents_with_simple_path() {
+    Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    element.appendChild(getElementWithAttributes("http:listener",
+        Attribute.with("configRef", "http-config"), Attribute.with("path", "/api")));
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("http");
+    item.setOperation("listener");
+    item.setSource(true);
+    item.setPathAttributeName("path");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(element,
+        Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("http", "listener");
+    expectedComponent.setAsync(false);
+    expectedComponent.setSource(true);
+    expectedComponent.setPath(Attribute.with("path", "/api"));
+    expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1);
+    assertThat(components.stream()
+        .filter(component -> component.qualifiedName().equals("http:listener:/api")).findFirst()
+        .get()).usingRecursiveComparison().isEqualTo(expectedComponent);
+  }
+
+  @Test
+  @DisplayName("Element with xpath-expression in path")
+  void fillComponents_with_xpath_expression_in_path() {
+    Element element = getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    element.appendChild(
+        getElementWithAttributes("http:listener", Attribute.with("configRef", "http-config"),
+            Attribute.with("path", "/api"), Attribute.with("allowedMethod", "GET")));
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("http");
+    item.setOperation("listener");
+    item.setSource(true);
+    item.setPathAttributeName("xpath:@path");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(element,
+        Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("http", "listener");
+    expectedComponent.setAsync(false);
+    expectedComponent.setSource(true);
+    expectedComponent.setPath(Attribute.with("xpath:@path", "/api"));
+    expectedComponent.setConfigRef(Attribute.with("configRef", "http-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1);
+    assertThat(components.stream()
+        .filter(component -> component.qualifiedName().equals("http:listener:/api")).findFirst()
+        .get()).usingRecursiveComparison().isEqualTo(expectedComponent);
+  }
+
+  @Test
+  @DisplayName("Element containing children addressed by xpath-expression in path")
+  void fillComponents_with_children_in_xpath_expression() {
+    final Element flowElement =
+        getElementWithAttributes("flow", Attribute.with("name", "test-flow-name"));
+    final Element amqpPublisherElement = getElementWithAttributes("amqp:publisher",
+        Attribute.with("configRef", "amqp-config"), Attribute.with("path", "api"));
+    final Element queueElement =
+        getElementWithAttributes("amqp:target", Attribute.with("queue", "a-queue"));
+    amqpPublisherElement.appendChild(queueElement);
+    flowElement.appendChild(amqpPublisherElement);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("amqp");
+    item.setOperation("publisher");
+    item.setSource(false);
+    item.setAsync(true);
+    item.setPathAttributeName("xpath:target/@queue");
+    item.setConfigAttributeName("configRef");
+
+    List<MuleComponent> components = MuleXmlElement.fillComponents(flowElement,
+        Collections.singletonMap(item.qualifiedName(), item));
+
+    MuleComponent expectedComponent = new MuleComponent("amqp", "publisher");
+    expectedComponent.setAsync(true);
+    expectedComponent.setSource(false);
+    expectedComponent.setPath(Attribute.with("xpath:target/@queue", "a-queue"));
+    expectedComponent.setConfigRef(Attribute.with("configRef", "amqp-config"));
+
+    assertThat(components).as("List of Mule components processed").isNotEmpty().hasSize(1);
+    assertThat(components.stream()
+        .filter(component -> component.qualifiedName().equals("amqp:publisher:a-queue")).findFirst()
+        .get()).usingRecursiveComparison().isEqualTo(expectedComponent);
+  }
 }

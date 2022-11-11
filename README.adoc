@@ -316,7 +316,22 @@ prefix, operation,  sourceFlag, path,   configName, async
 * **prefix**: Namespace of module/connector. Eg. `vm`, `http` etc.
 * **operation**: Name of an operation or input source in that namespace. Eg. `listener`, `consume` in `vm` etc. This supports wildcard entries (values defined as `*`) for non-source (`sourceFlag=false`) entries.
 * **sourceFlag**: `true` if `operation` is an input source withing that namespace. Eg. `listener` in `vm`.
-* **path**: Name of the attribute on operation which can help identify resource path. Eg. `queueName` for `vm:listener` or `path` for `http:request`. For sources, this is visible on source nodes in diagram.
+* **path**: Name of the attribute on operation which can help identify resource path. Eg. `queueName` for `vm:listener` or `path` for `http:request`. This value will be visible on source nodes in the diagram.
+** For complex paths, it is possible to specify xpath expression to extract value. `xpath:` prefix must be added to the expression when providing relative xpath.
+
+.Scheduler Element for Complex Path selector
+[source, xml]
+----
+<scheduler doc:name="Scheduler">
+	<scheduling-strategy >
+		<cron expression="${cron.expreesion}" /> // <1>
+	</scheduling-strategy>
+</scheduler>
+----
+<1> For example, the scheduler component's path can be `xpath:scheduling-strategy/cron/@expression`. Notice that it is relative to `<scheduler>` element.
+
+//
+
 * **configName**: Name of the module configuration. Eg. `config-ref` attribute name for `vm:listener`. For sources, this is visible on source nodes in diagram. This can help identify source uniquely when multiple configuration exists.
 * **async**: `true` if this is an asynchronous operation. Defaults to `false`.
 

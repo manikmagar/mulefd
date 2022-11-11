@@ -2,6 +2,11 @@ package com.javastreets.mulefd;
 
 import java.util.*;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,6 +22,7 @@ public class MuleXmlElement {
   public static final String ELEMENT_FLOW_REF = "flow-ref";
   public static final String ELEMENT_SCOPE_ASYNC = "async";
   public static final String ELEMENT_ERROR_HANDLER = "error-handler";
+  public static final String XPATH_INDICATOR = "xpath:";
 
   private MuleXmlElement() {}
 
@@ -139,15 +145,33 @@ public class MuleXmlElement {
         mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
             element.getAttribute(item.getConfigAttributeName())));
       }
-      if (!item.getPathAttributeName().trim().isEmpty()) {
-        mc.setPath(Attribute.with(item.getPathAttributeName(),
-            element.getAttribute(item.getPathAttributeName())));
+      String pathExpression = item.getPathAttributeName().trim();
+      if (!pathExpression.isEmpty()) {
+        final String evaluatedPath =
+            isXPath(pathExpression) ? evaluateXpathOnElement(element, pathExpression)
+                : element.getAttribute(item.getPathAttributeName());
+        mc.setPath(Attribute.with(item.getPathAttributeName(), evaluatedPath));
       }
       mc.setAsync(item.isAsync());
       muleComponentList.add(mc);
     }
 
 
+  }
+
+  private static String evaluateXpathOnElement(Element element, String expression) {
+    try {
+      XPath xPath = XPathFactory.newInstance().newXPath();
+      return (String) xPath.compile(expression.substring(XPATH_INDICATOR.length()))
+          .evaluate(element, XPathConstants.STRING);
+    } catch (XPathExpressionException e) {
+      throw new MuleFDException(
+          "Could not evaluate " + expression + " on element " + element.getNodeName(), e);
+    }
+  }
+
+  private static boolean isXPath(final String expression) {
+    return expression.startsWith(XPATH_INDICATOR);
   }
 
   /**
