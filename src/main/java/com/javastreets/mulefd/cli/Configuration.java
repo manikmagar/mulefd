@@ -1,5 +1,8 @@
 package com.javastreets.mulefd.cli;
 
+import static com.javastreets.mulefd.util.ConsoleLog.debug;
+import static com.javastreets.mulefd.util.ConsoleLog.warn;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,8 +10,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Configuration {
   protected final Properties properties = new Properties();
@@ -17,7 +18,6 @@ public class Configuration {
 
   public static final String MULEFD_CONFIG_PROPERTIES = "mulefd.properties";
 
-  private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 
   private static final Configuration globalConfig = readUserHomeConfig();
   private static final Configuration defaultConfig = readDefaultConfig();
@@ -120,7 +120,7 @@ public class Configuration {
         Paths.get(userHome).resolve(MULEFD_DOT_DIRECTORY).resolve(MULEFD_CONFIG_PROPERTIES);
     if (!configProperties.toFile().exists())
       return new Configuration();
-    log.debug("Loading default properties file from: {}", configProperties);
+    debug("Loading default properties file from: {}", configProperties);
     return read(configProperties);
   }
 
@@ -138,7 +138,7 @@ public class Configuration {
         props.load(in);
         configuration.properties.putAll(props);
       } catch (IOException e) {
-        log.warn("Couldn't parse configuration: {}", configFile);
+        warn("Couldn't parse configuration: {}", configFile);
       }
     }
     return configuration;

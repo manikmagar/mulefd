@@ -2,6 +2,8 @@ package com.javastreets.mulefd.cli;
 
 import java.util.concurrent.Callable;
 
+import com.javastreets.mulefd.util.ConsoleLog;
+
 import picocli.CommandLine;
 
 public abstract class BaseCommand implements Callable<Integer> {
@@ -15,8 +17,13 @@ public abstract class BaseCommand implements Callable<Integer> {
       description = "display this help message")
   boolean usageHelpRequested;
 
+  @CommandLine.Option(names = {"-v", "--verbose"}, description = "Run in verbose mode")
+  boolean verboseMode;
+
   @Override
   public Integer call() throws Exception {
+    if (verboseMode)
+      ConsoleLog.setVerbose(true);
     return execute();
   }
 

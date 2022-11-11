@@ -5,20 +5,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.slf4j.event.Level;
 
 import com.javastreets.mulefd.cli.CommandModel;
 import com.javastreets.mulefd.cli.Configuration;
@@ -26,13 +26,9 @@ import com.javastreets.mulefd.drawings.DiagramType;
 import com.javastreets.mulefd.drawings.DrawingContext;
 import com.javastreets.mulefd.model.Component;
 import com.javastreets.mulefd.model.ComponentItem;
+import com.javastreets.mulefd.util.ConsoleLog;
 
-import io.github.netmikey.logunit.api.LogCapturer;
-
-class DiagramRendererTest {
-
-  @RegisterExtension
-  LogCapturer logs = LogCapturer.create().captureForType(DiagramRenderer.class, Level.DEBUG);
+class DiagramRendererTest extends AbstractTest {
 
   @TempDir
   File tempDir;
@@ -55,6 +51,7 @@ class DiagramRendererTest {
   @Test
   @DisplayName("Skips rendering non-mule file")
   void skipsNonMuleFileRendering() {
+    ConsoleLog.setVerbose(true);
     Path sourcePath = Paths.get("src/test/resources/renderer/non-mule");
     DiagramRenderer renderer =
         Mockito.spy(new DiagramRenderer(getCommandModel(sourcePath, tempDir)));
@@ -65,8 +62,9 @@ class DiagramRendererTest {
     ArgumentCaptor<DrawingContext> captor = ArgumentCaptor.forClass(DrawingContext.class);
     verify(renderer).diagram(captor.capture());
     assertThat(captor.getValue().getComponents()).isEmpty();
-    logs.assertContains(
-        "Not a mule configuration file: " + Paths.get(sourcePath.toString(), "non-mule-file.xml"));
+    assertThat(getLogEntries()).contains("DEBUG: Not a mule configuration file: "
+        + Paths.get(sourcePath.toString(), "non-mule-file.xml"));
+    ConsoleLog.setVerbose(false);
   }
 
   @Test
@@ -158,7 +156,7 @@ class DiagramRendererTest {
     Path sourcePath = Paths.get("src/test/resources/renderer/single/example-config.xml");
     assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path").isEqualTo(sourcePath);
-    logs.assertContains("Reading source file " + sourcePath.toString());
+    assertThat(getLogEntries()).contains("INFO: Reading source file " + sourcePath.toString());
   }
 
   @Test
@@ -168,8 +166,8 @@ class DiagramRendererTest {
     assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/mule"));
-    logs.assertContains(
-        "Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
+    assertThat(getLogEntries()).contains(
+        "INFO: Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
   }
 
   @Test
@@ -179,8 +177,8 @@ class DiagramRendererTest {
     assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
-    logs.assertContains(
-        "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+    assertThat(getLogEntries()).contains(
+        "INFO: Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
   }
 
   @Test
@@ -190,7 +188,7 @@ class DiagramRendererTest {
     assertThat(new DiagramRenderer(getCommandModel(sourcePath, tempDir)).getMuleSourcePath())
         .as("Resolved mule configuration path")
         .isEqualTo(Paths.get(sourcePath.toString(), "src/main/app"));
-    logs.assertContains(
-        "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+    assertThat(getLogEntries()).contains(
+        "INFO: Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
   }
 }

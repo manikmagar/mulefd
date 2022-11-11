@@ -1,5 +1,6 @@
 package com.javastreets.mulefd.drawings;
 
+import static com.javastreets.mulefd.util.ConsoleLog.*;
 import static com.javastreets.mulefd.util.FileUtil.sanitizeFilename;
 import static guru.nidi.graphviz.attribute.Arrow.DirType;
 import static guru.nidi.graphviz.attribute.Arrow.VEE;
@@ -14,9 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.cli.Configuration;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
@@ -33,8 +31,6 @@ import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.model.MutableNode;
 
 public class GraphDiagram implements Diagram {
-
-  Logger log = LoggerFactory.getLogger(GraphDiagram.class);
 
   @Override
   public boolean draw(DrawingContext drawingContext) {
@@ -108,7 +104,7 @@ public class GraphDiagram implements Diagram {
   }
 
   void addLegends(MutableGraph rootGraph) {
-    log.debug("Adding legend to graph - {}", rootGraph.name());
+    debug("Adding legend to graph - %s", rootGraph.name());
     graph("legend").directed().cluster().graphAttr().with(Label.html("<b>Legend</b>"), Style.DASHED)
         .with(
             asFlow(sizedNode("flow", 1))
@@ -138,14 +134,14 @@ public class GraphDiagram implements Diagram {
     String flowName = flowComponent.getName();
     Path targetPath =
         Paths.get(targetDirectory.toString(), sanitizeFilename(flowName.concat(".png")));
-    log.info("Writing individual flow graph for {} at {}", flowName, targetPath);
+    info("Writing individual flow graph for %s at %s", flowName, targetPath);
     try {
       flowGraph.setName(flowComponent.qualifiedName());
       Files.createDirectories(targetPath);
       writGraphToFile(targetPath.toFile(), flowGraph);
     } catch (IOException e) {
-      log.error("Error while creating parent directory for {}", targetPath, e);
-      log.error("Skipping individual graph generation for flow {}", flowName);
+      error("Error while creating parent directory for %s", targetPath, e);
+      error("Skipping individual graph generation for flow %s", flowName);
       return false;
     }
     return true;
@@ -153,10 +149,10 @@ public class GraphDiagram implements Diagram {
 
   boolean writGraphToFile(File outputFilename, MutableGraph graph) {
     try {
-      log.debug("Writing graph at path {}", outputFilename);
+      debug("Writing graph at path %s", outputFilename);
       return GraphvizEngineHelper.generate(graph, Format.PNG, outputFilename);
     } catch (IOException e) {
-      log.error("Error while writing graph at {}", outputFilename, e);
+      error("Error while writing graph at %s", outputFilename, e);
       return false;
     }
   }
@@ -216,7 +212,7 @@ public class GraphDiagram implements Diagram {
   MutableNode processComponent(Component component, DrawingContext drawingContext,
       Map<String, Component> flowRefs, List<String> mappedFlowKinds,
       List<MutableNode> additionalRootNodes) {
-    log.debug("Processing flow - {}", component.qualifiedName());
+    debug("Processing flow - %s", component.qualifiedName());
     FlowContainer flow = (FlowContainer) component;
     MutableNode flowNode = mutNode(flow.qualifiedName()).add(Label.markdown(getNodeLabel(flow)));
     if (flow.isaSubFlow()) {
@@ -235,7 +231,7 @@ public class GraphDiagram implements Diagram {
             k -> targetFlowByName(muleComponent.getName(), drawingContext.getComponents()));
         if (refComponent != null) {
           if (refComponent.equals(flow)) {
-            log.warn("Detected a possible self loop in {} {}. Skipping flow-ref processing.",
+            warn("Detected a possible self loop in %s %s. Skipping flow-ref processing.",
                 refComponent.getType(), refComponent.getName());
             flowNode.addLink(flowNode);
             mappedFlowKinds.add(name);
@@ -261,7 +257,7 @@ public class GraphDiagram implements Diagram {
         // 1. Create a new apikit node for this component
         // 2. Find all flows with name ending with ":{apikiConfigName}"
         // 3. Link those flows with apiKit flow.
-        log.debug("Processing apikit component - {}", component.qualifiedName());
+        debug("Processing apikit component - %s", component.qualifiedName());
         MutableNode apiKitNode =
             asApikitNode(muleComponent.getType().concat(muleComponent.getConfigRef().getValue()))
                 .add(Label.htmlLines("<b>" + muleComponent.getType() + "</b>",

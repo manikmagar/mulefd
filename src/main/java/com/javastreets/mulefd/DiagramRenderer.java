@@ -1,5 +1,7 @@
 package com.javastreets.mulefd;
 
+import static com.javastreets.mulefd.util.ConsoleLog.*;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,9 +9,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.cli.CommandModel;
 import com.javastreets.mulefd.cli.Configuration;
@@ -30,9 +29,7 @@ public class DiagramRenderer {
   public static final int EXPECTED_NUMBER_OF_COLUMNS = 6;
   public static final String ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS =
       "Found an invalid configuration line in mule components file. Column count must be "
-          + EXPECTED_NUMBER_OF_COLUMNS + ". Line - {}";
-  Logger log = LoggerFactory.getLogger(DiagramRenderer.class);
-
+          + EXPECTED_NUMBER_OF_COLUMNS + ". Line - %s";
   private final CommandModel commandModel;
 
   public DiagramRenderer(CommandModel commandModel) {
@@ -80,7 +77,7 @@ public class DiagramRenderer {
    * @param filePath {@link Path} to read components from
    */
   private void loadComponentsFile(final Map<String, ComponentItem> items, final Path filePath) {
-    log.debug("Loading known components from {}", filePath);
+    info("Loading known components from %s", filePath);
     Validations.requireTrue(Files.exists(filePath),
         "Configuration components file '" + filePath + "' does not exist");
     try {
@@ -94,10 +91,10 @@ public class DiagramRenderer {
     try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream))) {
       for (String line; (line = bufferedReader.readLine()) != null;) {
         if (!line.startsWith("prefix")) {
-          log.trace("Reading component line - {}", line);
+          debug("Reading component line - %s", line);
           String[] part = line.split(",");
           if (part.length != EXPECTED_NUMBER_OF_COLUMNS) {
-            log.error(ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS, line);
+            error(ERROR_MESSAGE_INVALID_NUMBER_OF_COLUMNS, line);
             throw new DrawingException("Invalid mule components configuration file.");
           }
           ComponentItem item = new ComponentItem();
@@ -105,8 +102,8 @@ public class DiagramRenderer {
           item.setOperation(part[1]);
           item.setSource(Boolean.parseBoolean(part[2]));
           if (item.getOperation().equals("*") && item.isSource()) {
-            log.error(
-                "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - {}",
+            error(
+                "Wildcard operation entry as a source is not allowed. Please create a separate entry for source if needed. Line - %s",
                 line);
             throw new DrawingException("Invalid mule components configuration file.");
           }
@@ -133,7 +130,7 @@ public class DiagramRenderer {
       }
       return diagram(context);
     } catch (IOException e) {
-      log.error("Error while parsing xml file", e);
+      error("Error while parsing xml file", e);
       return false;
     }
   }
@@ -161,44 +158,41 @@ public class DiagramRenderer {
     Path newSourcePath = commandModel.getSourcePath();
     commandModel.setMuleVersion(MULE_VERSION_4);
     if (Files.isDirectory(commandModel.getSourcePath())) {
-      log.debug("Source is a directory {}", commandModel.getSourcePath());
+      debug("Source is a directory %s", commandModel.getSourcePath());
       if (existInSource("src/main/mule/") && existInSource("mule-artifact.json")) {
-        log.info(
-            "Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
+        info("Found standard Mule 4 source structure 'src/main/mule'. Source is a Mule-4 project.");
         newSourcePath = Paths.get(commandModel.getSourcePath().toString(), "src/main/mule");
         commandModel.setMuleVersion(MULE_VERSION_4);
       } else if (existInSource("src/main/app/") && existInSource("mule-project.xml")) {
-        log.info(
-            "Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
+        info("Found standard Mule 3 source structure 'src/main/app'. Source is a Mule-3 project.");
         newSourcePath = Paths.get(commandModel.getSourcePath().toString(), "src/main/app");
         commandModel.setMuleVersion(MULE_VERSION_3);
       } else {
-        log.warn(
+        warn(
             "No known standard Mule (3/4) directory structure found (src/main/mule or src/main/app).");
       }
-      log.info(
-          "Source directory '{}' will be scanned recursively to find Mule {} configuration files.",
+      info("Source directory '%s' will be scanned recursively to find Mule %s configuration files.",
           newSourcePath, commandModel.getMuleVersion());
     } else {
-      log.info("Reading source file {}", newSourcePath);
+      info("Reading source file %s", newSourcePath);
     }
     return newSourcePath;
   }
 
   void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) {
-    log.debug("Reading file {}", path);
+    debug("Reading file %s", path);
     MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
     muleXmlParser.parse();
     if (muleXmlParser.isMuleFile()) {
       flows.addAll(muleXmlParser.getMuleFlows(knownComponents));
     } else {
-      log.debug("Not a mule configuration file: {}", path);
+      debug("Not a mule configuration file: %s", path);
     }
   }
 
   Boolean diagram(DrawingContext context) {
     if (context.getComponents().isEmpty()) {
-      log.warn("No mule flows found for creating diagram.");
+      warn("No mule flows found for creating diagram.");
       return false;
     }
     ServiceLoader<Diagram> diagramServices = ServiceLoader.load(Diagram.class);
@@ -206,17 +200,17 @@ public class DiagramRenderer {
     boolean drawn = false;
     while (its.hasNext()) {
       Diagram diagram = its.next();
-      log.debug("Analyzing diagram provider {}", diagram.getClass());
+      debug("Analyzing diagram provider %s", diagram.getClass());
       if (diagram.supports(commandModel.getDiagramType())) {
-        log.debug("Found a supporting provider {} for drawing {}", diagram.getClass(),
+        debug("Found a supporting provider %s for drawing %s", diagram.getClass(),
             commandModel.getDiagramType());
-        log.info("Initiating drawing {} at {}", diagram.name(), commandModel.getTargetPath());
+        info("Initiating drawing %s at %s", diagram.name(), commandModel.getTargetPath());
         if (context.getFlowName() != null) {
-          log.info("Generating diagram for dependencies of single flow only - {}",
+          info("Generating diagram for dependencies of single flow only - %s",
               context.getFlowName());
         }
         drawn = diagram.draw(context);
-        log.info("Generated {} at {}", diagram.name(), context.getOutputFile().getAbsolutePath());
+        info("Generated %s at %s", diagram.name(), context.getOutputFile().getAbsolutePath());
         break;
       }
     }
