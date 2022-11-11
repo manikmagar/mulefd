@@ -1,20 +1,19 @@
 package com.javastreets.mulefd.xml;
 
+import static com.javastreets.mulefd.util.ConsoleLog.error;
+
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class XmlParser {
 
-  Logger logger = LoggerFactory.getLogger(XmlParser.class);
 
   private final String filePath;
 
@@ -35,7 +34,7 @@ public class XmlParser {
       document = documentBuilder.parse(filePath);
       document.getDocumentElement().normalize();
     } catch (SAXException | IOException | ParserConfigurationException e) {
-      logger.error("Failed to parse xml - " + filePath, e);
+      error("Failed to parse xml - " + filePath, e);
     }
   }
 

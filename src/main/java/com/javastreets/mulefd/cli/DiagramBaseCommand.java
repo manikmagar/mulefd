@@ -1,10 +1,9 @@
 package com.javastreets.mulefd.cli;
 
+import static com.javastreets.mulefd.util.ConsoleLog.info;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.javastreets.mulefd.DiagramRenderer;
 import com.javastreets.mulefd.drawings.DiagramType;
@@ -15,7 +14,6 @@ import picocli.CommandLine;
 
 public abstract class DiagramBaseCommand extends BaseCommand {
 
-  private static final Logger log = LoggerFactory.getLogger(DiagramBaseCommand.class);
   @CommandLine.Parameters(index = "0",
       description = "Source directory path containing mule configuration files")
   private Path sourcePath;
@@ -40,11 +38,11 @@ public abstract class DiagramBaseCommand extends BaseCommand {
 
   @Override
   protected Integer execute() {
-    log.info("Mule Flow Diagrams - {}, Started at {}", Version.VersionProvider.getMuleFDVersion(),
+    info("Mule Flow Diagrams - %s, Started at %s", Version.VersionProvider.getMuleFDVersion(),
         DateUtil.now());
     CommandModel cm = getCommandModel();
     Boolean rendered = new DiagramRenderer(cm).render();
-    log.info("Finished at {}", DateUtil.now());
+    info("Finished at %s", DateUtil.now());
     return EXIT_OK;
   }
 

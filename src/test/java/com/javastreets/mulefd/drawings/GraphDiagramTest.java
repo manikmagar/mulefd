@@ -19,28 +19,27 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.slf4j.event.Level;
 
+import com.javastreets.mulefd.AbstractTest;
 import com.javastreets.mulefd.DiagramRendererTestUtil;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.*;
 
-import guru.nidi.graphviz.attribute.*;
+import guru.nidi.graphviz.attribute.Arrow;
+import guru.nidi.graphviz.attribute.GraphAttr;
+import guru.nidi.graphviz.attribute.Label;
+import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.model.MutableGraph;
-import io.github.netmikey.logunit.api.LogCapturer;
 
-class GraphDiagramTest {
+class GraphDiagramTest extends AbstractTest {
 
   @TempDir
   File tempDir;
 
-  @RegisterExtension
-  LogCapturer logs = LogCapturer.create().captureForType(GraphDiagram.class, Level.DEBUG);
 
   private static final long MEGABYTE = 1024L * 1024L;
 
@@ -72,7 +71,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -81,8 +79,8 @@ class GraphDiagramTest {
     System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
     verify(graphDiagram, Mockito.times(0)).writeFlowGraph(any(), any(), any());
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
   @Test
@@ -259,7 +257,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -269,8 +266,8 @@ class GraphDiagramTest {
     assertThat(output).exists();
     verify(graphDiagram, Mockito.times(1)).writeFlowGraph(any(), any(), any());
     verify(graphDiagram, Mockito.times(1)).writeFlowGraph(eq(flowContainer), any(), any());
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
   @Test
@@ -296,7 +293,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow, flowContainer2));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -308,8 +304,8 @@ class GraphDiagramTest {
     verify(graphDiagram, Mockito.times(3)).processComponent(compArg.capture(), eq(context),
         anyMap(), anyList(), anyList());
     assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow, subflow);
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
 
