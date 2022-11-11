@@ -50,7 +50,7 @@ jacocoTestReport {
 dependencies {
 	implementation 'guru.nidi:graphviz-java-all-j2v8:0.17.0'
 	implementation 'info.picocli:picocli:4.6.3'
-	implementation 'org.slf4j:slf4j-nop:1.7.30'
+	implementation 'org.slf4j:slf4j-nop:2.0.3'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.1'
