@@ -9,11 +9,14 @@ ifdef::env-github[]
 endif::[]
 :toc: macro
 
+image:https://img.shields.io/github/downloads/manikmagar/mulefd/total[GitHub all releases]
 image:https://img.shields.io/github/release/manikmagar/mulefd.svg[Release,link=https://github.com/manikmagar/mulefd/releases]
 image:https://github.com/manikmagar/mulefd/workflows/ci-build/badge.svg[Build Status,link=https://github.com/manikmagar/mulefd/actions]
-image:https://api.dependabot.com/badges/status?host=github&repo=manikmagar/mulefd[Dependabot Status,https://dependabot.com]
 image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=vulnerabilities[SonarCloud Vulnerability]
 image:https://sonarcloud.io/api/project_badges/measure?project=manikmagar_mulefd&metric=alert_status[SonarCloud Quality]
+image:https://img.shields.io/docker/v/manikmagar/mulefd?color=blue&label=docker%20image&sort=semver[Docker Image Version (latest semver)]
+image:https://img.shields.io/github/license/manikmagar/mulefd[GitHub]
+
 
 toc::[]
 
@@ -196,7 +199,7 @@ To install the distribution -
 .. icon:apple[] icon:linux[] : `sh build/install/mulefd/bin/mulefd help`
 .. icon:windows[] : `./build/install/mulefd/bin/mulefd.bat help`
 
-== Configuration
+== Configuration [[configuration, Configuration]]
 `mulefd` supports external properties configuration to change the behavior of the tool. You can create a file `${user.home}/.mulefd/mulefd.properties` and provide configuration properties.
 
 To see the current properties, including the defaults of the tool, run following command -
@@ -212,6 +215,7 @@ $ mulefd config list
 Following properties are supported in the config properties:
 
 - `diagram.font.name`: To change the font used for graph text, set this to the name of the font available on target system. Eg. Arial or Courier.
+- `mule.components.csv`: Path of the file containing list of <<known-components>>.
 
 NOTE: If generated diagram has node label's going out of the shape, try changing the font to the one available on the systm.
 
@@ -297,7 +301,7 @@ Target directory to output generated diagram can be specified with `-t {director
 
 The file name for diagram defaults to `mule-diagram.png`. This can be changed by specifying `-o {filename}` argument.
 
-== Known modules/connectors
+== Known modules/connectors [[known-components, Known modules/connectors]]
 Mule has many connectors/modules that can be used for building flows and sub-flows, and list keeps growing. This tool maintains a list of known components with their supported operations for including in the generated diagram.
 
 You can find this list in source code link:src/main/resources/default-mule-components.csv[].
@@ -306,7 +310,7 @@ Each record in this file has following columns -
 
 [source, csv]
 ----
-prefix,operation,sourceFlag,path,configName,async
+prefix, operation,  sourceFlag, path,   configName, async
 
 ----
 * **prefix**: Namespace of module/connector. Eg. `vm`, `http` etc.
@@ -326,6 +330,12 @@ If any module is missing in the default list - either being a new module or a cu
 If `mulefd-components.csv` named CSV file exists in `sourcePath`, then all modules/connectors within that file are registered as known components. Structure of this file must be same as default components file explained above.
 
 See example file at link:src/test/resources/mulefd-components.csv[].
+
+MuleFD will load components file from predefined locations in the given order as below -
+
+1. Default Components file shipped with the tool
+2. Components file from the path defined in <<configuration>> file with key `mule.components.csv`
+3. Components file located in the source directory
 
 == Troubleshooting
 

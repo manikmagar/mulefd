@@ -34,13 +34,10 @@ subgraph "cluster_mule" {
 edge ["dir"="forward"]
 graph ["rankdir"="LR","splines"="spline","pad"="1.0,0.5","dpi"="150","label"=<Application graph<br/>>,"labelloc"="t","style"="invis"]
 edge ["arrowhead"="vee","dir"="forward"]
-"http:listener:/pushMessage" ["shape"="hexagon","style"="filled","color"="cyan","sourceNode"="true","label"=<<b>http: listener</b><br/>/pushMessage<br/>>]
-"flow:Producer-Flow" ["label"=<<b>flow</b>: Producer-Flow>,"shape"="rectangle","color"="blue"]
-"kafka:publish:#[payload.topic]" ["shape"="component","label"=<<b>kafka</b>: publish  <br/><i>#[payload.topic]</i>>]
-"kafka:message-listener:" ["shape"="hexagon","style"="filled","color"="cyan","sourceNode"="true","label"=<<b>kafka: message-listener</b><br/><br/>>]
-"flow:Consumer-Flow" ["label"=<<b>flow</b>: Consumer-Flow>,"shape"="rectangle","color"="blue"]
-"http:listener:/pushMessage" -> "flow:Producer-Flow" ["style"="bold"]
-"flow:Producer-Flow" -> "kafka:publish:#[payload.topic]" ["style"="dashed,bold","xlabel"="(1) Async","color"="lightblue3"]
-"kafka:message-listener:" -> "flow:Consumer-Flow" ["style"="bold"]
+"flow:mulefdFlow" ["label"=<<b>flow</b>: mulefdFlow>,"shape"="rectangle","color"="blue"]
+"vm:publish:queue1" ["shape"="component","label"=<<b>vm</b>: publish  <br/><i>queue1</i>>]
+"vm:publish:queue2" ["shape"="component","label"=<<b>vm</b>: publish  <br/><i>queue2</i>>]
+"flow:mulefdFlow" -> "vm:publish:queue1" ["style"="solid","label"="(1)"]
+"flow:mulefdFlow" -> "vm:publish:queue2" ["style"="solid","label"="(2)"]
 }
 }

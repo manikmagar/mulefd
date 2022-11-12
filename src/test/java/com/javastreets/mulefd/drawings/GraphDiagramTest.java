@@ -19,28 +19,27 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.slf4j.event.Level;
 
+import com.javastreets.mulefd.AbstractTest;
 import com.javastreets.mulefd.DiagramRendererTestUtil;
 import com.javastreets.mulefd.drawings.engine.GraphvizEngineHelper;
 import com.javastreets.mulefd.model.*;
 
-import guru.nidi.graphviz.attribute.*;
+import guru.nidi.graphviz.attribute.Arrow;
+import guru.nidi.graphviz.attribute.GraphAttr;
+import guru.nidi.graphviz.attribute.Label;
+import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.model.MutableGraph;
-import io.github.netmikey.logunit.api.LogCapturer;
 
-class GraphDiagramTest {
+class GraphDiagramTest extends AbstractTest {
 
   @TempDir
   File tempDir;
 
-  @RegisterExtension
-  LogCapturer logs = LogCapturer.create().captureForType(GraphDiagram.class, Level.DEBUG);
 
   private static final long MEGABYTE = 1024L * 1024L;
 
@@ -72,7 +71,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -81,15 +79,15 @@ class GraphDiagramTest {
     System.out.println("Used memory is megabytes: " + bytesToMegabytes(memory));
     assertThat(output).exists();
     verify(graphDiagram, Mockito.times(0)).writeFlowGraph(any(), any(), any());
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
   @Test
-  @DisplayName("Validate generated graph when generated as JSON.")
+  @DisplayName("Validate generated graph when generated as DOT.")
   void drawToValidateGraph() throws Exception {
 
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -129,11 +127,43 @@ class GraphDiagramTest {
 
 
   @Test
-  @DisplayName("Validate generated graph for APIKIT flows when generated as JSON.")
+  @DisplayName("When APIKIT generated flow excludes flow-refs")
+  void github_issue_256() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-256.xml"));
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("apikit");
+    item.setOperation("*");
+    item.setSource(false);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("config-ref");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref =
+        new String(Files.readAllBytes(Paths.get("src/test/resources/gh-issues/iss-256.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
+  }
+
+  @Test
+  @DisplayName("Validate generated graph for APIKIT flows when generated as DOT.")
   void drawToValidateGraph_APIKIT() throws Exception {
 
     List flows = DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/test-api.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -160,12 +190,12 @@ class GraphDiagramTest {
   }
 
   @Test
-  @DisplayName("Validate generated graph for Single flow when generated as JSON.")
+  @DisplayName("Validate generated graph for Single flow when generated as DOT.")
   void drawToValidateGraph_SingleFlow() throws Exception {
 
     List flows = DiagramRendererTestUtil
         .getFlows(Paths.get("src/test/resources/single-flow-generation-example.xml"));
-    File output = new File(".", "output.png");
+    File output = new File(tempDir, "output.png");
     DrawingContext context = new DrawingContext();
     context.setDiagramType(DiagramType.GRAPH);
     context.setOutputFile(output);
@@ -193,7 +223,7 @@ class GraphDiagramTest {
         Paths.get("./mulefd-components.csv"), StandardCopyOption.REPLACE_EXISTING);
 
     DrawingContext context = DiagramRendererTestUtil.getDrawingContext(
-        Paths.get("src/test/resources/kafka-flows-mulefd-components-example.xml"));
+        Paths.get("src/test/resources/kafka-flows-mulefd-components-example.xml"), tempDir);
 
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
@@ -227,7 +257,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -237,8 +266,8 @@ class GraphDiagramTest {
     assertThat(output).exists();
     verify(graphDiagram, Mockito.times(1)).writeFlowGraph(any(), any(), any());
     verify(graphDiagram, Mockito.times(1)).writeFlowGraph(eq(flowContainer), any(), any());
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
   @Test
@@ -264,7 +293,6 @@ class GraphDiagramTest {
 
     context.setComponents(Arrays.asList(flowContainer, subflow, flowContainer2));
     context.setKnownComponents(Collections.emptyMap());
-
     GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
     graphDiagram.draw(context);
     runtime.gc();
@@ -274,10 +302,10 @@ class GraphDiagramTest {
     assertThat(output).exists();
     ArgumentCaptor<Component> compArg = ArgumentCaptor.forClass(Component.class);
     verify(graphDiagram, Mockito.times(3)).processComponent(compArg.capture(), eq(context),
-        anyMap(), anyList());
+        anyMap(), anyList(), anyList());
     assertThat(compArg.getAllValues()).containsExactly(flowContainer2, subflow, subflow);
-    logs.assertContains(
-        "Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
+    assertThat(getLogEntries()).contains(
+        "WARN: Detected a possible self loop in sub-flow test-sub-flow. Skipping flow-ref processing.");
   }
 
 
@@ -358,5 +386,68 @@ class GraphDiagramTest {
     Path outputFilePath = Paths.get(tempDir.getAbsolutePath(), "dummy");
     boolean written = graphDiagram.writeFlowGraph(subflow, outputFilePath, graph);
     assertThat(written).isFalse();
+  }
+
+  @Test
+  @DisplayName("Mule Core component flows - Scheduler")
+  void github_issue_301() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-301.xml"));
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("mule");
+    item.setOperation("scheduler");
+    item.setSource(true);
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    Path path = Paths.get("src/test/resources/gh-issues/iss-301.dot");
+    GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref = new String(Files.readAllBytes(path));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
+  }
+
+  @Test
+  @DisplayName("Distinguish same connector with different path")
+  void github_issue_302() throws Exception {
+
+    List flows =
+        DiagramRendererTestUtil.getFlows(Paths.get("src/test/resources/gh-issues/iss-302.xml"));
+    File output = new File(tempDir, "output.png");
+    DrawingContext context = new DrawingContext();
+    context.setDiagramType(DiagramType.GRAPH);
+    context.setOutputFile(output);
+    context.setComponents(flows);
+
+    ComponentItem item = new ComponentItem();
+    item.setPrefix("vm");
+    item.setOperation("publish");
+    item.setSource(false);
+    item.setConfigAttributeName("config-ref");
+    item.setPathAttributeName("queueName");
+    context.setKnownComponents(Collections.singletonMap(item.qualifiedName(), item));
+
+    GraphDiagram graphDiagram = Mockito.spy(new GraphDiagram());
+    when(graphDiagram.getDiagramHeaderLines()).thenReturn(new String[] {"Test Diagram"});
+    graphDiagram.draw(context);
+    ArgumentCaptor<MutableGraph> graphArgumentCaptor = ArgumentCaptor.forClass(MutableGraph.class);
+    verify(graphDiagram).writGraphToFile(any(File.class), graphArgumentCaptor.capture());
+    MutableGraph generatedGraph = graphArgumentCaptor.getValue();
+    String generated = GraphvizEngineHelper.generate(generatedGraph, Format.DOT);
+    String ref =
+        new String(Files.readAllBytes(Paths.get("src/test/resources/gh-issues/iss-302.dot")));
+    assertThat(generated).as("DOT Graph").isEqualToNormalizingNewlines(ref);
   }
 }

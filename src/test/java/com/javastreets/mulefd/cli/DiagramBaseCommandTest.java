@@ -43,8 +43,7 @@ class DiagramBaseCommandTest {
   @DisplayName("When parsing source file without parent folder, sets parent as target")
   void commandLineWithBareSourceFile() throws Exception {
     tempDir.createNewFile();
-    Path sourceFile = Paths.get("db-config.xml");
-    sourceFile.toFile().delete();
+    Path sourceFile = tempDir.toPath().resolve("db-config.xml");
     Files.copy(Paths.get("src/test/resources/renderer/component-configs/db-config.xml"),
         sourceFile);
     String[] args = new String[] {sourceFile.toString()};

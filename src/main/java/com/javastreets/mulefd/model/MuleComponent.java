@@ -1,5 +1,8 @@
 package com.javastreets.mulefd.model;
 
+import java.util.Objects;
+
+
 public class MuleComponent extends Component {
   private boolean async;
   private boolean source;
@@ -28,6 +31,17 @@ public class MuleComponent extends Component {
 
   public void setSource(boolean source) {
     this.source = source;
+  }
+
+  /**
+   * Prefixes the provided name with mule namespace.
+   * 
+   * @param name {@link String} of a component
+   * @return String mule prefixed name
+   */
+  public static String toMuleCoreComponentName(String name) {
+    Objects.requireNonNull(name, "Component name cannot be null");
+    return "mule:" + name;
   }
 
   public Attribute<String, String> getConfigRef() {

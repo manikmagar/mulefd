@@ -8,7 +8,6 @@ import org.w3c.dom.NodeList;
 
 import com.javastreets.mulefd.model.Attribute;
 import com.javastreets.mulefd.model.ComponentItem;
-import com.javastreets.mulefd.model.KnownMuleComponent;
 import com.javastreets.mulefd.model.MuleComponent;
 
 import javax.xml.xpath.XPath;
@@ -64,6 +63,10 @@ public class MuleXmlElement {
 
   public static boolean isanErrorHandler(Element element) {
     return ELEMENT_ERROR_HANDLER.equalsIgnoreCase(element.getNodeName());
+  }
+
+  public static boolean isMuleCoreElement(Element element) {
+    return "mule".equalsIgnoreCase(element.getNodeName());
   }
 
   public static boolean isFlowRef(MuleComponent component) {
@@ -150,6 +153,9 @@ public class MuleXmlElement {
     final Optional<ComponentItem> foundItemByKey = Optional.ofNullable(components.get(keyName));
     if (foundItemByKey.isPresent())
       return foundItemByKey;
+    if (!keyName.contains(":")) {
+      return Optional.ofNullable(components.get(MuleComponent.toMuleCoreComponentName(keyName)));
+    }
     if (keyName.contains(":")) {
       final String wildcardEntry = keyName.split(":")[0] + ":*";
       return Optional.ofNullable(components.get(wildcardEntry));

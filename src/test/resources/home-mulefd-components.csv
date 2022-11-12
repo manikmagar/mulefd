@@ -1,0 +1,2 @@
+prefix,operation,sourceFlag,path,configName,async
+some,operation,true,topic,config-ref,true
