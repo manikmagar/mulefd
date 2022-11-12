@@ -19,8 +19,6 @@ import com.javastreets.mulefd.model.ComponentItem;
 import com.javastreets.mulefd.model.FlowContainer;
 import com.javastreets.mulefd.util.Validations;
 
-import javax.xml.xpath.XPathExpressionException;
-
 public class DiagramRenderer {
   public static final int MULE_VERSION_4 = 4;
   public static final int MULE_VERSION_3 = 3;
@@ -47,7 +45,7 @@ public class DiagramRenderer {
    * 3. Components CSV file in the source directory
    *
    * </pre>
-   * 
+   *
    * @return Map of known components
    * @throws MuleFDException when failed to load components file
    */
@@ -74,7 +72,7 @@ public class DiagramRenderer {
 
   /**
    * Reads the components CSV from given {@link Path}
-   * 
+   *
    * @param items Processed {@link ComponentItem} from the file
    * @param filePath {@link Path} to read components from
    */
@@ -134,9 +132,6 @@ public class DiagramRenderer {
     } catch (IOException e) {
       error("Error while parsing xml file", e);
       return false;
-    } catch (XPathExpressionException e) {
-      log.error("Error while interpreting path", e);
-      return false;
     }
   }
 
@@ -144,7 +139,7 @@ public class DiagramRenderer {
     return Files.exists(Paths.get(commandModel.getSourcePath().toString(), path));
   }
 
-  List<FlowContainer> findFlows(DrawingContext context) throws IOException, XPathExpressionException {
+  List<FlowContainer> findFlows(DrawingContext context) throws IOException {
     Path newSourcePath = getMuleSourcePath();
     List<FlowContainer> flows = new ArrayList<>();
     try (Stream<Path> paths = Files.walk(newSourcePath)) {
@@ -184,8 +179,8 @@ public class DiagramRenderer {
     return newSourcePath;
   }
 
-  void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) throws XPathExpressionException {
-    debug("Reading file {}", path);
+  void flows(List<FlowContainer> flows, Map<String, ComponentItem> knownComponents, Path path) {
+    debug("Reading file %s", path);
     MuleXmlParser muleXmlParser = new MuleXmlParser(path.toAbsolutePath().toString());
     muleXmlParser.parse();
     if (muleXmlParser.isMuleFile()) {
@@ -222,7 +217,7 @@ public class DiagramRenderer {
     return drawn;
   }
 
-public DrawingContext drawingContext(CommandModel model) {
+  public DrawingContext drawingContext(CommandModel model) {
     DrawingContext context = new DrawingContext();
     context.setDiagramType(model.getDiagramType());
     context.setOutputFile(new File(model.getTargetPath().toFile(), model.getOutputFilename()));

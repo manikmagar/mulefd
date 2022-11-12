@@ -59,4 +59,8 @@ public class ComponentItem {
   public void setAsync(boolean async) {
     this.async = async;
   }
+
+  public boolean hasWildcardOperation() {
+    return "*".equals(operation);
+  }
 }

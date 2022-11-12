@@ -2,18 +2,19 @@ package com.javastreets.mulefd;
 
 import java.util.*;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.javastreets.mulefd.model.Attribute;
 import com.javastreets.mulefd.model.ComponentItem;
+import com.javastreets.mulefd.model.KnownMuleComponent;
 import com.javastreets.mulefd.model.MuleComponent;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 public class MuleXmlElement {
   public static final String ELEMENT_FLOW = "flow";
@@ -74,7 +75,7 @@ public class MuleXmlElement {
   }
 
   public static List<MuleComponent> fillComponents(Element flowElement,
-      Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
+      Map<String, ComponentItem> knownComponents) {
     Objects.requireNonNull(flowElement, "Flow element must not be null");
     List<MuleComponent> muleComponentList = new ArrayList<>();
     NodeList children = flowElement.getChildNodes();
@@ -100,10 +101,7 @@ public class MuleXmlElement {
         if (isanErrorHandler(element)) {
           muleComponentList.addAll(parseContainerElement(element, knownComponents));
         }
-
-        Optional<MuleComponent> muleComponent = processKnownComponents(knownComponents, element);
-        if (muleComponent.isPresent())
-          muleComponentList.add(muleComponent.get());
+        processKnownComponents(knownComponents, muleComponentList, element);
 
       }
     }
@@ -115,72 +113,81 @@ public class MuleXmlElement {
    * external CSV file.
    *
    * @param knownComponents {@link Map} of element name {@link String} and {@link ComponentItem}
-   *                        definition
-   * @param element         {@link Element} representing the target component
+   *        definition
+   * @param muleComponentList Modifiable list of {@link MuleComponent}s to add known instances
+   * @param element {@link Element} representing the target component
    */
-  static Optional<MuleComponent> processKnownComponents(Map<String, ComponentItem> knownComponents,
-                                                             Element element) throws XPathExpressionException {
-    final String keyName = element.getTagName();
-    final Optional<ComponentItem> item = findByName(knownComponents, keyName);
+  static void processKnownComponents(Map<String, ComponentItem> knownComponents,
+      List<MuleComponent> muleComponentList, Element element) {
 
-    return item.isPresent() ? Optional.of(createKnownComponent(element, item.get())) : Optional.empty();
+    ComponentItem item = findKnownItem(knownComponents, element);
+
+    if (item != null) {
+      String name = item.getOperation();
+      if (item.hasWildcardOperation()) {
+        // E.g. When `db:select` is represented by `db:*` item, restore original operation name
+        name = element.getTagName().split(":")[1];
+      }
+      KnownMuleComponent mc = new KnownMuleComponent(item.getPrefix(), name);
+      mc.setSource(item.isSource());
+      if (!item.getConfigAttributeName().trim().isEmpty()) {
+        mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
+            element.getAttribute(item.getConfigAttributeName())));
+      }
+      String pathExpression = item.getPathAttributeName().trim();
+      if (!pathExpression.isEmpty()) {
+        final String evaluatedPath =
+            isXPath(pathExpression) ? evaluateXpathOnElement(element, pathExpression)
+                : element.getAttribute(item.getPathAttributeName());
+        mc.setPath(Attribute.with(item.getPathAttributeName(), evaluatedPath));
+      }
+      mc.setAsync(item.isAsync());
+      muleComponentList.add(mc);
+    }
   }
 
-  private static MuleComponent createKnownComponent(Element element, ComponentItem item) throws XPathExpressionException {
-    final String[] wildcards = element.getTagName().split(":");
-    String name = wildcards != null && wildcards.length > 1
-            ? wildcards[1]
-            : item.getOperation();
-    final MuleComponent mc = new MuleComponent(item.getPrefix(), name);
-    mc.setSource(item.isSource());
-    if (!item.getConfigAttributeName().trim().isEmpty()) {
-      mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
-          element.getAttribute(item.getConfigAttributeName())));
+  private static ComponentItem findKnownItem(Map<String, ComponentItem> knownComponents,
+      Element element) {
+    ComponentItem item = null;
+    String keyName = element.getTagName();
+    if (knownComponents.containsKey(keyName)) {
+      item = knownComponents.get(keyName);
+    } else if (!element.getNodeName().contains(":")) {
+      item = knownComponents.get(MuleComponent.toMuleCoreComponentName(element.getNodeName()));
+    } else if (element.getTagName().contains(":")) {
+      String[] wildcards = element.getTagName().split(":");
+      String wildcardEntry = wildcards[0] + ":*";
+      if (knownComponents.containsKey(wildcardEntry)) {
+        item = knownComponents.get(wildcardEntry);
+      }
     }
-
-    final String pathExpression = item.getPathAttributeName().trim();
-    if (!pathExpression.isEmpty()) {
-      final String evaluatedPath = isXpath(pathExpression)
-              ? evaluateXpathOnElement(element, pathExpression)
-              : element.getAttribute(item.getPathAttributeName());
-      mc.setPath(Attribute.with(item.getPathAttributeName(), evaluatedPath));
-    }
-    mc.setAsync(item.isAsync());
-    return mc;
+    return item;
   }
 
-  private static Optional<ComponentItem> findByName(final Map<String, ComponentItem> components, final String keyName) {
-    final Optional<ComponentItem> foundItemByKey = Optional.ofNullable(components.get(keyName));
-    if (foundItemByKey.isPresent())
-      return foundItemByKey;
-    if (!keyName.contains(":")) {
-      return Optional.ofNullable(components.get(MuleComponent.toMuleCoreComponentName(keyName)));
+  private static String evaluateXpathOnElement(Element element, String expression) {
+    try {
+      XPath xPath = XPathFactory.newInstance().newXPath();
+      return (String) xPath.compile(expression.substring(XPATH_INDICATOR.length()))
+          .evaluate(element, XPathConstants.STRING);
+    } catch (XPathExpressionException e) {
+      throw new MuleFDException(
+          "Could not evaluate " + expression + " on element " + element.getNodeName(), e);
     }
-    if (keyName.contains(":")) {
-      final String wildcardEntry = keyName.split(":")[0] + ":*";
-      return Optional.ofNullable(components.get(wildcardEntry));
-    }
-    return Optional.empty();
   }
 
-  private static boolean isXpath(final String expression) {
+  private static boolean isXPath(final String expression) {
     return expression.startsWith(XPATH_INDICATOR);
-  }
-
-  private static String evaluateXpathOnElement(final Element element, final String expression) throws XPathExpressionException {
-    XPath xPath = XPathFactory.newInstance().newXPath();
-    return (String)xPath.compile(expression.substring(XPATH_INDICATOR.length())).evaluate(element, XPathConstants.STRING);
   }
 
   /**
    * Parses router elements such as choice, scatter-gather, round-robin, first-successful
-   * 
+   *
    * @param element
    * @param knownComponents
    * @return
    */
   private static List<MuleComponent> parseContainerElement(Element element,
-      Map<String, ComponentItem> knownComponents) throws XPathExpressionException {
+      Map<String, ComponentItem> knownComponents) {
     List<MuleComponent> muleComponentList = new ArrayList<>();
     NodeList routes = element.getChildNodes();
     for (int i = 0; i < routes.getLength(); i++) {
