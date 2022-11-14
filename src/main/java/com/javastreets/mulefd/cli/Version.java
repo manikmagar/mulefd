@@ -19,7 +19,7 @@ public class Version extends BaseCommand {
     }
 
     public static String getMuleFDVersion() {
-      return com.javastreets.mulefd.app.BuildConfig.VERSION;
+      return com.javastreets.mulefd.app.BuildConfig.APP_VERSION;
     }
   }
 }
