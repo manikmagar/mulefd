@@ -45,7 +45,7 @@ public class DiagramRenderer {
    * 3. Components CSV file in the source directory
    *
    * </pre>
-   * 
+   *
    * @return Map of known components
    * @throws MuleFDException when failed to load components file
    */
@@ -72,7 +72,7 @@ public class DiagramRenderer {
 
   /**
    * Reads the components CSV from given {@link Path}
-   * 
+   *
    * @param items Processed {@link ComponentItem} from the file
    * @param filePath {@link Path} to read components from
    */

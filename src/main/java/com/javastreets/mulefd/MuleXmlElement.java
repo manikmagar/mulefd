@@ -2,6 +2,11 @@ package com.javastreets.mulefd;
 
 import java.util.*;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,6 +22,7 @@ public class MuleXmlElement {
   public static final String ELEMENT_FLOW_REF = "flow-ref";
   public static final String ELEMENT_SCOPE_ASYNC = "async";
   public static final String ELEMENT_ERROR_HANDLER = "error-handler";
+  public static final String XPATH_INDICATOR = "xpath:";
 
   private MuleXmlElement() {}
 
@@ -105,7 +111,7 @@ public class MuleXmlElement {
   /**
    * Checks if component represented by the given {@link Element} is known i.e. configured in the
    * external CSV file.
-   * 
+   *
    * @param knownComponents {@link Map} of element name {@link String} and {@link ComponentItem}
    *        definition
    * @param muleComponentList Modifiable list of {@link MuleComponent}s to add known instances
@@ -113,25 +119,14 @@ public class MuleXmlElement {
    */
   static void processKnownComponents(Map<String, ComponentItem> knownComponents,
       List<MuleComponent> muleComponentList, Element element) {
-    ComponentItem item = null;
-    String keyName = element.getTagName();
-    String[] wildcards = null;
-    if (knownComponents.containsKey(keyName)) {
-      item = knownComponents.get(keyName);
-    } else if (!element.getNodeName().contains(":")) {
-      item = knownComponents.get(MuleComponent.toMuleCoreComponentName(element.getNodeName()));
-    } else if (element.getTagName().contains(":")) {
-      wildcards = element.getTagName().split(":");
-      String wildcardEntry = wildcards[0] + ":*";
-      if (knownComponents.containsKey(wildcardEntry)) {
-        item = knownComponents.get(wildcardEntry);
-      }
-    }
+
+    ComponentItem item = findKnownItem(knownComponents, element);
 
     if (item != null) {
       String name = item.getOperation();
-      if (wildcards != null && wildcards.length > 1) {
-        name = wildcards[1];
+      if (item.hasWildcardOperation()) {
+        // E.g. When `db:select` is represented by `db:*` item, restore original operation name
+        name = element.getTagName().split(":")[1];
       }
       KnownMuleComponent mc = new KnownMuleComponent(item.getPrefix(), name);
       mc.setSource(item.isSource());
@@ -139,20 +134,54 @@ public class MuleXmlElement {
         mc.setConfigRef(Attribute.with(item.getConfigAttributeName(),
             element.getAttribute(item.getConfigAttributeName())));
       }
-      if (!item.getPathAttributeName().trim().isEmpty()) {
-        mc.setPath(Attribute.with(item.getPathAttributeName(),
-            element.getAttribute(item.getPathAttributeName())));
+      String pathExpression = item.getPathAttributeName().trim();
+      if (!pathExpression.isEmpty()) {
+        final String evaluatedPath =
+            isXPath(pathExpression) ? evaluateXpathOnElement(element, pathExpression)
+                : element.getAttribute(item.getPathAttributeName());
+        mc.setPath(Attribute.with(item.getPathAttributeName(), evaluatedPath));
       }
       mc.setAsync(item.isAsync());
       muleComponentList.add(mc);
     }
+  }
 
+  private static ComponentItem findKnownItem(Map<String, ComponentItem> knownComponents,
+      Element element) {
+    ComponentItem item = null;
+    String keyName = element.getTagName();
+    if (knownComponents.containsKey(keyName)) {
+      item = knownComponents.get(keyName);
+    } else if (!element.getNodeName().contains(":")) {
+      item = knownComponents.get(MuleComponent.toMuleCoreComponentName(element.getNodeName()));
+    } else if (element.getTagName().contains(":")) {
+      String[] wildcards = element.getTagName().split(":");
+      String wildcardEntry = wildcards[0] + ":*";
+      if (knownComponents.containsKey(wildcardEntry)) {
+        item = knownComponents.get(wildcardEntry);
+      }
+    }
+    return item;
+  }
 
+  private static String evaluateXpathOnElement(Element element, String expression) {
+    try {
+      XPath xPath = XPathFactory.newInstance().newXPath();
+      return (String) xPath.compile(expression.substring(XPATH_INDICATOR.length()))
+          .evaluate(element, XPathConstants.STRING);
+    } catch (XPathExpressionException e) {
+      throw new MuleFDException(
+          "Could not evaluate " + expression + " on element " + element.getNodeName(), e);
+    }
+  }
+
+  private static boolean isXPath(final String expression) {
+    return expression.startsWith(XPATH_INDICATOR);
   }
 
   /**
    * Parses router elements such as choice, scatter-gather, round-robin, first-successful
-   * 
+   *
    * @param element
    * @param knownComponents
    * @return
