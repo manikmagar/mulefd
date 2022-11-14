@@ -61,6 +61,7 @@ spotless {
 	}
 	java {
 		importOrder 'java', 'javax', 'org', 'com', 'com.github.manikmagar', ''
+		targetExclude 'build/generated/**/*.*'
 		removeUnusedImports()
 		eclipse().configFile "eclipse-java-google-style.xml"
 	}
