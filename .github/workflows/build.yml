@@ -77,7 +77,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'adopt'
+          distribution: 'temurin'
           check-latest: true
       - uses: actions/download-artifact@v2.1.0
         with:
