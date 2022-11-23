@@ -34,8 +34,8 @@ subgraph "cluster_mule" {
 edge ["dir"="forward"]
 graph ["rankdir"="LR","splines"="spline","pad"="1.0,0.5","dpi"="150","label"=<Application graph<br/>>,"labelloc"="t","style"="invis"]
 edge ["arrowhead"="vee","dir"="forward"]
-"mule:scheduler" ["shape"="hexagon","style"="filled","color"="cyan","sourceNode"="true","label"=<<b>mule: scheduler</b><br/><br/>>]
+"mule:scheduler:${cron.expreesion}" ["shape"="hexagon","style"="filled","color"="cyan","sourceNode"="true","label"=<<b>mule: scheduler</b><br/>${cron.expreesion}<br/>>]
 "flow:scheduler-configFlow" ["label"=<<b>flow</b>: scheduler-configFlow>,"shape"="rectangle","color"="blue"]
-"mule:scheduler" -> "flow:scheduler-configFlow" ["style"="bold"]
+"mule:scheduler:${cron.expreesion}" -> "flow:scheduler-configFlow" ["style"="bold"]
 }
 }
