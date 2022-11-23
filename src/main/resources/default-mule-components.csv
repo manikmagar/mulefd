@@ -1,5 +1,5 @@
 prefix,operation,sourceFlag,path,configName,async
-mule,scheduler,true,,,false
+mule,scheduler,true,xpath:scheduling-strategy/cron/@expression,,false
 http,listener,true,path,config-ref,true
 http,request,false,path,config-ref,false
 apikit,*,false,api,config-ref,false
